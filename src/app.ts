@@ -3,7 +3,7 @@ import mysql from "mysql2";
 import "dotenv/config";
 import { logger } from "./utils/winston";
 import cors from "cors";
-import { userRouter } from "./router/userRouter";
+import { userRouter } from "./users/routers/userRouter";
 
 const port: number = 5000;
 

@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model chat_contents {
+  id           Int        @id
+  chat_room_id Int
+  is_from_user Boolean
+  from_id      String     @db.VarChar(255)
+  content      String     @db.Text
+  created_at   DateTime   @db.DateTime(0)
+  chat_rooms   chat_rooms @relation(fields: [chat_room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_contents_chat_rooms")
+
+  @@index([chat_room_id], map: "FK_chat_contents_chat_rooms")
+}
+
+model chat_rooms {
+  id                                     Int               @id
+  user_email                             String            @db.VarChar(255)
+  user_vet_email                         String            @db.VarChar(255)
+  status                                 chat_rooms_status
+  grade                                  Float?            @db.Float
+  created_at                             DateTime          @db.DateTime(0)
+  updated_at                             DateTime          @db.DateTime(0)
+  deleted_at                             DateTime?         @db.DateTime(0)
+  chat_contents                          chat_contents[]
+  users_chat_rooms_user_emailTousers     users             @relation("chat_rooms_user_emailTousers", fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_rooms_users")
+  users_chat_rooms_user_vet_emailTousers users             @relation("chat_rooms_user_vet_emailTousers", fields: [user_vet_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_rooms_users_2")
+
+  @@index([user_email], map: "FK_chat_rooms_users")
+  @@index([user_vet_email], map: "FK_chat_rooms_users_2")
+}
+
+model comments {
+  id              Int               @id
+  post_id         Int
+  group           Int
+  order           Int
+  indent          Int
+  author_email    String            @db.VarChar(255)
+  body            String            @db.Text
+  created_at      DateTime          @db.DateTime(0)
+  updated_at      DateTime          @db.DateTime(0)
+  deleted_at      DateTime?         @db.DateTime(0)
+  posts           posts             @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_comments_posts")
+  users           users             @relation(fields: [author_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_comments_users")
+  report_comments report_comments[]
+
+  @@index([post_id], map: "FK_comments_posts")
+  @@index([author_email], map: "FK_comments_users")
+}
+
+model hospitals {
+  id            Int       @id
+  hospital_name String    @db.VarChar(255)
+  address       String    @db.VarChar(255)
+  contact       String?   @db.VarChar(255)
+  locate_x      Float?    @db.Float
+  locate_y      Float?    @db.Float
+  created_at    DateTime  @db.DateTime(0)
+  updated_at    DateTime  @db.DateTime(0)
+  deleted_at    DateTime? @db.DateTime(0)
+}
+
+model posts {
+  id           Int            @id
+  author_email String         @db.VarChar(255)
+  category     posts_category
+  title        String         @db.VarChar(255)
+  body         String         @db.Text
+  like         Int
+  created_at   DateTime       @db.DateTime(0)
+  updated_at   DateTime       @db.DateTime(0)
+  deleted_at   DateTime?      @db.DateTime(0)
+  comments     comments[]
+  users        users          @relation(fields: [author_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_posts_users")
+  report_posts report_posts[]
+
+  @@index([author_email], map: "FK_posts_users")
+}
+
+model profileimages {
+  id         Int       @id
+  user_email String    @db.VarChar(255)
+  path       String    @db.VarChar(255)
+  file_name  String    @db.VarChar(255)
+  mimetype   String    @db.VarChar(255)
+  created_at DateTime  @db.DateTime(0)
+  updated_at DateTime  @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  users      users     @relation(fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_profileimages_users")
+
+  @@index([user_email], map: "FK_profileimages_users")
+}
+
+model report_comments {
+  comment_id Int
+  report_id  Int
+  comments   comments @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_report_comments_comments")
+  reports    reports  @relation(fields: [report_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_report_comments_reports")
+
+  @@id([comment_id, report_id])
+  @@index([report_id], map: "FK_report_comments_reports")
+}
+
+model report_posts {
+  post_id   Int
+  report_id Int
+  posts     posts   @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_report_posts_posts")
+  reports   reports @relation(fields: [report_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_report_posts_reports")
+
+  @@id([post_id, report_id])
+  @@index([report_id], map: "FK_report_posts_reports")
+}
+
+model reports {
+  id              Int               @id
+  author_email    String            @db.VarChar(255)
+  content         String            @db.Text
+  status          reports_status
+  created_at      DateTime          @db.DateTime(0)
+  updated_at      DateTime          @db.DateTime(0)
+  deleted_at      DateTime?         @db.DateTime(0)
+  report_comments report_comments[]
+  report_posts    report_posts[]
+  users           users             @relation(fields: [author_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_reports_users")
+
+  @@index([author_email], map: "FK_reports_users")
+}
+
+model users {
+  email                                       String          @id @db.VarChar(255)
+  password                                    String          @db.VarChar(255)
+  username                                    String          @db.VarChar(255)
+  role                                        users_role
+  created_at                                  DateTime        @db.DateTime(0)
+  updated_at                                  DateTime        @db.DateTime(0)
+  blocked_at                                  DateTime?       @db.DateTime(0)
+  deleted_at                                  DateTime?       @db.DateTime(0)
+  chat_rooms_chat_rooms_user_emailTousers     chat_rooms[]    @relation("chat_rooms_user_emailTousers")
+  chat_rooms_chat_rooms_user_vet_emailTousers chat_rooms[]    @relation("chat_rooms_user_vet_emailTousers")
+  comments                                    comments[]
+  posts                                       posts[]
+  profileimages                               profileimages[]
+  reports                                     reports[]
+  vets                                        vets[]
+}
+
+model vets {
+  id            Int       @id
+  user_email    String    @db.VarChar(255)
+  name          String    @db.VarChar(255)
+  region        String    @db.VarChar(255)
+  hospital_name String    @db.VarChar(255)
+  chat_count    Int
+  grade         Float     @db.Float
+  created_at    DateTime  @db.DateTime(0)
+  updated_at    DateTime  @db.DateTime(0)
+  deleted_at    DateTime? @db.DateTime(0)
+  users         users     @relation(fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_vets_users")
+
+  @@index([user_email], map: "FK_vets_users")
+}
+
+enum posts_category {
+  free
+  info
+}
+
+enum reports_status {
+  pending
+  accepted
+  rejected
+  completed
+}
+
+enum chat_rooms_status {
+  pending
+  accepted
+  rejected
+  completed
+}
+
+enum users_role {
+  vet
+  admin
+  user
+}
