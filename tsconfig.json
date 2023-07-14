@@ -22,7 +22,8 @@
     "noImplicitReturns": true, //함수에서 return 빼먹으면 에러내기
     "noFallthroughCasesInSwitch": true, //switch문 이상하면 에러내기
     "typeRoots": ["node_modules/@types"],
-    "types": ["cors"]
+    "types": ["cors"],
+    "resolveJsonModule": true // json import 가능
   },
   "include": ["src"],
   "exclude": ["node_modules"]

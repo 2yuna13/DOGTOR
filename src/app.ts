@@ -4,7 +4,8 @@ import "dotenv/config";
 import { logger } from "./utils/winston";
 import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
-
+// import swaggerUi from "swagger-ui-express";
+// import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
 
 const app = express();
@@ -37,6 +38,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// app.use("/api-json", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 app.get("/", (request: Request, response: Response) => {
   response.send("hello");
