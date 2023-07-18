@@ -136,7 +136,7 @@ model reports {
 model users {
   email                                       String          @id @db.VarChar(255)
   password                                    String          @db.VarChar(255)
-  username                                    String          @db.VarChar(255)
+  nickname                                    String          @db.VarChar(255)
   role                                        users_role
   created_at                                  DateTime        @db.DateTime(0)
   updated_at                                  DateTime        @db.DateTime(0)
@@ -149,6 +149,13 @@ model users {
   profileimages                               profileimages[]
   reports                                     reports[]
   vets                                        vets[]
+}
+
+model verificationCodes {
+  id            Int       @id @default(autoincrement())
+  email         String
+  code          String
+  createdAt     DateTime  @default(now())
 }
 
 model vets {
