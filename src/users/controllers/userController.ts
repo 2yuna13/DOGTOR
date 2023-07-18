@@ -10,13 +10,22 @@ class UserController {
       const userDto = new UserDto(
         req.body.email,
         req.body.password,
-        req.body.username
+        req.body.nickname
       );
-      validate(userDto);
-
-      const newUser = await UserService.addUser(userDto);
-      logger.info("회원가입 성공");
-      res.status(201).json(newUser);
+      validate(userDto).then((errors) => {
+        if (errors.length > 0) {
+          const errorMessages = errors
+            .map((error) => Object.values<string>(error.constraints!))
+            .join(", ");
+          return res
+            .status(400)
+            .json({ error: `유효성 검사 에러: ${errorMessages}` });
+        } else {
+          const newUser = UserService.addUser(userDto);
+          logger.info("회원가입 성공");
+          return res.status(201).json(newUser);
+        }
+      });
     } catch (error) {
       logger.error("회원가입 실패");
       res.status(500).json({ error });
