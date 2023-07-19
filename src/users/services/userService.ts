@@ -1,7 +1,12 @@
 import { connection } from "../../app";
 import { logger } from "../../utils/winston";
 import { PrismaClient } from "@prisma/client";
-import { UserDto, VerifyCodeDto, VerifyEmailDto } from "../dtos/userDto";
+import {
+  UserDto,
+  VerifyCodeDto,
+  VerifyEmailDto,
+  VerifyVetDto,
+} from "../dtos/userDto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
@@ -134,6 +139,23 @@ class UserService {
       return loginUser;
     } catch (err) {
       throw err;
+    }
+  }
+
+  static async addVet(verifyVetDto: VerifyVetDto) {
+    try {
+      const createVet = await prisma.vets.create({
+        data: {
+          user_email: verifyVetDto.userEmail,
+          name: verifyVetDto.name,
+          region: verifyVetDto.region,
+          hospital_name: verifyVetDto.hospitalName,
+          img_path: verifyVetDto.imgPath,
+        },
+      });
+      return createVet;
+    } catch (Error) {
+      throw Error;
     }
   }
 }

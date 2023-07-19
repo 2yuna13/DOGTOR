@@ -8,25 +8,25 @@ datasource db {
 }
 
 model chat_contents {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   chat_room_id Int
   is_from_user Boolean
   from_id      String     @db.VarChar(255)
   content      String     @db.Text
-  created_at   DateTime   @db.DateTime(0)
+  created_at   DateTime   @db.DateTime(0) @default(now())
   chat_rooms   chat_rooms @relation(fields: [chat_room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_contents_chat_rooms")
 
   @@index([chat_room_id], map: "FK_chat_contents_chat_rooms")
 }
 
 model chat_rooms {
-  id                                     Int               @id
+  id                                     Int               @id @default(autoincrement())
   user_email                             String            @db.VarChar(255)
   user_vet_email                         String            @db.VarChar(255)
   status                                 chat_rooms_status
   grade                                  Float?            @db.Float
-  created_at                             DateTime          @db.DateTime(0)
-  updated_at                             DateTime          @db.DateTime(0)
+  created_at                             DateTime          @db.DateTime(0) @default(now())
+  updated_at                             DateTime          @db.DateTime(0) @default(now())
   deleted_at                             DateTime?         @db.DateTime(0)
   chat_contents                          chat_contents[]
   users_chat_rooms_user_emailTousers     users             @relation("chat_rooms_user_emailTousers", fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_rooms_users")
@@ -37,15 +37,15 @@ model chat_rooms {
 }
 
 model comments {
-  id              Int               @id
+  id              Int               @id @default(autoincrement())
   post_id         Int
   group           Int
   order           Int
   indent          Int
   author_email    String            @db.VarChar(255)
   body            String            @db.Text
-  created_at      DateTime          @db.DateTime(0)
-  updated_at      DateTime          @db.DateTime(0)
+  created_at      DateTime          @db.DateTime(0) @default(now())
+  updated_at      DateTime          @db.DateTime(0) @default(now())
   deleted_at      DateTime?         @db.DateTime(0)
   posts           posts             @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_comments_posts")
   users           users             @relation(fields: [author_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_comments_users")
@@ -56,26 +56,26 @@ model comments {
 }
 
 model hospitals {
-  id            Int       @id
+  id            Int       @id @default(autoincrement())
   hospital_name String    @db.VarChar(255)
   address       String    @db.VarChar(255)
   contact       String?   @db.VarChar(255)
   locate_x      Float?    @db.Float
   locate_y      Float?    @db.Float
-  created_at    DateTime  @db.DateTime(0)
-  updated_at    DateTime  @db.DateTime(0)
+  created_at    DateTime  @db.DateTime(0) @default(now())
+  updated_at    DateTime  @db.DateTime(0) @default(now())
   deleted_at    DateTime? @db.DateTime(0)
 }
 
 model posts {
-  id           Int            @id
+  id           Int            @id @default(autoincrement())
   author_email String         @db.VarChar(255)
   category     posts_category
   title        String         @db.VarChar(255)
   body         String         @db.Text
   like         Int
-  created_at   DateTime       @db.DateTime(0)
-  updated_at   DateTime       @db.DateTime(0)
+  created_at   DateTime       @db.DateTime(0) @default(now())
+  updated_at   DateTime       @db.DateTime(0) @default(now())
   deleted_at   DateTime?      @db.DateTime(0)
   comments     comments[]
   users        users          @relation(fields: [author_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_posts_users")
@@ -85,13 +85,13 @@ model posts {
 }
 
 model profileimages {
-  id         Int       @id
+  id         Int       @id @default(autoincrement())
   user_email String    @db.VarChar(255)
   path       String    @db.VarChar(255)
   file_name  String    @db.VarChar(255)
   mimetype   String    @db.VarChar(255)
-  created_at DateTime  @db.DateTime(0)
-  updated_at DateTime  @db.DateTime(0)
+  created_at DateTime  @db.DateTime(0) @default(now())
+  updated_at DateTime  @db.DateTime(0) @default(now())
   deleted_at DateTime? @db.DateTime(0)
   users      users     @relation(fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_profileimages_users")
 
@@ -119,12 +119,12 @@ model report_posts {
 }
 
 model reports {
-  id              Int               @id
+  id              Int               @id @default(autoincrement())
   author_email    String            @db.VarChar(255)
   content         String            @db.Text
   status          reports_status
-  created_at      DateTime          @db.DateTime(0)
-  updated_at      DateTime          @db.DateTime(0)
+  created_at      DateTime          @db.DateTime(0) @default(now())
+  updated_at      DateTime          @db.DateTime(0) @default(now())
   deleted_at      DateTime?         @db.DateTime(0)
   report_comments report_comments[]
   report_posts    report_posts[]
@@ -138,8 +138,9 @@ model users {
   password                                    String          @db.VarChar(255)
   nickname                                    String          @db.VarChar(255)
   role                                        users_role
-  created_at                                  DateTime        @db.DateTime(0)
-  updated_at                                  DateTime        @db.DateTime(0)
+  user_type                                   users_type      @default(normal)
+  created_at                                  DateTime        @db.DateTime(0) @default(now())
+  updated_at                                  DateTime        @db.DateTime(0) @default(now())
   blocked_at                                  DateTime?       @db.DateTime(0)
   deleted_at                                  DateTime?       @db.DateTime(0)
   chat_rooms_chat_rooms_user_emailTousers     chat_rooms[]    @relation("chat_rooms_user_emailTousers")
@@ -159,15 +160,17 @@ model verificationCodes {
 }
 
 model vets {
-  id            Int       @id
+  id            Int       @id @default(autoincrement())
   user_email    String    @db.VarChar(255)
   name          String    @db.VarChar(255)
   region        String    @db.VarChar(255)
   hospital_name String    @db.VarChar(255)
-  chat_count    Int
-  grade         Float     @db.Float
-  created_at    DateTime  @db.DateTime(0)
-  updated_at    DateTime  @db.DateTime(0)
+  img_path      String    @db.VarChar(255)
+  chat_count    Int?
+  grade         Float?    @db.Float
+  status        vet_status@default(pending)
+  created_at    DateTime  @db.DateTime(0) @default(now())
+  updated_at    DateTime  @db.DateTime(0) @default(now())
   deleted_at    DateTime? @db.DateTime(0)
   users         users     @relation(fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_vets_users")
 
@@ -193,8 +196,20 @@ enum chat_rooms_status {
   completed
 }
 
+enum vet_status {
+  pending
+  accepted
+  rejected
+}
+
 enum users_role {
   vet
   admin
   user
+}
+
+enum users_type {
+  normal
+  kakao
+  google
 }

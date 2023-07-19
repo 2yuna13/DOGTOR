@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { logger } from "../../utils/winston";
 import UserController from "../controllers/userController";
+import upload from "../../utils/upload";
 
 const userRouter = Router();
 
@@ -16,4 +17,10 @@ userRouter.post("/verifyEmail", UserController.userVerifyController);
 // 로그인
 userRouter.post("/login", UserController.userLoginController);
 
+// 수의자 등록 신청
+userRouter.post(
+  "/user/vetregister",
+  upload.single("vet"),
+  UserController.userVetRegisterController
+);
 export { userRouter };

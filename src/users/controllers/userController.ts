@@ -1,7 +1,12 @@
 import { logger } from "../../utils/winston";
 import { UserService } from "../services/userService";
 import { Request, Response } from "express";
-import { UserDto, VerifyCodeDto, VerifyEmailDto } from "../dtos/userDto";
+import {
+  UserDto,
+  VerifyCodeDto,
+  VerifyEmailDto,
+  VerifyVetDto,
+} from "../dtos/userDto";
 import { validate } from "class-validator";
 
 class UserController {
@@ -69,6 +74,39 @@ class UserController {
       res.status(200).send({ message: "로그인 되었습니다.", user });
     } catch (error) {
       logger.error("로그인 실패");
+      res.status(500).json({ error });
+    }
+  }
+
+  // login 필요
+  static async userVetRegisterController(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "면허증 파일 미첨부" });
+      }
+      const vetDto = new VerifyVetDto(
+        //req.currentEmailId
+        req.body.email, // 토큰에서 가져온 이메일
+        req.body.name,
+        req.body.region,
+        req.body.hospitalName,
+        req.file.path
+      );
+      const errors = await validate(vetDto);
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values<string>(error.constraints!))
+          .join(", ");
+        return res
+          .status(400)
+          .json({ error: `유효성 검사 에러: ${errorMessages}` });
+      } else {
+        const newUser = await UserService.addVet(vetDto);
+        logger.info("수의사 등록 신청 성공");
+        return res.status(201).json(newUser);
+      }
+    } catch (error) {
+      logger.error("수의사 등록 실패");
       res.status(500).json({ error });
     }
   }
