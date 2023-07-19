@@ -4,6 +4,7 @@ import "dotenv/config";
 import { logger } from "./utils/winston";
 import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
+import { AdminRouter } from "./admins/routers/adminRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
@@ -49,5 +50,5 @@ app.listen(port, () => {
 });
 
 app.use(userRouter);
-
+app.use(AdminRouter);
 export { connection, app };

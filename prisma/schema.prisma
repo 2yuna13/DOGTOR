@@ -138,6 +138,7 @@ model users {
   password                                    String          @db.VarChar(255)
   nickname                                    String          @db.VarChar(255)
   role                                        users_role
+  user_type                                   users_type      @default(normal)
   created_at                                  DateTime        @db.DateTime(0) @default(now())
   updated_at                                  DateTime        @db.DateTime(0) @default(now())
   blocked_at                                  DateTime?       @db.DateTime(0)
@@ -205,4 +206,10 @@ enum users_role {
   vet
   admin
   user
+}
+
+enum users_type {
+  normal
+  kakao
+  google
 }

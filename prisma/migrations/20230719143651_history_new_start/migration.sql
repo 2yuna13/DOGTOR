@@ -129,6 +129,7 @@ CREATE TABLE `users` (
     `password` VARCHAR(255) NOT NULL,
     `nickname` VARCHAR(255) NOT NULL,
     `role` ENUM('vet', 'admin', 'user') NOT NULL,
+    `user_type` ENUM('normal', 'kakao', 'google') NOT NULL DEFAULT 'normal',
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `blocked_at` DATETIME(0) NULL,
