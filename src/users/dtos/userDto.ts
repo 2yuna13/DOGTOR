@@ -43,4 +43,35 @@ class VerifyEmailDto {
   }
 }
 
-export { UserDto, VerifyCodeDto, VerifyEmailDto };
+class VerifyVetDto {
+  @IsEmail()
+  userEmail: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  region: string;
+
+  @IsString()
+  hospitalName: string;
+
+  @IsString()
+  imgPath: string;
+
+  constructor(
+    userEmail: string,
+    name: string,
+    region: string,
+    hospitalName: string,
+    imgPath: string
+  ) {
+    this.userEmail = userEmail;
+    this.name = name;
+    this.region = region;
+    this.hospitalName = hospitalName;
+    this.imgPath = imgPath;
+  }
+}
+
+export { UserDto, VerifyCodeDto, VerifyEmailDto, VerifyVetDto };
