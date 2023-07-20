@@ -1,6 +1,6 @@
 import { connection } from "../../app";
 import { logger } from "../../utils/winston";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import {
   UserDto,
   VerifyCodeDto,
@@ -88,7 +88,7 @@ class UserService {
       // 사용자 이메일과 인증 코드를 사용하여 인증 확인
       const verificationCode = await prisma.verificationCodes.findFirst({
         where: { email: verifyEmailDto.email },
-        orderBy: { createdAt: Prisma.SortOrder.desc },
+        orderBy: { createdAt: "desc" },
       });
 
       if (!verificationCode || verificationCode.code !== verifyEmailDto.code) {
