@@ -74,4 +74,19 @@ class VerifyVetDto {
   }
 }
 
-export { UserDto, VerifyCodeDto, VerifyEmailDto, VerifyVetDto };
+class UserLoginDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
+  @Length(10)
+  password: string;
+
+  constructor(email: string, password: string) {
+    this.email = email;
+    this.password = password;
+  }
+}
+
+export { UserDto, VerifyCodeDto, VerifyEmailDto, UserLoginDto, VerifyVetDto };

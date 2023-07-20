@@ -1,10 +1,11 @@
 import { connection } from "../../app";
 import { logger } from "../../utils/winston";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import {
   UserDto,
   VerifyCodeDto,
   VerifyEmailDto,
+  UserLoginDto,
   VerifyVetDto,
 } from "../dtos/userDto";
 import jwt from "jsonwebtoken";
@@ -67,7 +68,7 @@ class UserService {
 
     const mailOptions = {
       to: verifyCodeDto.email,
-      subject: "[dogto] 회원가입 이메일 인증 메일입니다.",
+      subject: "[dogtor] 회원가입 이메일 인증 메일입니다.",
       html: `인증 코드: <strong>${verificationCode}</strong>를 사용하여 회원가입을 완료해주세요.`,
     };
 
@@ -87,6 +88,7 @@ class UserService {
       // 사용자 이메일과 인증 코드를 사용하여 인증 확인
       const verificationCode = await prisma.verificationCodes.findFirst({
         where: { email: verifyEmailDto.email },
+        orderBy: { createdAt: Prisma.SortOrder.desc },
       });
 
       if (!verificationCode || verificationCode.code !== verifyEmailDto.code) {
@@ -103,40 +105,26 @@ class UserService {
     }
   }
 
-  static async getUser({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) {
+  static async loginUser(userLoginDto: UserLoginDto) {
     try {
       const user = await prisma.users.findUnique({
-        where: {
-          email: email,
-        },
+        where: { email: userLoginDto.email },
       });
 
       if (!user) {
         throw new Error("해당 이메일은 가입 내역이 없습니다.");
       }
 
-      const passwordMatch = await bcrypt.compare(password, user.password);
+      const passwordMatch = await bcrypt.compare(
+        userLoginDto.password,
+        user.password
+      );
 
       if (!passwordMatch) {
         throw new Error("비밀번호가 일치하지 않습니다.");
       }
 
-      const secretKey = process.env.JWT_SECRET_KEY || "jwt-secret-key";
-      const token = jwt.sign({ email: user.email }, secretKey);
-
-      const loginUser = {
-        email: user.email,
-        nickname: user.nickname,
-        token: token,
-      };
-
-      return loginUser;
+      return user;
     } catch (err) {
       throw err;
     }
