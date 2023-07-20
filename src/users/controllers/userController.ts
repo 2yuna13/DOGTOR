@@ -3,11 +3,14 @@ import { UserService } from "../services/userService";
 import { Request, Response } from "express";
 import {
   UserDto,
+  UserLoginDto,
   VerifyCodeDto,
   VerifyEmailDto,
   VerifyVetDto,
 } from "../dtos/userDto";
 import { validate } from "class-validator";
+import passport from "passport";
+import { generateToken } from "../../utils/auth";
 
 class UserController {
   static async userRegisterController(req: Request, res: Response) {
@@ -17,20 +20,21 @@ class UserController {
         req.body.password,
         req.body.nickname
       );
-      validate(userDto).then((errors) => {
-        if (errors.length > 0) {
-          const errorMessages = errors
-            .map((error) => Object.values<string>(error.constraints!))
-            .join(", ");
-          return res
-            .status(400)
-            .json({ error: `유효성 검사 에러: ${errorMessages}` });
-        } else {
-          const newUser = UserService.addUser(userDto);
-          logger.info("회원가입 성공");
-          return res.status(201).json(newUser);
-        }
-      });
+      const errors = await validate(userDto);
+
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values<string>(error.constraints!))
+          .join(", ");
+        logger.error("유효성 검사 에러");
+        return res
+          .status(400)
+          .json({ error: `유효성 검사 에러: ${errorMessages}` });
+      } else {
+        await UserService.addUser(userDto);
+        logger.info("회원가입 성공");
+        return res.status(201).json({ message: "회원가입이 완료되었습니다." });
+      }
     } catch (error) {
       logger.error("회원가입 실패");
       res.status(500).json({ error });
@@ -43,7 +47,7 @@ class UserController {
 
       await UserService.createVerificationCode(email);
 
-      logger.info("이메일이 전송되었습니다.");
+      logger.info("이메일 전송");
       res.status(200).json({ message: "이메일이 전송되었습니다." });
     } catch (error) {
       logger.error("이메일 전송 실패");
@@ -68,10 +72,38 @@ class UserController {
 
   static async userLoginController(req: Request, res: Response) {
     try {
-      const { email, password } = req.body;
-      const user = await UserService.getUser({ email, password });
+      const userLoginDto = new UserLoginDto(req.body.email, req.body.password);
 
-      res.status(200).send({ message: "로그인 되었습니다.", user });
+      // DTO 유효성 검사
+      const errors = await validate(userLoginDto);
+      if (errors.length > 0) {
+        res.status(400).json({ errors });
+        return;
+      }
+
+      passport.authenticate(
+        "local",
+        { session: false },
+        async (err: Error | null, user: any, info: any) => {
+          try {
+            if (err || !user) {
+              return res
+                .status(400)
+                .json({ error: info ? info.message : "로그인 실패" });
+            }
+
+            const token = generateToken(user);
+
+            // 인증된 사용자 정보를 이용하여 로그인 후 로직을 처리
+            await UserService.loginUser(userLoginDto);
+
+            logger.info("로그인 성공");
+            return res.status(200).json(token);
+          } catch (error) {
+            return res.status(500).json({ error });
+          }
+        }
+      )(req, res);
     } catch (error) {
       logger.error("로그인 실패");
       res.status(500).json({ error });
