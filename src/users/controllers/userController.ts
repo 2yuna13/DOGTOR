@@ -88,8 +88,8 @@ class UserController {
         //req.currentEmailId
         req.body.email, // 토큰에서 가져온 이메일
         req.body.name,
-        req.body.region,
         req.body.hospitalName,
+        req.body.description,
         req.file.path
       );
       const errors = await validate(vetDto);

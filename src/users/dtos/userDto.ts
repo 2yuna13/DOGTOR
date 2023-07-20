@@ -51,10 +51,10 @@ class VerifyVetDto {
   name: string;
 
   @IsString()
-  region: string;
+  hospitalName: string;
 
   @IsString()
-  hospitalName: string;
+  description: string;
 
   @IsString()
   imgPath: string;
@@ -62,14 +62,14 @@ class VerifyVetDto {
   constructor(
     userEmail: string,
     name: string,
-    region: string,
     hospitalName: string,
+    description: string,
     imgPath: string
   ) {
     this.userEmail = userEmail;
     this.name = name;
-    this.region = region;
     this.hospitalName = hospitalName;
+    this.description = description;
     this.imgPath = imgPath;
   }
 }

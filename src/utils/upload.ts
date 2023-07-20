@@ -4,10 +4,14 @@ import fs from "fs";
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      if (!fs.existsSync("./imgs/vets")) {
-        fs.mkdirSync("./imgs/vets");
+      const fieldName = file.fieldname; // 필드명 가져오기
+      const folderPath = `./imgs/${fieldName}`;
+
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
       }
-      cb(null, "./imgs/vets");
+
+      cb(null, folderPath);
     },
     filename: function (req, file, cb) {
       const encodedFileName =

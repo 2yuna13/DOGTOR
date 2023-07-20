@@ -148,8 +148,8 @@ class UserService {
         data: {
           user_email: verifyVetDto.userEmail,
           name: verifyVetDto.name,
-          region: verifyVetDto.region,
           hospital_name: verifyVetDto.hospitalName,
+          description: verifyVetDto.description,
           img_path: verifyVetDto.imgPath,
         },
       });

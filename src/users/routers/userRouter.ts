@@ -20,7 +20,7 @@ userRouter.post("/login", UserController.userLoginController);
 // 수의자 등록 신청
 userRouter.post(
   "/user/vetregister",
-  upload.single("vet"),
+  upload.single("vets"),
   UserController.userVetRegisterController
 );
 export { userRouter };
