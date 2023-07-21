@@ -5,6 +5,7 @@ import { logger } from "./utils/winston";
 import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
 import { AdminRouter } from "./admins/routers/adminRouter";
+import { ChatRouter } from "./chats/routers/chatRouter";
 import passport from "./utils/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
@@ -59,4 +60,5 @@ chatSocket(io);
 
 app.use(userRouter);
 app.use(AdminRouter);
+app.use(ChatRouter);
 export { connection, app, io };
