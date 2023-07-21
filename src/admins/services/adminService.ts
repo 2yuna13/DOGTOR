@@ -1,30 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import { VetStatusDto } from "../dtos/adminDto";
+import { VetListDto, VetStatusDto } from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
 
 class AdminService {
-  static async getVetRequestsPending() {
+  static async getVetRequestLists(vetListsDto: VetListDto) {
     try {
       const vetRequests = await prisma.vets.findMany({
         where: {
-          status: "pending",
-        },
-        orderBy: {
-          updated_at: "asc",
-        },
-      });
-      return vetRequests;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  static async getVetRequestsAccepted() {
-    try {
-      const vetRequests = await prisma.vets.findMany({
-        where: {
-          status: "accepted",
+          status: vetListsDto.status,
         },
         orderBy: {
           updated_at: "asc",

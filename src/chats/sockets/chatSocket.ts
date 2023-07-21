@@ -22,7 +22,7 @@ export const chatSocket = (io: Server) => {
       logger.error(`에러 발생: ${error}`);
     });
 
-    // 4) 클라이언트에서 보낸 이벤트 처리: 클라이언트에서 "client_msg" 이름으로 보낸 데이터 수신
+    // 4) 클라이언트에서 보낸 이벤트 처리: 클라이언트에서 "msgSend" 이름으로 보낸 데이터 수신
     socket.on("msgSend", ({ email, chatId, content }) => {
       socket.broadcast.to(chatId).emit("msgReceive", {
         email,

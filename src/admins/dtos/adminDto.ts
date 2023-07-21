@@ -9,6 +9,15 @@ enum statusEnum {
   rejected = "rejected",
 }
 
+class VetListDto {
+  @IsEnum(statusEnum)
+  status: statusEnum;
+
+  constructor(status: statusEnum) {
+    this.status = status;
+  }
+}
+
 class VetStatusDto {
   @IsNumber()
   id: number;
@@ -26,4 +35,4 @@ class VetStatusDto {
   }
 }
 
-export { VetStatusDto };
+export { VetStatusDto, VetListDto };

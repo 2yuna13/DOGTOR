@@ -7,14 +7,8 @@ const AdminRouter = Router();
 
 //확인안한 수의사 인증 신청 목록 불러오기 (시간 오래된 순)
 AdminRouter.get(
-  "/admin/vetrequests/pending",
-  AdminController.vetRequestPendingController
-);
-
-//승인된 수의사 인증 신청 목록 불러오기 (시간 오래된 순)
-AdminRouter.get(
-  "/admin/vetrequests/accepted",
-  AdminController.vetRequestAcceptedController
+  "/admin/vetrequests/lists",
+  AdminController.vetRequestListsController
 );
 
 //수의사 인증 상태 변경 (승인, 거절)

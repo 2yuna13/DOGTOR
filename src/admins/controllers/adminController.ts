@@ -1,24 +1,26 @@
 import { logger } from "../../utils/winston";
 import { Request, Response } from "express";
 import { validate } from "class-validator";
-import { VetStatusDto } from "../dtos/adminDto";
+import { VetListDto, VetStatusDto } from "../dtos/adminDto";
 import { AdminService } from "../services/adminService";
 
 class AdminController {
-  static async vetRequestPendingController(req: Request, res: Response) {
+  static async vetRequestListsController(req: Request, res: Response) {
     try {
-      const vetRequests = await AdminService.getVetRequestsPending();
-      console.log(vetRequests);
-      res.status(200).send(vetRequests);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  }
-
-  static async vetRequestAcceptedController(req: Request, res: Response) {
-    try {
-      const vetRequests = await AdminService.getVetRequestsAccepted();
-      res.status(200).send(vetRequests);
+      const vetListDto = new VetListDto(req.body.status);
+      const errors = await validate(vetListDto);
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values<string>(error.constraints!))
+          .join(", ");
+        return res
+          .status(400)
+          .json({ error: `유효성 검사 에러: ${errorMessages}` });
+      } else {
+        const vetLists = await AdminService.getVetRequestLists(vetListDto);
+        logger.info("수의사 신청 목록 조회 성공");
+        return res.status(200).json(vetLists);
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
