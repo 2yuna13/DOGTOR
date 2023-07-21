@@ -113,6 +113,16 @@ class UserController {
     }
   }
 
+  static async googleLoginController(req: Request, res: Response) {
+    try {
+      const token = generateToken(req.user);
+
+      res.status(200).json(token);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
   // login 필요
   static async userVetRegisterController(req: Request, res: Response) {
     try {

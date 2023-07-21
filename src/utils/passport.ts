@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import { UserService } from "../users/services/userService";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
@@ -59,6 +60,50 @@ passport.use(
         }
 
         return done(null, user);
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GMAIL_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET,
+      callbackURL: "http://localhost:8080/auth/google/callback",
+    },
+    async (
+      accessToken: string,
+      refreshToken: string,
+      profile: Profile,
+      done: (error: any, user?: any, info?: any) => void
+    ) => {
+      try {
+        const email = profile.emails?.[0].value || "";
+
+        const user = await prisma.users.findUnique({
+          where: { email },
+        });
+
+        if (user) {
+          return done(null, user);
+        }
+
+        const newUser = await prisma.users.create({
+          data: {
+            email,
+            password: "",
+            nickname: profile.displayName || "",
+            role: "user",
+            user_type: "google",
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        });
+
+        return done(null, newUser);
       } catch (error) {
         return done(error);
       }

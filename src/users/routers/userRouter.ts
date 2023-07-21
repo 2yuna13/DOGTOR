@@ -2,6 +2,7 @@ import { Router } from "express";
 import { logger } from "../../utils/winston";
 import UserController from "../controllers/userController";
 import upload from "../../utils/upload";
+import passport from "../../utils/passport";
 
 const userRouter = Router();
 
@@ -16,6 +17,18 @@ userRouter.post("/verifyEmail", UserController.userVerifyController);
 
 // 로그인
 userRouter.post("/login", UserController.userLoginController);
+
+// 구글 로그인
+userRouter.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+userRouter.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  UserController.googleLoginController
+);
 
 // 수의자 등록 신청
 userRouter.post(
