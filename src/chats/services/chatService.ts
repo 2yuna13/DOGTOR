@@ -27,8 +27,8 @@ class ChatService {
         },
       });
       return;
-    } catch (error) {
-      throw error;
+    } catch (Error) {
+      throw Error;
     }
   }
 
@@ -55,7 +55,7 @@ class ChatService {
     try {
       const selectChat = await prisma.chat_contents.findMany({
         where: { chat_room_id: chatSelectDto.id },
-        orderBy: { created_at: "desc" },
+        orderBy: { created_at: "asc" },
       });
       return selectChat;
     } catch (error) {
@@ -70,6 +70,41 @@ class ChatService {
         data: { status: chatStatusDto.status },
       });
       return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async addChat(email: string, chatId: number, content: string) {
+    try {
+      const checkUser = await prisma.chat_rooms.findFirst({
+        where: { id: chatId },
+      });
+      if (checkUser?.user_email == email) {
+        await prisma.chat_contents.create({
+          data: {
+            chat_room_id: chatId,
+            is_from_user: true,
+            from_id: email,
+            content: content,
+          },
+        });
+      } else {
+        await prisma.chat_contents.create({
+          data: {
+            chat_room_id: chatId,
+            is_from_user: false,
+            from_id: email,
+            content: content,
+          },
+        });
+      }
+      await prisma.chat_rooms.update({
+        where: { id: chatId },
+        data: {
+          updated_at: new Date(),
+        },
+      });
     } catch (error) {
       throw error;
     }

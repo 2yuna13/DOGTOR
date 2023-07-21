@@ -41,20 +41,19 @@ class ChatController {
       //로그인 토큰으로 유저 파악, 추후 수정 필요
       //const currentEmailId = req.currnetEmailId;
       const chatListDto = new ChatListDto(req.body.email);
-      validate(chatListDto).then((errors) => {
-        if (errors.length > 0) {
-          const errorMessages = errors
-            .map((error) => Object.values<string>(error.constraints!))
-            .join(", ");
-          return res
-            .status(400)
-            .json({ error: `유효성 검사 에러: ${errorMessages}` });
-        } else {
-          const chatList = ChatService.getChatList(chatListDto);
-          logger.info("채팅 목록 조회 성공");
-          return res.status(201).json(chatList);
-        }
-      });
+      const errors = await validate(chatListDto);
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values<string>(error.constraints!))
+          .join(", ");
+        return res
+          .status(400)
+          .json({ error: `유효성 검사 에러: ${errorMessages}` });
+      } else {
+        const chatList = await ChatService.getChatList(chatListDto);
+        logger.info("채팅 목록 조회 성공");
+        return res.status(201).json(chatList);
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -63,20 +62,19 @@ class ChatController {
   static async chatSelectController(req: Request, res: Response) {
     try {
       const chatSelectDto = new ChatSelectDto(req.body.id);
-      validate(chatSelectDto).then((errors) => {
-        if (errors.length > 0) {
-          const errorMessages = errors
-            .map((error) => Object.values<string>(error.constraints!))
-            .join(", ");
-          return res
-            .status(400)
-            .json({ error: `유효성 검사 에러: ${errorMessages}` });
-        } else {
-          const chat = ChatService.selectChat(chatSelectDto);
-          logger.info("채팅 조회 성공");
-          return res.status(201).json(chat);
-        }
-      });
+      const errors = await validate(chatSelectDto);
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values<string>(error.constraints!))
+          .join(", ");
+        return res
+          .status(400)
+          .json({ error: `유효성 검사 에러: ${errorMessages}` });
+      } else {
+        const chat = await ChatService.selectChat(chatSelectDto);
+        logger.info("채팅 조회 성공");
+        return res.status(201).json(chat);
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -96,7 +94,7 @@ class ChatController {
         } else {
           ChatService.chatStatus(chatStatusDto);
           logger.info("상담 요청 상태 변경 성공");
-          return res.status(201).json("상담 요청 상태 변경 성공공");
+          return res.status(201).json("상담 요청 상태 변경 성공");
         }
       });
     } catch (error) {
