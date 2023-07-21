@@ -50,6 +50,14 @@ class UserService {
   }
 
   static async createVerificationCode(verifyCodeDto: VerifyCodeDto) {
+    const existingUser = await prisma.users.findUnique({
+      where: { email: verifyCodeDto.email },
+    });
+
+    if (existingUser) {
+      return null;
+    }
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
