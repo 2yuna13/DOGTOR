@@ -6,6 +6,8 @@ import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
 import { AdminRouter } from "./admins/routers/adminRouter";
 import passport from "./utils/passport";
+import { Server } from "socket.io";
+import { chatSocket } from "./chats/sockets/chatSocket";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
@@ -48,10 +50,13 @@ app.get("/", (request: Request, response: Response) => {
   response.send("hello");
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   logger.info(`${port} 포트에서 서버 시작`);
 });
 
+const io = new Server(server, { path: "/chat" });
+chatSocket(io);
+
 app.use(userRouter);
 app.use(AdminRouter);
-export { connection, app };
+export { connection, app, io };

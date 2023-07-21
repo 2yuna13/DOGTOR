@@ -23,7 +23,7 @@ model chat_rooms {
   id                                     Int               @id @default(autoincrement())
   user_email                             String            @db.VarChar(255)
   user_vet_email                         String            @db.VarChar(255)
-  status                                 chat_rooms_status
+  status                                 chat_rooms_status @default(pending)
   grade                                  Float?            @db.Float
   created_at                             DateTime          @db.DateTime(0) @default(now())
   updated_at                             DateTime          @db.DateTime(0) @default(now())
