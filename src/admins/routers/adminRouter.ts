@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { AdminController } from "../controllers/adminController";
+import validationMiddleware from "../../middlewares/validateDto";
+import { VetListDto, VetStatusDto } from "../dtos/adminDto";
 
 const AdminRouter = Router();
 
@@ -7,13 +9,15 @@ const AdminRouter = Router();
 
 //확인안한 수의사 인증 신청 목록 불러오기 (시간 오래된 순)
 AdminRouter.get(
-  "/admin/vetrequests/lists",
+  "/admins/vet-requests",
+  validationMiddleware(VetListDto),
   AdminController.vetRequestListsController
 );
 
 //수의사 인증 상태 변경 (승인, 거절)
 AdminRouter.put(
-  "/admin/vetrequests/status",
+  "/admins/vet-requests/status",
+  validationMiddleware(VetStatusDto),
   AdminController.manageVetRequestsController
 );
 
