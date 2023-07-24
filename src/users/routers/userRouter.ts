@@ -9,17 +9,17 @@ const userRouter = Router();
 userRouter.post("/register", UserController.userRegisterController);
 
 // 이메일 인증번호 발송
-userRouter.post("/verifyCode", UserController.verifyCodeController);
+userRouter.post("/verify-code", UserController.verifyCodeController);
 
 // 이메일 인증
-userRouter.post("/verifyEmail", UserController.userVerifyController);
+userRouter.post("/verify-email", UserController.userVerifyController);
 
 // 로그인
 userRouter.post("/login", UserController.userLoginController);
 
 // 수의자 등록 신청
 userRouter.post(
-  "/user/vetregister",
+  "/user/vet-register",
   upload.single("vets"),
   UserController.userVetRegisterController
 );

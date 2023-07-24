@@ -2,25 +2,6 @@ import { IsEmail, IsString, Length, Matches } from "class-validator";
 
 // Data Transform Object
 // 유효성 검증
-class UserDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
-  @Length(10)
-  password: string;
-
-  @IsString()
-  nickname: string;
-
-  constructor(email: string, password: string, nickname: string) {
-    this.email = email;
-    this.password = password;
-    this.nickname = nickname;
-  }
-}
-
 class VerifyCodeDto {
   @IsEmail()
   email: string;
@@ -30,15 +11,28 @@ class VerifyCodeDto {
   }
 }
 
-class VerifyEmailDto {
-  @IsEmail()
-  email: string;
+class UserDto extends VerifyCodeDto {
+  @IsString()
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
+  @Length(10)
+  password: string;
 
+  @IsString()
+  nickname: string;
+
+  constructor(email: string, password: string, nickname: string) {
+    super(email);
+    this.password = password;
+    this.nickname = nickname;
+  }
+}
+
+class VerifyEmailDto extends VerifyCodeDto {
   @IsString()
   code: string;
 
   constructor(email: string, code: string) {
-    this.email = email;
+    super(email);
     this.code = code;
   }
 }
@@ -74,17 +68,14 @@ class VerifyVetDto {
   }
 }
 
-class UserLoginDto {
-  @IsEmail()
-  email: string;
-
+class UserLoginDto extends VerifyCodeDto {
   @IsString()
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
   @Length(10)
   password: string;
 
   constructor(email: string, password: string) {
-    this.email = email;
+    super(email);
     this.password = password;
   }
 }

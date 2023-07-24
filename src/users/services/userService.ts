@@ -10,23 +10,8 @@ import {
 } from "../dtos/userDto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
-import config from "../../utils/config";
-
+import { sendEmail } from "../../utils/mail";
 const prisma = new PrismaClient();
-
-const generateVerificationCode = () => {
-  const codeLength = 6; // 인증 코드 길이
-  const characters = "0123456789"; // 인증 코드로 사용할 문자 집합
-
-  let code = "";
-  for (let i = 0; i < codeLength; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    code += characters[randomIndex];
-  }
-
-  return code;
-};
 
 class UserService {
   static async addUser(userDto: UserDto) {
@@ -58,29 +43,7 @@ class UserService {
       return null;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: true,
-      auth: {
-        type: "OAuth2",
-        user: config.mailer.gmailUser,
-        clientId: config.mailer.gmailClientId,
-        clientSecret: config.mailer.gmailClientSecret,
-        refreshToken: config.mailer.gmailRefreshToken,
-      },
-    });
-
-    const verificationCode = generateVerificationCode();
-
-    const mailOptions = {
-      to: verifyCodeDto.email,
-      subject: "[dogtor] 회원가입 이메일 인증 메일입니다.",
-      html: `인증 코드: <strong>${verificationCode}</strong>를 사용하여 회원가입을 완료해주세요.`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    const verificationCode = sendEmail(verifyCodeDto.email);
 
     const verification = await prisma.verificationCodes.create({
       data: {
