@@ -1,10 +1,10 @@
 import { IsEmail, IsString, IsNumber, IsEnum } from "class-validator";
 
-enum statusEnum {
-  pending = "pending",
-  accepted = "accepted",
-  rejected = "rejected",
-  completed = "completed",
+enum StatusEnum {
+  PENDING = "pending",
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  COMPLETED = "completed",
 }
 
 class ChatRequestDto {
@@ -46,10 +46,10 @@ class ChatStatusDto {
   @IsNumber()
   id: number;
 
-  @IsEnum(statusEnum)
-  status: statusEnum;
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
 
-  constructor(id: number, status: statusEnum) {
+  constructor(id: number, status: StatusEnum) {
     (this.id = id), (this.status = status);
   }
 }
