@@ -61,7 +61,7 @@ class ChatController {
 
   static async chatSelectController(req: Request, res: Response) {
     try {
-      const chatSelectDto = new ChatSelectDto(req.body.id);
+      const chatSelectDto = new ChatSelectDto(parseInt(req.params.id));
       const errors = await validate(chatSelectDto);
       if (errors.length > 0) {
         const errorMessages = errors
