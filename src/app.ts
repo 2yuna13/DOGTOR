@@ -55,7 +55,7 @@ const server = app.listen(port, () => {
   logger.info(`${port} 포트에서 서버 시작`);
 });
 
-const io = new Server(server, { path: "/chat" });
+const io = new Server(server);
 chatSocket(io);
 
 app.use(userRouter);
