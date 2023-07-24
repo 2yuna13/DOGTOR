@@ -1,12 +1,18 @@
 import { Router } from "express";
 import { logger } from "../../utils/winston";
 import UserController from "../controllers/userController";
-import upload from "../../utils/upload";
+import upload from "../../middlewares/upload";
+import validationMiddleware from "../../middlewares/validateDto";
+import { UserDto } from "../dtos/userDto";
 
 const userRouter = Router();
 
 // 회원가입
-userRouter.post("/register", UserController.userRegisterController);
+userRouter.post(
+  "/register",
+  validationMiddleware(UserDto),
+  UserController.userRegisterController
+);
 
 // 이메일 인증번호 발송
 userRouter.post("/verify-code", UserController.verifyCodeController);

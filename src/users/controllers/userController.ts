@@ -10,7 +10,7 @@ import {
 } from "../dtos/userDto";
 import { validate } from "class-validator";
 import passport from "passport";
-import { generateToken } from "../../utils/auth";
+import { generateToken } from "../../middlewares/auth";
 
 class UserController {
   static async userRegisterController(req: Request, res: Response) {
