@@ -50,21 +50,16 @@ class VerifyVetDto {
   @IsString()
   description: string;
 
-  @IsString()
-  imgPath: string;
-
   constructor(
     userEmail: string,
     name: string,
     hospitalName: string,
-    description: string,
-    imgPath: string
+    description: string
   ) {
     this.userEmail = userEmail;
     this.name = name;
     this.hospitalName = hospitalName;
     this.description = description;
-    this.imgPath = imgPath;
   }
 }
 

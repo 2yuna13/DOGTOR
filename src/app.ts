@@ -6,7 +6,7 @@ import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
 import { AdminRouter } from "./admins/routers/adminRouter";
 import { ChatRouter } from "./chats/routers/chatRouter";
-import passport from "./utils/passport";
+import passport from "./middlewares/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
 // import swaggerUi from "swagger-ui-express";

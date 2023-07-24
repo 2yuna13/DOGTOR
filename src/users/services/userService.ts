@@ -8,7 +8,6 @@ import {
   UserLoginDto,
   VerifyVetDto,
 } from "../dtos/userDto";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
 const prisma = new PrismaClient();
@@ -34,20 +33,20 @@ class UserService {
     }
   }
 
-  static async createVerificationCode(verifyCodeDto: VerifyCodeDto) {
+  static async createVerificationCode(email: string) {
     const existingUser = await prisma.users.findUnique({
-      where: { email: verifyCodeDto.email },
+      where: { email: email },
     });
 
     if (existingUser) {
       return null;
     }
 
-    const verificationCode = sendEmail(verifyCodeDto.email);
+    const verificationCode = sendEmail(email);
 
     const verification = await prisma.verificationCodes.create({
       data: {
-        email: verifyCodeDto.email,
+        email: email,
         code: verificationCode,
       },
     });
@@ -101,7 +100,7 @@ class UserService {
     }
   }
 
-  static async addVet(verifyVetDto: VerifyVetDto) {
+  static async addVet(verifyVetDto: VerifyVetDto, file_path: string) {
     try {
       const createVet = await prisma.vets.create({
         data: {
@@ -109,7 +108,7 @@ class UserService {
           name: verifyVetDto.name,
           hospital_name: verifyVetDto.hospitalName,
           description: verifyVetDto.description,
-          img_path: verifyVetDto.imgPath,
+          img_path: file_path,
         },
       });
       return createVet;
