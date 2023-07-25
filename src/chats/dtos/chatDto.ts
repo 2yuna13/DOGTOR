@@ -7,6 +7,22 @@ enum StatusEnum {
   COMPLETED = "completed",
 }
 
+enum RegionEnum {
+  SEOUL = "Seoul",
+  GYEONGGI = "Gyeonggi",
+  INCHEON = "Incheon",
+  DAEJEON = "Daejeon",
+  DAEGU = "Daegu",
+  GWANGJU = "Gwangju",
+  ULSAN = "Ulsan",
+  BUSAN = "Busan",
+  GANGWON = "Gangwon",
+  CHUNGCHEONG = "Chungcheong",
+  JEOLLA = "Jeolla",
+  GYEONGSANG = "Gyeongsang",
+  JEJU = "Jeju",
+}
+
 class ChatRequestDto {
   @IsEmail()
   vetEmail: string;
@@ -50,4 +66,23 @@ class ChatStatusDto {
   }
 }
 
-export { ChatRequestDto, ChatListDto, ChatSelectDto, ChatStatusDto };
+class VetRegionDto {
+  @IsString()
+  currentPage: string;
+
+  @IsEnum(RegionEnum)
+  region: RegionEnum;
+
+  constructor(currentPage: string, region: RegionEnum) {
+    this.currentPage = currentPage;
+    this.region = region;
+  }
+}
+
+export {
+  ChatRequestDto,
+  ChatListDto,
+  ChatSelectDto,
+  ChatStatusDto,
+  VetRegionDto,
+};

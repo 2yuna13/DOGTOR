@@ -100,14 +100,19 @@ class UserService {
     }
   }
 
-  static async addVet(verifyVetDto: VerifyVetDto, file_path: string) {
+  static async addVet(
+    verifyVetDto: VerifyVetDto,
+    file_path: string,
+    userEmail: string
+  ) {
     try {
       const createVet = await prisma.vets.create({
         data: {
-          user_email: verifyVetDto.userEmail,
+          user_email: userEmail,
           name: verifyVetDto.name,
           hospital_name: verifyVetDto.hospitalName,
           description: verifyVetDto.description,
+          region: verifyVetDto.region,
           img_path: file_path,
         },
       });

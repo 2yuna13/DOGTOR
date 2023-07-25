@@ -1,7 +1,24 @@
-import { IsEmail, IsString, Length, Matches } from "class-validator";
+import { IsEmail, IsString, Length, Matches, IsEnum } from "class-validator";
 
 // Data Transform Object
 // 유효성 검증
+
+enum RegionEnum {
+  SEOUL = "Seoul",
+  GYEONGGI = "Gyeonggi",
+  INCHEON = "Incheon",
+  DAEJEON = "Daejeon",
+  DAEGU = "Daegu",
+  GWANGJU = "Gwangju",
+  ULSAN = "Ulsan",
+  BUSAN = "Busan",
+  GANGWON = "Gangwon",
+  CHUNGCHEONG = "Chungcheong",
+  JEOLLA = "Jeolla",
+  GYEONGSANG = "Gyeongsang",
+  JEJU = "Jeju",
+}
+
 class VerifyCodeDto {
   @IsEmail()
   email: string;
@@ -38,9 +55,6 @@ class VerifyEmailDto extends VerifyCodeDto {
 }
 
 class VerifyVetDto {
-  @IsEmail()
-  userEmail: string;
-
   @IsString()
   name: string;
 
@@ -50,16 +64,19 @@ class VerifyVetDto {
   @IsString()
   description: string;
 
+  @IsEnum(RegionEnum)
+  region: RegionEnum;
+
   constructor(
-    userEmail: string,
     name: string,
     hospitalName: string,
-    description: string
+    description: string,
+    region: RegionEnum
   ) {
-    this.userEmail = userEmail;
     this.name = name;
     this.hospitalName = hospitalName;
     this.description = description;
+    this.region = region;
   }
 }
 
