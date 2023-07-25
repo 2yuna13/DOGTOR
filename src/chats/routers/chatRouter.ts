@@ -5,11 +5,19 @@ import {
   ChatRequestDto,
   ChatSelectDto,
   ChatStatusDto,
+  VetRegionDto,
 } from "../dtos/chatDto";
 import validationMiddleware from "../../middlewares/validateDto";
 import passport from "passport";
 
 const ChatRouter = Router();
+
+//수의사 목록 조회
+ChatRouter.get(
+  "/chats/vet-lists",
+  //validationMiddleware(VetRegionDto),
+  ChatController.vetListController
+);
 
 //login required, 상담 신청
 ChatRouter.post(

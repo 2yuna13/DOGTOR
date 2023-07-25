@@ -1,8 +1,35 @@
 import { Request, Response } from "express";
 import { logger } from "../../utils/winston";
 import { ChatService } from "../services/chatService";
+import { VetRegionDto } from "../dtos/chatDto";
 
 class ChatController {
+  static async vetListController(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string);
+      const totalVetsCnt = await ChatService.getTotalVetCnt(req.query as any);
+      let startIndex: number = (currentPage - 1) * rowPerPage;
+      if (startIndex < 0) {
+        startIndex = 0;
+      }
+      const vetList = await ChatService.getVetList(
+        req.query as any,
+        startIndex,
+        rowPerPage
+      );
+      logger.info("수의사 목록 조회 성공");
+      return res.status(200).json({
+        totalVetsCnt,
+        currentPage,
+        totalPages: Math.ceil(totalVetsCnt / rowPerPage),
+        data: vetList,
+      });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
   static async chatRequestController(req: Request, res: Response) {
     try {
       const newRequest = ChatService.addRequest(req.body, req.user as string);
