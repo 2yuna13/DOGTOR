@@ -5,7 +5,7 @@ import { AdminService } from "../services/adminService";
 class AdminController {
   static async vetRequestListsController(req: Request, res: Response) {
     try {
-      const vetLists = await AdminService.getVetRequestLists(req.body.status);
+      const vetLists = await AdminService.getVetRequestLists(req.query as any);
       logger.info("수의사 신청 목록 조회 성공");
       return res.status(200).json(vetLists);
     } catch (error) {
