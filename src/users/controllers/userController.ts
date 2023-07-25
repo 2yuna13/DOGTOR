@@ -92,6 +92,30 @@ class UserController {
       res.status(500).json({ error });
     }
   }
+
+  static async getUserController(req: Request, res: Response) {
+    try {
+      // const currentUser = await UserService.getUser(req.body.email);
+      // logger.info("유저 조회 성공");
+      // return res.status(201).json(currentUser);
+      // passport.authenticate를 통해 로그인된 사용자 정보를 가져옴
+      const loggedInUser = req.user;
+      console.log("loggedInUser", loggedInUser);
+
+      if (!req.user) {
+        // 사용자가 로그인되어 있지 않으면 401 Unauthorized 에러 반환
+        return res.status(401).json({ error: "Unauthorized" });
+      } else {
+        const user = await UserService.getUser(req.user);
+        res.status(200).json({ user });
+      }
+      // UserService에서 getUser 메서드를 이용해 로그인된 사용자 정보를 가져옴
+
+      // 가져온 정보를 클라이언트에게 전달
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
 }
 
 export default UserController;

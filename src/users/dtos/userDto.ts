@@ -11,7 +11,7 @@ class VerifyCodeDto {
   }
 }
 
-class UserDto extends VerifyCodeDto {
+class UserRegisterDto extends VerifyCodeDto {
   @IsString()
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
   @Length(10)
@@ -75,4 +75,25 @@ class UserLoginDto extends VerifyCodeDto {
   }
 }
 
-export { UserDto, VerifyCodeDto, VerifyEmailDto, UserLoginDto, VerifyVetDto };
+class UserDto extends VerifyCodeDto {
+  @IsString()
+  nickname: string;
+
+  @IsString()
+  role: string;
+
+  constructor(email: string, nickname: string, role: string) {
+    super(email);
+    this.nickname = nickname;
+    this.role = role;
+  }
+}
+
+export {
+  UserRegisterDto,
+  VerifyCodeDto,
+  VerifyEmailDto,
+  UserLoginDto,
+  VerifyVetDto,
+  UserDto,
+};

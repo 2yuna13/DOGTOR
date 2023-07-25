@@ -5,18 +5,20 @@ import upload from "../../middlewares/upload";
 import validationMiddleware from "../../middlewares/validateDto";
 import {
   UserDto,
+  UserRegisterDto,
   UserLoginDto,
   VerifyCodeDto,
   VerifyEmailDto,
   VerifyVetDto,
 } from "../dtos/userDto";
+import passport from "passport";
 
 const userRouter = Router();
 
 // 회원가입
 userRouter.post(
   "/users/register",
-  validationMiddleware(UserDto),
+  validationMiddleware(UserRegisterDto),
   UserController.userRegisterController
 );
 
@@ -28,7 +30,7 @@ userRouter.post(
 );
 
 // 이메일 인증
-userRouter.delete(
+userRouter.post(
   "/users/verify-email",
   validationMiddleware(VerifyEmailDto),
   UserController.userVerifyController
@@ -45,7 +47,17 @@ userRouter.post(
 userRouter.post(
   "/users/vet-register",
   upload.single("vets"),
+  passport.authenticate("jwt", { session: false }),
   validationMiddleware(VerifyVetDto),
   UserController.userVetRegisterController
 );
+
+// 유저 정보 조회
+userRouter.get(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  // validationMiddleware(UserDto),
+  UserController.getUserController
+);
+
 export { userRouter };

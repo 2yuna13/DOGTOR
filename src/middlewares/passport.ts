@@ -57,8 +57,8 @@ passport.use(
         if (!user) {
           return done(null, false, { message: "인증 실패" });
         }
-
-        return done(null, user);
+        console.log(user.email);
+        return done(null, user.email);
       } catch (error) {
         return done(error);
       }
