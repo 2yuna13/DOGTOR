@@ -9,16 +9,12 @@ enum StatusEnum {
 
 class ChatRequestDto {
   @IsEmail()
-  userEmail: string;
-
-  @IsEmail()
   vetEmail: string;
 
   @IsString()
   content: string;
 
-  constructor(userEmail: string, vetEmail: string, content: string) {
-    this.userEmail = userEmail;
+  constructor(vetEmail: string, content: string) {
     this.vetEmail = vetEmail;
     this.content = content;
   }
@@ -34,10 +30,10 @@ class ChatListDto {
 }
 
 class ChatSelectDto {
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
-  constructor(id: number) {
+  constructor(id: string) {
     this.id = id;
   }
 }

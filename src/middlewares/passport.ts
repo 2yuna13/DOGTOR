@@ -47,18 +47,9 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
     async (jwtPayload, done) => {
-      // JWT 페이로드를 기반으로 유저 정보를 가져오는 로직이 필요합니다.
-      // 예를 들어, 유저 아이디를 기반으로 데이터베이스에서 유저를 찾는 등의 작업이 여기서 이루어집니다.
+      // 토큰으로 찾은 email 전달
       try {
-        const user = await prisma.users.findUnique({
-          where: { email: jwtPayload.email },
-        });
-
-        if (!user) {
-          return done(null, false, { message: "인증 실패" });
-        }
-        console.log(user.email);
-        return done(null, user.email);
+        return done(null, jwtPayload.email);
       } catch (error) {
         return done(error);
       }
