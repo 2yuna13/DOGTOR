@@ -10,11 +10,11 @@ import {
 const prisma = new PrismaClient();
 
 class ChatService {
-  static async addRequest(chatRequestDto: ChatRequestDto) {
+  static async addRequest(chatRequestDto: ChatRequestDto, userEmail: string) {
     try {
       const createRequest = await prisma.chat_rooms.create({
         data: {
-          user_email: chatRequestDto.userEmail,
+          user_email: userEmail,
           user_vet_email: chatRequestDto.vetEmail,
         },
       });
@@ -32,14 +32,11 @@ class ChatService {
     }
   }
 
-  static async getChatList(chatListDto: ChatListDto) {
+  static async getChatList(email: string) {
     try {
       const getChatList = await prisma.chat_rooms.findMany({
         where: {
-          OR: [
-            { user_email: chatListDto.email },
-            { user_vet_email: chatListDto.email },
-          ],
+          OR: [{ user_email: email }, { user_vet_email: email }],
         },
         orderBy: {
           updated_at: "desc",
@@ -51,10 +48,15 @@ class ChatService {
     }
   }
 
-  static async selectChat(chatSelectDto: ChatSelectDto) {
+  static async selectChat(id: number, email: string) {
     try {
       const selectChat = await prisma.chat_contents.findMany({
-        where: { chat_room_id: chatSelectDto.id },
+        where: {
+          chat_room_id: id,
+          chat_rooms: {
+            OR: [{ user_email: email }, { user_vet_email: email }],
+          },
+        },
         orderBy: { created_at: "asc" },
       });
       return selectChat;
@@ -63,10 +65,10 @@ class ChatService {
     }
   }
 
-  static async chatStatus(chatStatusDto: ChatStatusDto) {
+  static async chatStatus(chatStatusDto: ChatStatusDto, vetEmail: string) {
     try {
-      const chatStatus = await prisma.chat_rooms.update({
-        where: { id: chatStatusDto.id },
+      await prisma.chat_rooms.updateMany({
+        where: { id: chatStatusDto.id, user_vet_email: vetEmail },
         data: { status: chatStatusDto.status },
       });
       return;

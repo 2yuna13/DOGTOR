@@ -3,7 +3,7 @@ import { logger } from "../../utils/winston";
 import { PrismaClient } from "@prisma/client";
 import {
   UserDto,
-  VerifyCodeDto,
+  UserRegisterDto,
   VerifyEmailDto,
   UserLoginDto,
   VerifyVetDto,
@@ -13,15 +13,15 @@ import { sendEmail } from "../../utils/mail";
 const prisma = new PrismaClient();
 
 class UserService {
-  static async addUser(userDto: UserDto) {
+  static async addUser(userRegisterDto: UserRegisterDto) {
     try {
-      const hashedPassword = await bcrypt.hash(userDto.password, 10);
+      const hashedPassword = await bcrypt.hash(userRegisterDto.password, 10);
 
       const createUser = await prisma.users.create({
         data: {
-          email: userDto.email,
+          email: userRegisterDto.email,
           password: hashedPassword,
-          nickname: userDto.nickname,
+          nickname: userRegisterDto.nickname,
           role: "user",
           created_at: new Date(),
           updated_at: new Date(),
@@ -114,6 +114,18 @@ class UserService {
       return createVet;
     } catch (Error) {
       throw Error;
+    }
+  }
+
+  static async getUser(email: string) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+      return user;
+    } catch (err) {
+      console.log(err);
+      throw err;
     }
   }
 }
