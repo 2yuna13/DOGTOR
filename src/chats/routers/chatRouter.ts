@@ -9,6 +9,7 @@ import {
 } from "../dtos/chatDto";
 import validationMiddleware from "../../middlewares/validateDto";
 import passport from "passport";
+import PermissionValidation from "../../middlewares/permission";
 
 const ChatRouter = Router();
 
@@ -46,6 +47,7 @@ ChatRouter.get(
 ChatRouter.patch(
   "/chats/status",
   passport.authenticate("jwt", { session: false }),
+  PermissionValidation("vet"),
   validationMiddleware(ChatStatusDto),
   ChatController.chatStatusController
 );
