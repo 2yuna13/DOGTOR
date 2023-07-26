@@ -3,7 +3,7 @@ import { UserService } from "../services/userService";
 import { Request, Response } from "express";
 import passport from "passport";
 import { generateToken } from "../../middlewares/auth";
-import { UserDto } from "../dtos/userDto";
+import { UserDto, VetDto } from "../dtos/userDto";
 
 class UserController {
   static async userRegisterController(req: Request, res: Response) {
@@ -124,6 +124,26 @@ class UserController {
         updateUserFields
       );
       res.status(200).json({ user });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
+  static async setVetController(req: Request, res: Response) {
+    try {
+      const { hospital_name, description, region } = req.body;
+
+      const updateUserFields: Partial<VetDto> = {};
+
+      if (hospital_name) updateUserFields.hospitalName = hospital_name;
+      if (description) updateUserFields.description = description;
+      if (region) updateUserFields.region = region;
+
+      const vet = await UserService.setVet(
+        req.user as string,
+        updateUserFields
+      );
+      res.status(200).json(vet);
     } catch (error) {
       res.status(500).json({ error });
     }
