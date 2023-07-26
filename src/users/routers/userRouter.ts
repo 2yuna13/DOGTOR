@@ -56,8 +56,18 @@ userRouter.post(
 userRouter.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
-  // validationMiddleware(UserDto),
   UserController.getUserController
 );
+
+// 유저 정보 수정
+userRouter.patch(
+  "/users",
+  upload.single("users"),
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(UserDto),
+  UserController.setUserController
+);
+
+// 유저 게시글 조회
 
 export { userRouter };
