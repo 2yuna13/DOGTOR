@@ -127,7 +127,12 @@ class UserService {
       const user = await prisma.users.findUnique({
         where: { email },
       });
-      return user;
+
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      return { user, vet };
     } catch (err) {
       throw err;
     }
