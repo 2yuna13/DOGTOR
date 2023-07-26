@@ -5,11 +5,20 @@ import {
   ChatRequestDto,
   ChatSelectDto,
   ChatStatusDto,
+  VetRegionDto,
 } from "../dtos/chatDto";
 import validationMiddleware from "../../middlewares/validateDto";
 import passport from "passport";
+import PermissionValidation from "../../middlewares/permission";
 
 const ChatRouter = Router();
+
+//수의사 목록 조회
+ChatRouter.get(
+  "/chats/vet-lists",
+  //validationMiddleware(VetRegionDto),
+  ChatController.vetListController
+);
 
 //login required, 상담 신청
 ChatRouter.post(
@@ -38,6 +47,7 @@ ChatRouter.get(
 ChatRouter.patch(
   "/chats/status",
   passport.authenticate("jwt", { session: false }),
+  PermissionValidation("vet"),
   validationMiddleware(ChatStatusDto),
   ChatController.chatStatusController
 );

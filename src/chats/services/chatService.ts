@@ -5,6 +5,7 @@ import {
   ChatRequestDto,
   ChatSelectDto,
   ChatStatusDto,
+  VetRegionDto,
 } from "../dtos/chatDto";
 
 const prisma = new PrismaClient();
@@ -107,6 +108,33 @@ class ChatService {
           updated_at: new Date(),
         },
       });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getTotalVetCnt(vetRegionDto: VetRegionDto) {
+    try {
+      return await prisma.vets.count({
+        where: { region: vetRegionDto.region },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getVetList(
+    vetRegionDto: VetRegionDto,
+    startIndex: number,
+    rowPerPage: number
+  ) {
+    try {
+      const vetList = await prisma.vets.findMany({
+        where: { region: vetRegionDto.region },
+        skip: startIndex,
+        take: rowPerPage,
+      });
+      return vetList;
     } catch (error) {
       throw error;
     }

@@ -84,7 +84,11 @@ class UserController {
       if (!req.file) {
         return res.status(400).json({ error: "면허증 파일 미첨부" });
       }
-      const newUser = await UserService.addVet(req.body, req.file.path);
+      const newUser = await UserService.addVet(
+        req.body,
+        req.file.path,
+        req.user as string
+      );
       logger.info("수의사 등록 신청 성공");
       return res.status(201).json(newUser);
     } catch (error) {
