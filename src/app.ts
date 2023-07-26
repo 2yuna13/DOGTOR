@@ -9,6 +9,7 @@ import { ChatRouter } from "./chats/routers/chatRouter";
 import passport from "./middlewares/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
+import { PostRouter } from "./communities/routers/postRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
@@ -61,4 +62,6 @@ chatSocket(io);
 app.use(userRouter);
 app.use(AdminRouter);
 app.use(ChatRouter);
+app.use(PostRouter);
+
 export { connection, app, io };

@@ -1,53 +1,16 @@
-import { Request, Response } from "express";
-import { CreatePostDto, UpdatePostDto } from "../dtos/postDto";
-import { PostService } from "../services/postService";
+import { Router } from "express";
+import { PostController } from "../controllers/postController";
+import { validateRequest } from "../middlewares/validateRequest";
+import passport from "passport";
+import validationMiddleware from "../../middlewares/validateDto";
+import { CreatePostDto } from "../dtos/postDto";
+const PostRouter = Router();
 
-class PostController {
-  static async createPost(req: Request, res: Response) {
-    try {
-      const userId = req.user?.id;
-      const { title, body } = req.body;
+PostRouter.post(
+  "/post/create",
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(CreatePostDto),
+  PostController.createPost
+);
 
-      const createPostDto = new CreatePostDto(title, body);
-      const newPost = await PostService.createPost(createPostDto, userId);
-
-      return res.status(201).json(newPost);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 작성 실패" });
-    }
-  }
-
-  static async updatePost(req: Request, res: Response) {
-    try {
-      const userId = req.user?.id;
-      const postId = Number(req.params.postId);
-      const { title, body } = req.body;
-
-      const updatePostDto = new UpdatePostDto(title, body);
-      const updatedPost = await PostService.updatePost(
-        updatePostDto,
-        postId,
-        userId
-      );
-
-      return res.status(200).json(updatedPost);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 수정 실패" });
-    }
-  }
-
-  static async deletePost(req: Request, res: Response) {
-    try {
-      const userId = req.user?.id;
-      const postId = Number(req.params.postId);
-
-      await PostService.deletePost(postId, userId);
-
-      return res.status(200).json({ message: "게시물 삭제 성공" });
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 삭제 실패" });
-    }
-  }
-}
-
-export { PostController };
+export { PostRouter };

@@ -1,4 +1,5 @@
 import { PrismaClient, posts } from "@prisma/client";
+import { CreatePostDto } from "../dtos/postDto";
 
 const prisma = new PrismaClient();
 
@@ -14,13 +15,18 @@ class PostRepository {
     }
   }
 
-  static async createPost(title: string, body: string): Promise<posts> {
+  static async createPost(
+    postDto: CreatePostDto,
+    userId: string
+  ): Promise<posts> {
     try {
       const post = await prisma.posts.create({
         data: {
-          author_email,
-          title,
-          body,
+          author_email: userId,
+          title: postDto.title,
+          body: postDto.body,
+          category: "free",
+          like: 0,
         },
       });
       return post;
