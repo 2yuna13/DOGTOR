@@ -129,8 +129,37 @@ class UserService {
       });
       return user;
     } catch (err) {
-      console.log(err);
       throw err;
+    }
+  }
+
+  static async setUser(email: string, updatedFields: Partial<UserDto>) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new Error("유저 정보가 없습니다.");
+      }
+
+      if (updatedFields.password) {
+        const hashedPassword = await bcrypt.hash(updatedFields.password, 10);
+        user.password = hashedPassword;
+      }
+      if (updatedFields.nickname) user.nickname = updatedFields.nickname;
+      if (updatedFields.img_path) user.img_path = updatedFields.img_path;
+
+      const updateUser = await prisma.users.update({
+        where: {
+          email,
+        },
+        data: user,
+      });
+
+      return updateUser;
+    } catch (Error) {
+      throw Error;
     }
   }
 }
