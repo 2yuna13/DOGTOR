@@ -121,6 +121,31 @@ class UserDto {
   }
 }
 
+class VetDto {
+  @IsString()
+  @IsOptional()
+  hospitalName: string;
+
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @IsEnum(RegionEnum)
+  @IsOptional()
+  region: RegionEnum;
+
+  constructor(
+    name: string,
+    hospitalName: string,
+    description: string,
+    region: RegionEnum
+  ) {
+    this.hospitalName = hospitalName;
+    this.description = description;
+    this.region = region;
+  }
+}
+
 export {
   UserRegisterDto,
   VerifyCodeDto,
@@ -128,4 +153,5 @@ export {
   UserLoginDto,
   VerifyVetDto,
   UserDto,
+  VetDto,
 };
