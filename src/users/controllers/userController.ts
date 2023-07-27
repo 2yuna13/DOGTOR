@@ -53,20 +53,14 @@ class UserController {
       passport.authenticate(
         "local",
         { session: false },
-        async (err: Error | null, user: any, info: any) => {
+        async (err: Error | null, token: any, info: any) => {
           try {
-            if (err || !user) {
-              return res
-                .status(400)
-                .json({ error: info ? info.message : "로그인 실패" });
+            if (err) {
+              res.status(401).json(err.message);
             }
-
-            const token = generateToken(user);
-
-            // 인증된 사용자 정보를 이용하여 로그인 후 로직을 처리
-            await UserService.loginUser(req.body);
-
-            logger.info("로그인 성공");
+            if (info) {
+              res.status(401).json(info.reason);
+            }
             return res.status(200).json(token);
           } catch (error) {
             return res.status(500).json({ error });
