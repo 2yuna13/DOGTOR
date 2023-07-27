@@ -156,6 +156,8 @@ class UserService {
       if (updatedFields.nickname) user.nickname = updatedFields.nickname;
       if (updatedFields.img_path) user.img_path = updatedFields.img_path;
 
+      user.updated_at = new Date();
+
       const updateUser = await prisma.users.update({
         where: {
           email,
@@ -184,6 +186,8 @@ class UserService {
         vet.description = updatedFields.description;
       if (updatedFields.region) vet.region = updatedFields.region;
 
+      vet.updated_at = new Date();
+
       const updateVet = await prisma.vets.update({
         where: { id: vet.id },
         data: vet,
@@ -192,6 +196,29 @@ class UserService {
       return updateVet;
     } catch (Error) {
       throw Error;
+    }
+  }
+
+  static async getUserPost(
+    email: string,
+    currentPage: number,
+    rowPerPage: number
+  ) {
+    try {
+      const startIndex = (currentPage - 1) * rowPerPage;
+      const postList = await prisma.posts.findMany({
+        where: { author_email: email },
+        skip: startIndex,
+        take: rowPerPage,
+      });
+
+      const totalPostsCnt = await prisma.posts.count({
+        where: { author_email: email },
+      });
+
+      return { postList, totalPostsCnt };
+    } catch (err) {
+      throw err;
     }
   }
 }

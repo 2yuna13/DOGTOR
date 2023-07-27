@@ -79,5 +79,10 @@ userRouter.patch(
 );
 
 // 유저 게시글 조회
+userRouter.get(
+  "/users/post-list",
+  passport.authenticate("jwt", { session: false }),
+  UserController.userPostListController
+);
 
 export { userRouter };

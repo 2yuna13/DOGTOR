@@ -148,6 +148,25 @@ class UserController {
       res.status(500).json({ error });
     }
   }
+
+  static async userPostListController(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { postList, totalPostsCnt } = await UserService.getUserPost(
+        req.user as string,
+        currentPage,
+        rowPerPage
+      );
+      res.status(200).json({
+        currentPage,
+        totalPage: Math.ceil(totalPostsCnt / rowPerPage),
+        data: postList,
+      });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
 }
 
 export default UserController;
