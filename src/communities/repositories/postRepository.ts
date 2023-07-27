@@ -15,6 +15,15 @@ class PostRepository {
     }
   }
 
+  static async getPosts(): Promise<posts[]> {
+    try {
+      const posts = await prisma.posts.findMany();
+      return posts;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async createPost(
     postDto: CreatePostDto,
     userId: string

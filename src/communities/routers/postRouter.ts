@@ -1,16 +1,39 @@
 import { Router } from "express";
 import { PostController } from "../controllers/postController";
-import { validateRequest } from "../middlewares/validateRequest";
 import passport from "passport";
 import validationMiddleware from "../../middlewares/validateDto";
-import { CreatePostDto } from "../dtos/postDto";
+import { CreatePostDto, UpdatePostDto } from "../dtos/postDto";
+
 const PostRouter = Router();
 
 PostRouter.post(
-  "/post/create",
+  "/posts",
   passport.authenticate("jwt", { session: false }),
   validationMiddleware(CreatePostDto),
   PostController.createPost
+);
+
+PostRouter.get("/posts", PostController.getPosts);
+
+PostRouter.get("/posts/:postId", PostController.getPostById);
+
+PostRouter.put(
+  "/posts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(UpdatePostDto),
+  PostController.updatePost
+);
+
+PostRouter.delete(
+  "/posts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  PostController.deletePost
+);
+
+PostRouter.post(
+  "/posts/report",
+  passport.authenticate("jwt", { session: false }),
+  PostController.reportPost
 );
 
 export { PostRouter };
