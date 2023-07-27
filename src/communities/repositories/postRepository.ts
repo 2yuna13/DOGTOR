@@ -34,7 +34,7 @@ class PostRepository {
           author_email: userId,
           title: postDto.title,
           body: postDto.body,
-          category: "free",
+          category: postDto.category,
           like: 0,
         },
       });
