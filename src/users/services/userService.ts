@@ -7,6 +7,7 @@ import {
   VerifyEmailDto,
   UserLoginDto,
   VerifyVetDto,
+  VetDto,
 } from "../dtos/userDto";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
@@ -163,6 +164,32 @@ class UserService {
       });
 
       return updateUser;
+    } catch (Error) {
+      throw Error;
+    }
+  }
+
+  static async setVet(email: string, updatedFields: Partial<VetDto>) {
+    try {
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      if (!vet) {
+        throw new Error("수의사 정보가 없습니다.");
+      }
+      if (updatedFields.hospitalName)
+        vet.hospital_name = updatedFields.hospitalName;
+      if (updatedFields.description)
+        vet.description = updatedFields.description;
+      if (updatedFields.region) vet.region = updatedFields.region;
+
+      const updateVet = await prisma.vets.update({
+        where: { id: vet.id },
+        data: vet,
+      });
+
+      return updateVet;
     } catch (Error) {
       throw Error;
     }
