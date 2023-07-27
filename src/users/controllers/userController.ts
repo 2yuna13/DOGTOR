@@ -3,6 +3,7 @@ import { UserService } from "../services/userService";
 import { Request, Response } from "express";
 import passport from "passport";
 import { generateToken } from "../../middlewares/auth";
+import { UserDto, VetDto } from "../dtos/userDto";
 
 class UserController {
   static async userRegisterController(req: Request, res: Response) {
@@ -41,9 +42,9 @@ class UserController {
 
       logger.info("인증 성공");
       res.status(200).json({ message: "인증이 완료되었습니다." });
-    } catch (error) {
+    } catch (error: any) {
       logger.error("인증 실패");
-      res.status(500).json({ error });
+      res.status(500).json(error.message);
     }
   }
 
@@ -94,7 +95,49 @@ class UserController {
   static async getUserController(req: Request, res: Response) {
     try {
       const user = await UserService.getUser(req.user as string);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
+  static async setUserController(req: Request, res: Response) {
+    try {
+      const { password, nickname } = req.body;
+
+      const img_path = req.file?.path || null;
+
+      const updateUserFields: Partial<UserDto> = {};
+
+      if (password) updateUserFields.password = password;
+      if (nickname) updateUserFields.nickname = nickname;
+      if (img_path) updateUserFields.img_path = img_path;
+
+      const user = await UserService.setUser(
+        req.user as string,
+        updateUserFields
+      );
       res.status(200).json({ user });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
+  static async setVetController(req: Request, res: Response) {
+    try {
+      const { hospital_name, description, region } = req.body;
+
+      const updateUserFields: Partial<VetDto> = {};
+
+      if (hospital_name) updateUserFields.hospitalName = hospital_name;
+      if (description) updateUserFields.description = description;
+      if (region) updateUserFields.region = region;
+
+      const vet = await UserService.setVet(
+        req.user as string,
+        updateUserFields
+      );
+      res.status(200).json(vet);
     } catch (error) {
       res.status(500).json({ error });
     }

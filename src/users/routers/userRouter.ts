@@ -10,6 +10,7 @@ import {
   VerifyCodeDto,
   VerifyEmailDto,
   VerifyVetDto,
+  VetDto,
 } from "../dtos/userDto";
 import passport from "passport";
 
@@ -56,8 +57,27 @@ userRouter.post(
 userRouter.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
-  // validationMiddleware(UserDto),
   UserController.getUserController
 );
+
+// 유저 정보 수정
+userRouter.patch(
+  "/users",
+  upload.single("users"),
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(UserDto),
+  UserController.setUserController
+);
+
+// 수의사 정보 수정
+userRouter.patch(
+  "/users/vet",
+  upload.single("vets"),
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(VetDto),
+  UserController.setVetController
+);
+
+// 유저 게시글 조회
 
 export { userRouter };

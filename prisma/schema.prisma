@@ -84,20 +84,6 @@ model posts {
   @@index([author_email], map: "FK_posts_users")
 }
 
-model profileimages {
-  id         Int       @id @default(autoincrement())
-  user_email String    @db.VarChar(255)
-  path       String    @db.VarChar(255)
-  file_name  String    @db.VarChar(255)
-  mimetype   String    @db.VarChar(255)
-  created_at DateTime  @db.DateTime(0) @default(now())
-  updated_at DateTime  @db.DateTime(0) @default(now())
-  deleted_at DateTime? @db.DateTime(0)
-  users      users     @relation(fields: [user_email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "FK_profileimages_users")
-
-  @@index([user_email], map: "FK_profileimages_users")
-}
-
 model report_comments {
   comment_id Int
   report_id  Int
@@ -139,6 +125,7 @@ model users {
   nickname                                    String          @db.VarChar(255)
   role                                        users_role
   user_type                                   users_type      @default(normal)
+  img_path                                    String?          @db.VarChar(255)
   created_at                                  DateTime        @db.DateTime(0) @default(now())
   updated_at                                  DateTime        @db.DateTime(0) @default(now())
   blocked_at                                  DateTime?       @db.DateTime(0)
@@ -147,7 +134,6 @@ model users {
   chat_rooms_chat_rooms_user_vet_emailTousers chat_rooms[]    @relation("chat_rooms_user_vet_emailTousers")
   comments                                    comments[]
   posts                                       posts[]
-  profileimages                               profileimages[]
   reports                                     reports[]
   vets                                        vets[]
 }

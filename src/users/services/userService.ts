@@ -7,6 +7,7 @@ import {
   VerifyEmailDto,
   UserLoginDto,
   VerifyVetDto,
+  VetDto,
 } from "../dtos/userDto";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
@@ -127,10 +128,70 @@ class UserService {
       const user = await prisma.users.findUnique({
         where: { email },
       });
-      return user;
+
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      return { user, vet };
     } catch (err) {
-      console.log(err);
       throw err;
+    }
+  }
+
+  static async setUser(email: string, updatedFields: Partial<UserDto>) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new Error("유저 정보가 없습니다.");
+      }
+
+      if (updatedFields.password) {
+        const hashedPassword = await bcrypt.hash(updatedFields.password, 10);
+        user.password = hashedPassword;
+      }
+      if (updatedFields.nickname) user.nickname = updatedFields.nickname;
+      if (updatedFields.img_path) user.img_path = updatedFields.img_path;
+
+      const updateUser = await prisma.users.update({
+        where: {
+          email,
+        },
+        data: user,
+      });
+
+      return updateUser;
+    } catch (Error) {
+      throw Error;
+    }
+  }
+
+  static async setVet(email: string, updatedFields: Partial<VetDto>) {
+    try {
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      if (!vet) {
+        throw new Error("수의사 정보가 없습니다.");
+      }
+      if (updatedFields.hospitalName)
+        vet.hospital_name = updatedFields.hospitalName;
+      if (updatedFields.description)
+        vet.description = updatedFields.description;
+      if (updatedFields.region) vet.region = updatedFields.region;
+
+      const updateVet = await prisma.vets.update({
+        where: { id: vet.id },
+        data: vet,
+      });
+
+      return updateVet;
+    } catch (Error) {
+      throw Error;
     }
   }
 }

@@ -1,4 +1,11 @@
-import { IsEmail, IsString, Length, Matches, IsEnum } from "class-validator";
+import {
+  IsEmail,
+  IsString,
+  Length,
+  Matches,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
 
 // Data Transform Object
 // 유효성 검증
@@ -92,17 +99,50 @@ class UserLoginDto extends VerifyCodeDto {
   }
 }
 
-class UserDto extends VerifyCodeDto {
+class UserDto {
   @IsString()
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$/)
+  @Length(10)
+  @IsOptional()
+  password: string;
+
+  @IsString()
+  @IsOptional()
   nickname: string;
 
+  @IsOptional()
   @IsString()
-  role: string;
+  img_path?: string;
 
-  constructor(email: string, nickname: string, role: string) {
-    super(email);
+  constructor(password: string, nickname: string, img_path: string) {
+    this.password = password;
     this.nickname = nickname;
-    this.role = role;
+    this.img_path = img_path;
+  }
+}
+
+class VetDto {
+  @IsString()
+  @IsOptional()
+  hospitalName: string;
+
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @IsEnum(RegionEnum)
+  @IsOptional()
+  region: RegionEnum;
+
+  constructor(
+    name: string,
+    hospitalName: string,
+    description: string,
+    region: RegionEnum
+  ) {
+    this.hospitalName = hospitalName;
+    this.description = description;
+    this.region = region;
   }
 }
 
@@ -113,4 +153,5 @@ export {
   UserLoginDto,
   VerifyVetDto,
   UserDto,
+  VetDto,
 };
