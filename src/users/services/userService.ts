@@ -221,6 +221,20 @@ class UserService {
       throw err;
     }
   }
+
+  static async deleteVet(email: string) {
+    try {
+      const result = await prisma.vets.deleteMany({
+        where: { user_email: email, status: "rejected" },
+      });
+
+      if (result.count === 0) {
+        throw new Error("해당 수의사 정보는 존재하지 않습니다.");
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 export { UserService };

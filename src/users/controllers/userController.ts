@@ -73,7 +73,6 @@ class UserController {
     }
   }
 
-  // login 필요
   static async userVetRegisterController(req: Request, res: Response) {
     try {
       if (!req.file) {
@@ -167,6 +166,17 @@ class UserController {
     } catch (error) {
       logger.error("게시글 목록 조회 실패");
       res.status(500).json({ error });
+    }
+  }
+
+  static async deleteVetController(req: Request, res: Response) {
+    try {
+      await UserService.deleteVet(req.user as string);
+      logger.info("수의사 삭제 성공");
+      res.status(200).json({ message: "수의사 신청 내역이 삭제되었습니다." });
+    } catch (error: any) {
+      logger.error("수의사 삭제 실패");
+      res.status(500).json(error.message);
     }
   }
 }
