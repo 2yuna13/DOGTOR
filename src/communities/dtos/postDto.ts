@@ -1,5 +1,10 @@
 import { IsString, Length, IsEnum } from "class-validator";
 
+enum Category {
+  FREE = "free",
+  INFO = "info",
+}
+
 class CreatePostDto {
   @IsString()
   @Length(1, 255)
@@ -9,10 +14,10 @@ class CreatePostDto {
   @Length(1, 1000)
   body: string;
 
-  @IsEnum(["free", "info"])
-  category: string;
+  @IsEnum(Category)
+  category: Category;
 
-  constructor(title: string, body: string, category: string) {
+  constructor(title: string, body: string, category: Category) {
     this.title = title;
     this.body = body;
     this.category = category;
