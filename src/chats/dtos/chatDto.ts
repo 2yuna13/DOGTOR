@@ -34,11 +34,11 @@ class ChatRequestDto {
   vetEmail: string;
 
   @IsString()
-  content: string;
+  message: string;
 
-  constructor(vetEmail: string, content: string) {
+  constructor(vetEmail: string, message: string) {
     this.vetEmail = vetEmail;
-    this.content = content;
+    this.message = message;
   }
 }
 

@@ -22,6 +22,17 @@ class AdminController {
       res.status(500).json({ error });
     }
   }
+
+  //user_type별, role별, blocked_at별
+  static async userListcontroller(req: Request, res: Response) {
+    try {
+      const userList = await AdminService.getUserList(req.query as any);
+      logger.info("유저 목록 조회 성공");
+      return res.status(200).json(userList);
+    } catch (error: any) {
+      res.status(500).json(error.message);
+    }
+  }
 }
 
 export { AdminController };

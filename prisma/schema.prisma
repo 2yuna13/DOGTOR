@@ -12,7 +12,7 @@ model chat_contents {
   chat_room_id Int
   is_from_user Boolean
   from_id      String     @db.VarChar(255)
-  content      String     @db.Text
+  message      String     @db.Text
   created_at   DateTime   @db.DateTime(0) @default(now())
   chat_rooms   chat_rooms @relation(fields: [chat_room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_chat_contents_chat_rooms")
 

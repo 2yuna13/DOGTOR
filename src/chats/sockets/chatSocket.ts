@@ -33,15 +33,16 @@ export const chatSocket = (io: Server) => {
       });
 
       // 4) 클라이언트에서 보낸 이벤트 처리: 클라이언트에서 "msgSend" 이름으로 보낸 데이터 수신
-      socket.on("msgSend", ({ chatId, content }) => {
+      socket.on("msgSend", ({ chatId, message }) => {
         const email: string = decoded.email;
-        ChatService.addChat(email, chatId, content).then((response) => {
+        ChatService.addChat(email, chatId, message).then((response) => {
           const nickname = response?.nickname;
           const img_path = response?.img_path;
           socket.broadcast.to(chatId).emit("msgReceive", {
+            email,
             nickname,
             img_path,
-            content,
+            message,
           });
         });
       });
