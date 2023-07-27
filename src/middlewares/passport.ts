@@ -2,8 +2,8 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { UserService } from "../users/services/userService";
-import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
+import { generateToken } from "./auth";
 
 const prisma = new PrismaClient();
 
@@ -16,22 +16,8 @@ passport.use(
     async (email, password, done) => {
       try {
         const user = await UserService.loginUser({ email, password });
-
-        if (!user) {
-          return done(null, false, {
-            message: "해당 이메일은 가입 내역이 없습니다.",
-          });
-        }
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-          return done(null, false, {
-            message: "비밀번호가 일치하지 않습니다.",
-          });
-        }
-
-        return done(null, user);
+        const token = generateToken(user);
+        return done(null, token);
       } catch (error) {
         return done(error);
       }
