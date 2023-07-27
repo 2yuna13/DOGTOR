@@ -12,7 +12,7 @@ export default function PermissionValidation(role: string): RequestHandler {
       if (user?.role == role) {
         next();
       } else {
-        res.status(401).json({ message: "Permission Denied" });
+        res.status(401).json({ message: "권한이 없습니다." });
       }
     } catch (error) {
       res.status(500).json({ error });

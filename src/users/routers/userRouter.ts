@@ -79,5 +79,17 @@ userRouter.patch(
 );
 
 // 유저 게시글 조회
+userRouter.get(
+  "/users/post-list",
+  passport.authenticate("jwt", { session: false }),
+  UserController.userPostListController
+);
+
+// 수의사 신청 내역 삭제
+userRouter.delete(
+  "/users/vet",
+  passport.authenticate("jwt", { session: false }),
+  UserController.deleteVetController
+);
 
 export { userRouter };

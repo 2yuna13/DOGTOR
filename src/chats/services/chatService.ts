@@ -24,7 +24,7 @@ class ChatService {
           chat_room_id: createRequest.id,
           is_from_user: true,
           from_id: createRequest.user_email,
-          content: chatRequestDto.content,
+          message: chatRequestDto.message,
         },
       });
       return;
@@ -51,7 +51,12 @@ class ChatService {
 
   static async selectChat(id: number, email: string) {
     try {
-      const selectChat = await prisma.chat_contents.findMany({
+      let opponent,
+        nickname,
+        img_path,
+        writable: boolean = false,
+        editable: boolean = false;
+      const ChatContents = await prisma.chat_contents.findMany({
         where: {
           chat_room_id: id,
           chat_rooms: {
@@ -60,7 +65,31 @@ class ChatService {
         },
         orderBy: { created_at: "asc" },
       });
-      return selectChat;
+      const checkStatus = await prisma.chat_rooms.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      if (email == checkStatus?.user_vet_email) {
+        opponent = checkStatus.user_email;
+      } else {
+        opponent = checkStatus?.user_vet_email;
+      }
+      await prisma.users
+        .findUnique({ where: { email: opponent } })
+        .then((response) => {
+          nickname = response?.nickname;
+          img_path = response?.img_path;
+        });
+      if (checkStatus?.status == "accepted") {
+        writable = true;
+      } else {
+        if (email == checkStatus?.user_vet_email) {
+          editable = true;
+        }
+      }
+
+      return { ChatContents, writable, editable, email, nickname, img_path };
     } catch (error) {
       throw error;
     }
@@ -78,10 +107,12 @@ class ChatService {
     }
   }
 
-  static async addChat(email: string, chatId: number, content: string) {
+  static async addChat(email: string, chatId: number, message: string) {
     try {
       const checkUser = await prisma.chat_rooms.findFirst({
-        where: { id: chatId },
+        where: {
+          AND: [{ id: chatId }, { status: "accepted" }],
+        },
       });
       if (checkUser?.user_email == email) {
         await prisma.chat_contents.create({
@@ -89,7 +120,7 @@ class ChatService {
             chat_room_id: chatId,
             is_from_user: true,
             from_id: email,
-            content: content,
+            message: message,
           },
         });
       } else {
@@ -98,7 +129,7 @@ class ChatService {
             chat_room_id: chatId,
             is_from_user: false,
             from_id: email,
-            content: content,
+            message: message,
           },
         });
       }
@@ -108,6 +139,9 @@ class ChatService {
           updated_at: new Date(),
         },
       });
+      return await prisma.users.findUnique({
+        where: { email: email },
+      });
     } catch (error) {
       throw error;
     }
@@ -115,9 +149,36 @@ class ChatService {
 
   static async getTotalVetCnt(vetRegionDto: VetRegionDto) {
     try {
-      return await prisma.vets.count({
-        where: { region: vetRegionDto.region },
-      });
+      if (!vetRegionDto.region && !vetRegionDto.search) {
+        return await prisma.vets.count();
+      } else if (vetRegionDto.region && !vetRegionDto.search) {
+        return await prisma.vets.count({
+          where: { region: vetRegionDto.region },
+        });
+      } else if (vetRegionDto.search && !vetRegionDto.region) {
+        return await prisma.vets.count({
+          where: {
+            OR: [
+              { name: { contains: vetRegionDto.search } },
+              { hospital_name: { contains: vetRegionDto.search } },
+            ],
+          },
+        });
+      } else {
+        return await prisma.vets.count({
+          where: {
+            AND: [
+              {
+                OR: [
+                  { name: { contains: vetRegionDto.search } },
+                  { hospital_name: { contains: vetRegionDto.search } },
+                ],
+              },
+              { region: vetRegionDto.region },
+            ],
+          },
+        });
+      }
     } catch (error) {
       throw error;
     }
@@ -129,12 +190,45 @@ class ChatService {
     rowPerPage: number
   ) {
     try {
-      const vetList = await prisma.vets.findMany({
-        where: { region: vetRegionDto.region },
-        skip: startIndex,
-        take: rowPerPage,
-      });
-      return vetList;
+      if (!vetRegionDto.region && !vetRegionDto.search) {
+        return await prisma.vets.findMany({
+          skip: startIndex,
+          take: rowPerPage,
+        });
+      } else if (vetRegionDto.region && !vetRegionDto.search) {
+        return await prisma.vets.findMany({
+          where: { region: vetRegionDto.region },
+          skip: startIndex,
+          take: rowPerPage,
+        });
+      } else if (vetRegionDto.search && !vetRegionDto.region) {
+        return await prisma.vets.findMany({
+          where: {
+            OR: [
+              { name: { contains: vetRegionDto.search } },
+              { hospital_name: { contains: vetRegionDto.search } },
+            ],
+          },
+          skip: startIndex,
+          take: rowPerPage,
+        });
+      } else {
+        return await prisma.vets.findMany({
+          where: {
+            AND: [
+              {
+                OR: [
+                  { name: { contains: vetRegionDto.search } },
+                  { hospital_name: { contains: vetRegionDto.search } },
+                ],
+              },
+              { region: vetRegionDto.region },
+            ],
+          },
+          skip: startIndex,
+          take: rowPerPage,
+        });
+      }
     } catch (error) {
       throw error;
     }

@@ -1,4 +1,10 @@
-import { IsEmail, IsString, IsNumber, IsEnum } from "class-validator";
+import {
+  IsEmail,
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
 
 enum StatusEnum {
   PENDING = "pending",
@@ -28,11 +34,11 @@ class ChatRequestDto {
   vetEmail: string;
 
   @IsString()
-  content: string;
+  message: string;
 
-  constructor(vetEmail: string, content: string) {
+  constructor(vetEmail: string, message: string) {
     this.vetEmail = vetEmail;
-    this.content = content;
+    this.message = message;
   }
 }
 
@@ -70,12 +76,18 @@ class VetRegionDto {
   @IsString()
   currentPage: string;
 
+  @IsOptional()
   @IsEnum(RegionEnum)
   region: RegionEnum;
 
-  constructor(currentPage: string, region: RegionEnum) {
+  @IsOptional()
+  @IsString()
+  search: string;
+
+  constructor(currentPage: string, region: RegionEnum, search: string) {
     this.currentPage = currentPage;
     this.region = region;
+    this.search = search;
   }
 }
 

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { VetListDto, VetStatusDto } from "../dtos/adminDto";
+import { UserListDto, VetListDto, VetStatusDto } from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
 
@@ -41,6 +41,36 @@ class AdminService {
         });
       }
       return updateVet;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getUserList(userListDto: UserListDto) {
+    try {
+      if (userListDto.role) {
+        return await prisma.users.findMany({
+          where: {
+            role: userListDto.role,
+          },
+        });
+      } else if (userListDto.type) {
+        return await prisma.users.findMany({
+          where: {
+            user_type: userListDto.type,
+          },
+        });
+      } else if (userListDto.blocked) {
+        return await prisma.users.findMany({
+          where: {
+            blocked_at: {
+              not: null,
+            },
+          },
+        });
+      } else {
+        return await prisma.users.findMany();
+      }
     } catch (error) {
       throw error;
     }

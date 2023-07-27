@@ -53,20 +53,14 @@ class UserController {
       passport.authenticate(
         "local",
         { session: false },
-        async (err: Error | null, user: any, info: any) => {
+        async (err: Error | null, token: any, info: any) => {
           try {
-            if (err || !user) {
-              return res
-                .status(400)
-                .json({ error: info ? info.message : "로그인 실패" });
+            if (err) {
+              res.status(401).json(err.message);
             }
-
-            const token = generateToken(user);
-
-            // 인증된 사용자 정보를 이용하여 로그인 후 로직을 처리
-            await UserService.loginUser(req.body);
-
-            logger.info("로그인 성공");
+            if (info) {
+              res.status(401).json(info.reason);
+            }
             return res.status(200).json(token);
           } catch (error) {
             return res.status(500).json({ error });
@@ -79,7 +73,6 @@ class UserController {
     }
   }
 
-  // login 필요
   static async userVetRegisterController(req: Request, res: Response) {
     try {
       if (!req.file) {
@@ -101,8 +94,10 @@ class UserController {
   static async getUserController(req: Request, res: Response) {
     try {
       const user = await UserService.getUser(req.user as string);
+      logger.info("유저 조회 성공");
       res.status(200).json(user);
     } catch (error) {
+      logger.error("유저 조회 실패");
       res.status(500).json({ error });
     }
   }
@@ -123,8 +118,10 @@ class UserController {
         req.user as string,
         updateUserFields
       );
+      logger.info("유저 정보 수정 성공");
       res.status(200).json({ user });
     } catch (error) {
+      logger.error("유저 정보 수정 실패");
       res.status(500).json({ error });
     }
   }
@@ -143,9 +140,43 @@ class UserController {
         req.user as string,
         updateUserFields
       );
+      logger.info("수의사 정보 수정 성공");
       res.status(200).json(vet);
     } catch (error) {
+      logger.error("수의사 정보 수정 실패");
       res.status(500).json({ error });
+    }
+  }
+
+  static async userPostListController(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { postList, totalPostsCnt } = await UserService.getUserPost(
+        req.user as string,
+        currentPage,
+        rowPerPage
+      );
+      logger.info("게시글 목록 조회 성공");
+      res.status(200).json({
+        currentPage,
+        totalPage: Math.ceil(totalPostsCnt / rowPerPage),
+        data: postList,
+      });
+    } catch (error) {
+      logger.error("게시글 목록 조회 실패");
+      res.status(500).json({ error });
+    }
+  }
+
+  static async deleteVetController(req: Request, res: Response) {
+    try {
+      await UserService.deleteVet(req.user as string);
+      logger.info("수의사 삭제 성공");
+      res.status(200).json({ message: "수의사 신청 내역이 삭제되었습니다." });
+    } catch (error: any) {
+      logger.error("수의사 삭제 실패");
+      res.status(500).json(error.message);
     }
   }
 }
