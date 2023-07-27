@@ -85,4 +85,11 @@ userRouter.get(
   UserController.userPostListController
 );
 
+// 수의사 신청 내역 삭제
+userRouter.delete(
+  "/users/vet",
+  passport.authenticate("jwt", { session: false }),
+  UserController.deleteVetController
+);
+
 export { userRouter };
