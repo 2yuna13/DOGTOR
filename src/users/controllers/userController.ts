@@ -95,8 +95,10 @@ class UserController {
   static async getUserController(req: Request, res: Response) {
     try {
       const user = await UserService.getUser(req.user as string);
+      logger.info("유저 조회 성공");
       res.status(200).json(user);
     } catch (error) {
+      logger.error("유저 조회 실패");
       res.status(500).json({ error });
     }
   }
@@ -117,8 +119,10 @@ class UserController {
         req.user as string,
         updateUserFields
       );
+      logger.info("유저 정보 수정 성공");
       res.status(200).json({ user });
     } catch (error) {
+      logger.error("유저 정보 수정 실패");
       res.status(500).json({ error });
     }
   }
@@ -137,8 +141,31 @@ class UserController {
         req.user as string,
         updateUserFields
       );
+      logger.info("수의사 정보 수정 성공");
       res.status(200).json(vet);
     } catch (error) {
+      logger.error("수의사 정보 수정 실패");
+      res.status(500).json({ error });
+    }
+  }
+
+  static async userPostListController(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { postList, totalPostsCnt } = await UserService.getUserPost(
+        req.user as string,
+        currentPage,
+        rowPerPage
+      );
+      logger.info("게시글 목록 조회 성공");
+      res.status(200).json({
+        currentPage,
+        totalPage: Math.ceil(totalPostsCnt / rowPerPage),
+        data: postList,
+      });
+    } catch (error) {
+      logger.error("게시글 목록 조회 실패");
       res.status(500).json({ error });
     }
   }
