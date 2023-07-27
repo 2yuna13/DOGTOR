@@ -44,7 +44,7 @@ class ChatController {
     try {
       const chatList = await ChatService.getChatList(req.user as string);
       logger.info("채팅 목록 조회 성공");
-      return res.status(201).json(chatList);
+      return res.status(200).json(chatList);
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -57,7 +57,7 @@ class ChatController {
         req.user as string
       );
       logger.info("채팅 조회 성공");
-      return res.status(201).json(chat);
+      return res.status(200).json(chat);
     } catch (error) {
       res.status(500).json({ error });
     }

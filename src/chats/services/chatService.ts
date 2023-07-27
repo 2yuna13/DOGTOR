@@ -24,7 +24,7 @@ class ChatService {
           chat_room_id: createRequest.id,
           is_from_user: true,
           from_id: createRequest.user_email,
-          content: chatRequestDto.content,
+          message: chatRequestDto.message,
         },
       });
       return;
@@ -51,7 +51,10 @@ class ChatService {
 
   static async selectChat(id: number, email: string) {
     try {
-      let writable: boolean = false,
+      let opponent,
+        nickname,
+        img_path,
+        writable: boolean = false,
         editable: boolean = false;
       const ChatContents = await prisma.chat_contents.findMany({
         where: {
@@ -67,6 +70,17 @@ class ChatService {
           id: id,
         },
       });
+      if (email == checkStatus?.user_vet_email) {
+        opponent = checkStatus.user_email;
+      } else {
+        opponent = checkStatus?.user_vet_email;
+      }
+      await prisma.users
+        .findUnique({ where: { email: opponent } })
+        .then((response) => {
+          nickname = response?.nickname;
+          img_path = response?.img_path;
+        });
       if (checkStatus?.status == "accepted") {
         writable = true;
       } else {
@@ -74,7 +88,8 @@ class ChatService {
           editable = true;
         }
       }
-      return { ChatContents, writable, editable };
+
+      return { ChatContents, writable, editable, email, nickname, img_path };
     } catch (error) {
       throw error;
     }
@@ -92,7 +107,7 @@ class ChatService {
     }
   }
 
-  static async addChat(email: string, chatId: number, content: string) {
+  static async addChat(email: string, chatId: number, message: string) {
     try {
       const checkUser = await prisma.chat_rooms.findFirst({
         where: {
@@ -105,7 +120,7 @@ class ChatService {
             chat_room_id: chatId,
             is_from_user: true,
             from_id: email,
-            content: content,
+            message: message,
           },
         });
       } else {
@@ -114,7 +129,7 @@ class ChatService {
             chat_room_id: chatId,
             is_from_user: false,
             from_id: email,
-            content: content,
+            message: message,
           },
         });
       }

@@ -26,4 +26,13 @@ AdminRouter.put(
   AdminController.manageVetRequestsController
 );
 
+//유저목록 조회(role별, type별, block 여부)
+AdminRouter.get(
+  "/admins/users",
+  passport.authenticate("jwt", { session: false }),
+  PermissionValidation("admin"),
+  //validationMiddleware(UserListDto),
+  AdminController.userListcontroller
+);
+
 export { AdminRouter };
