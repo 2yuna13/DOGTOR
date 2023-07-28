@@ -28,7 +28,7 @@ ChatRouter.post(
   ChatController.chatRequestController
 );
 
-//login required, 내 채팅 목록 조회
+//login required, 내 채팅 목록 조회, status가 pending인건 따로
 ChatRouter.get(
   "/chats",
   passport.authenticate("jwt", { session: false }),

@@ -33,14 +33,48 @@ class ChatService {
     }
   }
 
-  static async getChatList(email: string) {
+  static async getChatList(email: string, chatListDto: ChatListDto) {
     try {
       const getChatList = await prisma.chat_rooms.findMany({
         where: {
-          OR: [{ user_email: email }, { user_vet_email: email }],
+          AND: [
+            { OR: [{ user_email: email }, { user_vet_email: email }] },
+            { status: chatListDto.status },
+          ],
         },
         orderBy: {
           updated_at: "desc",
+        },
+        include: {
+          chat_contents: {
+            select: {
+              message: true,
+            },
+            orderBy: {
+              created_at: "desc",
+            },
+            take: 1, // 최근 생성된 chat_contents 하나만 가져오도록 설정
+          },
+          users_chat_rooms_user_emailTousers: {
+            select: {
+              email: true,
+              nickname: true,
+              img_path: true,
+            },
+          },
+          users_chat_rooms_user_vet_emailTousers: {
+            select: {
+              email: true,
+              nickname: true,
+              img_path: true,
+              vets: {
+                select: {
+                  name: true,
+                  hospital_name: true,
+                },
+              },
+            },
+          },
         },
       });
       return getChatList;
