@@ -42,7 +42,10 @@ class ChatController {
 
   static async chatListController(req: Request, res: Response) {
     try {
-      const chatList = await ChatService.getChatList(req.user as string);
+      const chatList = await ChatService.getChatList(
+        req.user as string,
+        req.query as any
+      );
       logger.info("채팅 목록 조회 성공");
       return res.status(200).json(chatList);
     } catch (error) {
