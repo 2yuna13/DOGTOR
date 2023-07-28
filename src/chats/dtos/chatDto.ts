@@ -42,21 +42,22 @@ class ChatRequestDto {
   }
 }
 
-class ChatListDto {
-  @IsEmail()
-  email: string;
-
-  constructor(email: string) {
-    this.email = email;
-  }
-}
-
 class ChatSelectDto {
   @IsString()
   id: string;
 
   constructor(id: string) {
     this.id = id;
+  }
+}
+
+class ChatListDto {
+  @IsOptional()
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
+
+  constructor(status: StatusEnum) {
+    this.status = status;
   }
 }
 
