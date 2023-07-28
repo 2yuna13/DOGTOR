@@ -13,7 +13,7 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser((id: any, done) => {
-  done(null);
+  done(null, id);
 });
 
 passport.use(
