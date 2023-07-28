@@ -57,7 +57,7 @@ passport.use(
     {
       clientID: process.env.GMAIL_OAUTH_CLIENT_ID || "",
       clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET || "",
-      callbackURL: "http://localhost:5173",
+      callbackURL: "http://localhost:5000/auth/google/callback",
     },
     async (
       accessToken: string,

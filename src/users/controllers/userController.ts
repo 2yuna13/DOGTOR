@@ -76,8 +76,9 @@ class UserController {
   static async googleLoginController(req: Request, res: Response) {
     try {
       const token = generateToken(req.user);
+      res.cookie("token", token, { httpOnly: false });
 
-      res.status(200).json(token);
+      return res.redirect("http://localhost:5173");
     } catch (error) {
       res.status(500).json({ error });
     }
