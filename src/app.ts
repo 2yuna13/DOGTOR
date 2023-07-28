@@ -14,7 +14,7 @@ import session from "express-session";
 import { PostRouter } from "./communities/routers/postRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
-const port: number = 8080;
+const port: number = 5000;
 
 const app = express();
 

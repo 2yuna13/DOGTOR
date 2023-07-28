@@ -8,6 +8,14 @@ import { generateToken } from "./auth";
 
 const prisma = new PrismaClient();
 
+passport.serializeUser((user: any, done) => {
+  done(null, user.email);
+});
+
+passport.deserializeUser((id: any, done) => {
+  done(null);
+});
+
 passport.use(
   new LocalStrategy(
     {
@@ -47,9 +55,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GMAIL_OAUTH_CLIENT_ID,
-      clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET,
-      callbackURL: "http://localhost:8080/auth/google/callback",
+      clientID: process.env.GMAIL_OAUTH_CLIENT_ID || "",
+      clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET || "",
+      callbackURL: "http://localhost:5173",
     },
     async (
       accessToken: string,
@@ -75,6 +83,7 @@ passport.use(
             nickname: profile.displayName || "",
             role: "user",
             user_type: "google",
+            img_path: profile.photos?.[0].value || null,
             created_at: new Date(),
             updated_at: new Date(),
           },

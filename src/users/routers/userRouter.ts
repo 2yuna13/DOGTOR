@@ -52,7 +52,7 @@ userRouter.get(
 
 userRouter.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", { failureRedirect: "/" }),
   UserController.googleLoginController
 );
 
