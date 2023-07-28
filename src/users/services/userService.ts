@@ -3,41 +3,26 @@ import { logger } from "../../utils/winston";
 import { PrismaClient } from "@prisma/client";
 import {
   UserDto,
-  VerifyCodeDto,
+  UserRegisterDto,
   VerifyEmailDto,
   UserLoginDto,
   VerifyVetDto,
+  VetDto,
 } from "../dtos/userDto";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
-import config from "../../utils/config";
-
+import { sendEmail } from "../../utils/mail";
 const prisma = new PrismaClient();
 
-const generateVerificationCode = () => {
-  const codeLength = 6; // 인증 코드 길이
-  const characters = "0123456789"; // 인증 코드로 사용할 문자 집합
-
-  let code = "";
-  for (let i = 0; i < codeLength; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    code += characters[randomIndex];
-  }
-
-  return code;
-};
-
 class UserService {
-  static async addUser(userDto: UserDto) {
+  static async addUser(userRegisterDto: UserRegisterDto) {
     try {
-      const hashedPassword = await bcrypt.hash(userDto.password, 10);
+      const hashedPassword = await bcrypt.hash(userRegisterDto.password, 10);
 
       const createUser = await prisma.users.create({
         data: {
-          email: userDto.email,
+          email: userRegisterDto.email,
           password: hashedPassword,
-          nickname: userDto.nickname,
+          nickname: userRegisterDto.nickname,
           role: "user",
           created_at: new Date(),
           updated_at: new Date(),
@@ -49,42 +34,20 @@ class UserService {
     }
   }
 
-  static async createVerificationCode(verifyCodeDto: VerifyCodeDto) {
+  static async createVerificationCode(email: string) {
     const existingUser = await prisma.users.findUnique({
-      where: { email: verifyCodeDto.email },
+      where: { email: email },
     });
 
     if (existingUser) {
       return null;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: true,
-      auth: {
-        type: "OAuth2",
-        user: config.mailer.gmailUser,
-        clientId: config.mailer.gmailClientId,
-        clientSecret: config.mailer.gmailClientSecret,
-        refreshToken: config.mailer.gmailRefreshToken,
-      },
-    });
-
-    const verificationCode = generateVerificationCode();
-
-    const mailOptions = {
-      to: verifyCodeDto.email,
-      subject: "[dogtor] 회원가입 이메일 인증 메일입니다.",
-      html: `인증 코드: <strong>${verificationCode}</strong>를 사용하여 회원가입을 완료해주세요.`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    const verificationCode = sendEmail(email);
 
     const verification = await prisma.verificationCodes.create({
       data: {
-        email: verifyCodeDto.email,
+        email: email,
         code: verificationCode,
       },
     });
@@ -138,20 +101,138 @@ class UserService {
     }
   }
 
-  static async addVet(verifyVetDto: VerifyVetDto) {
+  static async addVet(
+    verifyVetDto: VerifyVetDto,
+    file_path: string,
+    userEmail: string
+  ) {
     try {
       const createVet = await prisma.vets.create({
         data: {
-          user_email: verifyVetDto.userEmail,
+          user_email: userEmail,
           name: verifyVetDto.name,
           hospital_name: verifyVetDto.hospitalName,
           description: verifyVetDto.description,
-          img_path: verifyVetDto.imgPath,
+          region: verifyVetDto.region,
+          img_path: file_path,
         },
       });
       return createVet;
     } catch (Error) {
       throw Error;
+    }
+  }
+
+  static async getUser(email: string) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      return { user, vet };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async setUser(email: string, updatedFields: Partial<UserDto>) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new Error("유저 정보가 없습니다.");
+      }
+
+      if (updatedFields.password) {
+        const hashedPassword = await bcrypt.hash(updatedFields.password, 10);
+        user.password = hashedPassword;
+      }
+      if (updatedFields.nickname) user.nickname = updatedFields.nickname;
+      if (updatedFields.img_path) user.img_path = updatedFields.img_path;
+
+      user.updated_at = new Date();
+
+      const updateUser = await prisma.users.update({
+        where: {
+          email,
+        },
+        data: user,
+      });
+
+      return updateUser;
+    } catch (Error) {
+      throw Error;
+    }
+  }
+
+  static async setVet(email: string, updatedFields: Partial<VetDto>) {
+    try {
+      const vet = await prisma.vets.findFirst({
+        where: { user_email: email },
+      });
+
+      if (!vet) {
+        throw new Error("수의사 정보가 없습니다.");
+      }
+      if (updatedFields.hospitalName)
+        vet.hospital_name = updatedFields.hospitalName;
+      if (updatedFields.description)
+        vet.description = updatedFields.description;
+      if (updatedFields.region) vet.region = updatedFields.region;
+
+      vet.updated_at = new Date();
+
+      const updateVet = await prisma.vets.update({
+        where: { id: vet.id },
+        data: vet,
+      });
+
+      return updateVet;
+    } catch (Error) {
+      throw Error;
+    }
+  }
+
+  static async getUserPost(
+    email: string,
+    currentPage: number,
+    rowPerPage: number
+  ) {
+    try {
+      const startIndex = (currentPage - 1) * rowPerPage;
+      const postList = await prisma.posts.findMany({
+        where: { author_email: email },
+        skip: startIndex,
+        take: rowPerPage,
+      });
+
+      const totalPostsCnt = await prisma.posts.count({
+        where: { author_email: email },
+      });
+
+      return { postList, totalPostsCnt };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async deleteVet(email: string) {
+    try {
+      const result = await prisma.vets.deleteMany({
+        where: { user_email: email, status: "rejected" },
+      });
+
+      if (result.count === 0) {
+        throw new Error("해당 수의사 정보는 존재하지 않습니다.");
+      }
+    } catch (err) {
+      throw err;
     }
   }
 }

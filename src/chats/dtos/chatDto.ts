@@ -1,26 +1,44 @@
-import { IsEmail, IsString, IsNumber, IsEnum } from "class-validator";
+import {
+  IsEmail,
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
 
-enum statusEnum {
-  pending = "pending",
-  accepted = "accepted",
-  rejected = "rejected",
-  completed = "completed",
+enum StatusEnum {
+  PENDING = "pending",
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  COMPLETED = "completed",
+}
+
+enum RegionEnum {
+  SEOUL = "Seoul",
+  GYEONGGI = "Gyeonggi",
+  INCHEON = "Incheon",
+  DAEJEON = "Daejeon",
+  DAEGU = "Daegu",
+  GWANGJU = "Gwangju",
+  ULSAN = "Ulsan",
+  BUSAN = "Busan",
+  GANGWON = "Gangwon",
+  CHUNGCHEONG = "Chungcheong",
+  JEOLLA = "Jeolla",
+  GYEONGSANG = "Gyeongsang",
+  JEJU = "Jeju",
 }
 
 class ChatRequestDto {
   @IsEmail()
-  userEmail: string;
-
-  @IsEmail()
   vetEmail: string;
 
   @IsString()
-  content: string;
+  message: string;
 
-  constructor(userEmail: string, vetEmail: string, content: string) {
-    this.userEmail = userEmail;
+  constructor(vetEmail: string, message: string) {
     this.vetEmail = vetEmail;
-    this.content = content;
+    this.message = message;
   }
 }
 
@@ -34,10 +52,10 @@ class ChatListDto {
 }
 
 class ChatSelectDto {
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
-  constructor(id: number) {
+  constructor(id: string) {
     this.id = id;
   }
 }
@@ -46,12 +64,37 @@ class ChatStatusDto {
   @IsNumber()
   id: number;
 
-  @IsEnum(statusEnum)
-  status: statusEnum;
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
 
-  constructor(id: number, status: statusEnum) {
+  constructor(id: number, status: StatusEnum) {
     (this.id = id), (this.status = status);
   }
 }
 
-export { ChatRequestDto, ChatListDto, ChatSelectDto, ChatStatusDto };
+class VetRegionDto {
+  @IsString()
+  currentPage: string;
+
+  @IsOptional()
+  @IsEnum(RegionEnum)
+  region: RegionEnum;
+
+  @IsOptional()
+  @IsString()
+  search: string;
+
+  constructor(currentPage: string, region: RegionEnum, search: string) {
+    this.currentPage = currentPage;
+    this.region = region;
+    this.search = search;
+  }
+}
+
+export {
+  ChatRequestDto,
+  ChatListDto,
+  ChatSelectDto,
+  ChatStatusDto,
+  VetRegionDto,
+};

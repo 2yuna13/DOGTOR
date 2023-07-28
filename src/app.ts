@@ -5,11 +5,13 @@ import { logger } from "./utils/winston";
 import cors from "cors";
 import { userRouter } from "./users/routers/userRouter";
 import { AdminRouter } from "./admins/routers/adminRouter";
-import passport from "./utils/passport";
+import { ChatRouter } from "./chats/routers/chatRouter";
+import passport from "./middlewares/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
 import session from "express-session";
 
+import { PostRouter } from "./communities/routers/postRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 8080;
@@ -67,9 +69,12 @@ const server = app.listen(port, () => {
   logger.info(`${port} 포트에서 서버 시작`);
 });
 
-const io = new Server(server, { path: "/chat" });
+const io = new Server(server);
 chatSocket(io);
 
 app.use(userRouter);
 app.use(AdminRouter);
+app.use(ChatRouter);
+app.use(PostRouter);
+
 export { connection, app, io };
