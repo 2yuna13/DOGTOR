@@ -9,6 +9,8 @@ import { ChatRouter } from "./chats/routers/chatRouter";
 import passport from "./middlewares/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
+import session from "express-session";
+
 import { PostRouter } from "./communities/routers/postRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
@@ -46,7 +48,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use("/api-json", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
+const secretKey = process.env.SESSION_SECRET_KEY || "default_secret_key";
+
+app.use(
+  session({
+    secret: secretKey,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 app.use(passport.initialize());
+app.use(passport.session());
 
 app.get("/", (request: Request, response: Response) => {
   response.send("hello");

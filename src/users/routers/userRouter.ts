@@ -44,6 +44,18 @@ userRouter.post(
   UserController.userLoginController
 );
 
+// 구글 로그인
+userRouter.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+userRouter.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  UserController.googleLoginController
+);
+
 // 수의자 등록 신청
 userRouter.post(
   "/users/vet-register",
