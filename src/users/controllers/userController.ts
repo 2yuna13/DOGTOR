@@ -84,6 +84,17 @@ class UserController {
     }
   }
 
+  static async delUserController(req: Request, res: Response) {
+    try {
+      await UserService.deleteUser(req.user as string);
+      logger.info("유저 탈퇴 성공");
+      res.status(200).json({ message: "유저가 삭제되었습니다." });
+    } catch (error: any) {
+      logger.error("유저 탈퇴 실패");
+      res.status(500).json(error.message);
+    }
+  }
+
   static async userVetRegisterController(req: Request, res: Response) {
     try {
       if (!req.file) {

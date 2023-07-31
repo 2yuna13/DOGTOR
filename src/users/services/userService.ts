@@ -78,8 +78,8 @@ class UserService {
 
   static async loginUser(userLoginDto: UserLoginDto) {
     try {
-      const user = await prisma.users.findUnique({
-        where: { email: userLoginDto.email },
+      const user = await prisma.users.findFirst({
+        where: { AND: [{ email: userLoginDto.email }, { deleted_at: null }] },
       });
 
       if (!user) {
@@ -94,6 +94,18 @@ class UserService {
       if (!passwordMatch) {
         throw new Error("비밀번호가 일치하지 않습니다.");
       }
+
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async deleteUser(email: string) {
+    try {
+      const user = await prisma.users.delete({
+        where: { email },
+      });
 
       return user;
     } catch (err) {

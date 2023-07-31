@@ -65,6 +65,13 @@ userRouter.get(
   UserController.socialLoginController
 );
 
+// 회원탈퇴
+userRouter.delete(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  UserController.delUserController
+);
+
 // 수의자 등록 신청
 userRouter.post(
   "/users/vet-register",
