@@ -23,13 +23,9 @@ class CommentController {
   static async deleteComment(req: Request, res: Response) {
     try {
       const userId = req.user as string;
-      const { post_id, commentId } = req.params;
+      const { commentId } = req.params;
 
-      await CommentService.deleteComment(
-        Number(post_id),
-        Number(commentId),
-        userId
-      );
+      await CommentService.deleteComment(Number(commentId), userId);
 
       return res.status(200).json({ message: "댓글 삭제 성공" });
     } catch (error) {
