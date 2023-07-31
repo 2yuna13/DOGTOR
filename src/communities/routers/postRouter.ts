@@ -2,7 +2,7 @@ import { Router } from "express";
 import { PostController } from "../controllers/postController";
 import passport from "passport";
 import validationMiddleware from "../../middlewares/validateDto";
-import { CreatePostDto, UpdatePostDto } from "../dtos/postDto";
+import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
 
 const PostRouter = Router();
 
@@ -33,6 +33,7 @@ PostRouter.delete(
 PostRouter.post(
   "/posts/report",
   passport.authenticate("jwt", { session: false }),
+  validationMiddleware(ReportPostDto),
   PostController.reportPost
 );
 

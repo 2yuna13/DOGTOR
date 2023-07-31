@@ -1,4 +1,4 @@
-import { IsString, Length, IsEnum } from "class-validator";
+import { IsString, Length, IsEnum, IsInt, IsIn } from "class-validator";
 
 enum Category {
   FREE = "free",
@@ -39,4 +39,29 @@ class UpdatePostDto {
   }
 }
 
-export { CreatePostDto, UpdatePostDto };
+enum ReportReason {
+  Abuse = "욕설",
+  InappropriateContent = "부적절한 내용",
+  Spam = "스팸",
+  Other = "기타",
+}
+
+class ReportPostDto {
+  @IsInt()
+  post_id: number;
+
+  @IsInt()
+  report_id: number;
+
+  @IsString()
+  @IsIn(Object.values(ReportReason))
+  reason: string;
+
+  constructor(post_id: number, report_id: number, reason: string) {
+    this.post_id = post_id;
+    this.report_id = report_id;
+    this.reason = reason;
+  }
+}
+
+export { CreatePostDto, UpdatePostDto, ReportPostDto };

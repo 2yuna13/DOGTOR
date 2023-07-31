@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PostService } from "../services/postService";
-import { CreatePostDto, UpdatePostDto } from "../dtos/postDto";
+import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
 
 class PostController {
   static async createPost(req: Request, res: Response) {
@@ -17,7 +17,7 @@ class PostController {
     }
   }
 
-  static async getPosts(req: Request, res: Response) {
+  static async getPosts(_req: Request, res: Response) {
     try {
       const posts = await PostService.getPosts();
       return res.status(200).json(posts);
@@ -74,7 +74,10 @@ class PostController {
   static async reportPost(req: Request, res: Response) {
     try {
       const userId = req.user as string;
-      const { postId, 신고내용 } = req.body;
+      const { post_id, reason } = req.body;
+
+      const reportPostDto = new ReportPostDto(post_id, 0, reason);
+      await PostService.reportPost(reportPostDto, userId);
 
       return res.status(200).json({ message: "게시물 신고 성공" });
     } catch (error) {
