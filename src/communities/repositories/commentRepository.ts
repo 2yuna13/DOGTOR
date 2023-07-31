@@ -1,4 +1,9 @@
-import { PrismaClient, comments, report_comments } from "@prisma/client";
+import {
+  PrismaClient,
+  comments,
+  reports,
+  report_comments,
+} from "@prisma/client";
 import { CreateCommentDto, ReportCommentDto } from "../dtos/commentDto";
 
 const prisma = new PrismaClient();
@@ -49,11 +54,11 @@ class CommentRepository {
   }
 
   static async reportComment(
-    reportCommentDto: ReportCommentDto,
+    commentDto: ReportCommentDto,
     author_email: string
-  ): Promise<{ report: report_comments; report_comments: report_comments }> {
+  ): Promise<{ report: reports; report_comments: report_comments }> {
     try {
-      const { comment_id, reason } = reportCommentDto;
+      const { comment_id, reason } = commentDto;
 
       const existingComment = await prisma.comments.findUnique({
         where: { id: comment_id },
@@ -72,6 +77,7 @@ class CommentRepository {
         data: {
           author_email,
           content: reason,
+          status: "pending",
         },
       });
 
