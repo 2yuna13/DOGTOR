@@ -85,10 +85,7 @@ class ChatService {
 
   static async selectChat(id: number, email: string) {
     try {
-      let opponent,
-        nickname,
-        img_path,
-        writable: boolean = false,
+      let writable: boolean = false,
         editable: boolean = false;
       const ChatContents = await prisma.chat_contents.findMany({
         where: {
@@ -103,27 +100,41 @@ class ChatService {
         where: {
           id: id,
         },
+        select: {
+          status: true,
+          users_chat_rooms_user_emailTousers: {
+            select: {
+              email: true,
+              nickname: true,
+              img_path: true,
+            },
+          },
+          users_chat_rooms_user_vet_emailTousers: {
+            select: {
+              email: true,
+              nickname: true,
+              img_path: true,
+              vets: {
+                select: {
+                  name: true,
+                  hospital_name: true,
+                },
+              },
+            },
+          },
+        },
       });
-      if (email == checkStatus?.user_vet_email) {
-        opponent = checkStatus.user_email;
-      } else {
-        opponent = checkStatus?.user_vet_email;
-      }
-      await prisma.users
-        .findUnique({ where: { email: opponent } })
-        .then((response) => {
-          nickname = response?.nickname;
-          img_path = response?.img_path;
-        });
       if (checkStatus?.status == "accepted") {
         writable = true;
       } else {
-        if (email == checkStatus?.user_vet_email) {
+        if (
+          email == checkStatus?.users_chat_rooms_user_vet_emailTousers?.email
+        ) {
           editable = true;
         }
       }
 
-      return { ChatContents, writable, editable, email, nickname, img_path };
+      return { ChatContents, checkStatus, writable, editable };
     } catch (error) {
       throw error;
     }
