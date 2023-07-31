@@ -53,7 +53,16 @@ userRouter.get(
 userRouter.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
-  UserController.googleLoginController
+  UserController.socialLoginController
+);
+
+// 카카오 로그인
+userRouter.get("/auth/kakao", passport.authenticate("kakao"));
+
+userRouter.get(
+  "/auth/kakao/callback",
+  passport.authenticate("kakao", { failureRedirect: "/" }),
+  UserController.socialLoginController
 );
 
 // 수의자 등록 신청
