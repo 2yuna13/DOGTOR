@@ -73,7 +73,7 @@ class UserController {
     }
   }
 
-  static async googleLoginController(req: Request, res: Response) {
+  static async socialLoginController(req: Request, res: Response) {
     try {
       const token = generateToken(req.user);
       res.cookie("token", token, { httpOnly: false });

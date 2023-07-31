@@ -1,7 +1,8 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as KakaoStrategy } from "passport-kakao";
 import { UserService } from "../users/services/userService";
 import { PrismaClient } from "@prisma/client";
 import { generateToken } from "./auth";
@@ -57,12 +58,12 @@ passport.use(
     {
       clientID: process.env.GMAIL_OAUTH_CLIENT_ID || "",
       clientSecret: process.env.GAMIL_OAUTH_CLIENT_SECRET || "",
-      callbackURL: "http://localhost:5000/auth/google/callback",
+      callbackURL: process.env.GOOGlE_CALLBACK || "",
     },
     async (
       accessToken: string,
       refreshToken: string,
-      profile: Profile,
+      profile,
       done: (error: any, user?: any, info?: any) => void
     ) => {
       try {
@@ -84,6 +85,49 @@ passport.use(
             role: "user",
             user_type: "google",
             img_path: profile.photos?.[0].value || null,
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        });
+
+        return done(null, newUser);
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
+
+passport.use(
+  new KakaoStrategy(
+    {
+      clientID: process.env.KAKAO_APIKEY || "",
+      callbackURL: process.env.KAKAO_CALLBACK || "",
+    },
+    async (
+      accessToken: string,
+      refreshToken: string,
+      profile,
+      done: (error: any, user?: any, info?: any) => void
+    ) => {
+      try {
+        console.log(profile);
+        const email = profile._json.kakao_account.email || "";
+        const user = await prisma.users.findUnique({
+          where: { email },
+        });
+        if (user) {
+          return done(null, user);
+        }
+
+        const newUser = await prisma.users.create({
+          data: {
+            email,
+            password: "",
+            nickname: profile.displayName || "",
+            role: "user",
+            user_type: "kakao",
+            img_path: profile._json.properties.profile_image || null,
             created_at: new Date(),
             updated_at: new Date(),
           },
