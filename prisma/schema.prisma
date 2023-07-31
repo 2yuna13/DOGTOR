@@ -38,10 +38,10 @@ model chat_rooms {
 
 model comments {
   id              Int               @id @default(autoincrement())
-  post_id         Int
-  group           Int
-  order           Int
-  indent          Int
+  post_id         Int   
+  group           Int?               
+  order           Int?
+  indent          Int?
   author_email    String            @db.VarChar(255)
   body            String            @db.Text
   created_at      DateTime          @db.DateTime(0) @default(now())
@@ -108,7 +108,7 @@ model reports {
   id              Int               @id @default(autoincrement())
   author_email    String            @db.VarChar(255)
   content         String            @db.Text
-  status          reports_status
+  status          reports_status    @default(pending)
   created_at      DateTime          @db.DateTime(0) @default(now())
   updated_at      DateTime          @db.DateTime(0) @default(now())
   deleted_at      DateTime?         @db.DateTime(0)
