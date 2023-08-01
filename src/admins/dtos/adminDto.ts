@@ -23,12 +23,12 @@ enum UserRoleEnum {
 }
 
 enum UserBlockEnum {
-  NULL = "null",
+  FALSE = "false",
   TRUE = "true",
 }
 
 enum UserDeleteEnum {
-  NULL = "null",
+  FALSE = "false",
   TRUE = "true",
 }
 class VetListDto {

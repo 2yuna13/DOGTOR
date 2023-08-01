@@ -56,11 +56,11 @@ class AdminService {
 
       if (userListDto.role) {
         where["role"] = userListDto.role;
-      } else if (userListDto.blocked === "null") {
+      } else if (userListDto.blocked === "false") {
         where["blocked_at"] = null;
       } else if (userListDto.blocked === "true") {
         where["blocked_at"] = { not: null };
-      } else if (userListDto.deleted === "null") {
+      } else if (userListDto.deleted === "false") {
         where["deleted_at"] = null;
       } else if (userListDto.deleted === "true") {
         where["deleted_at"] = { not: null };
@@ -89,11 +89,11 @@ class AdminService {
 
       if (userListDto.role) {
         where.role = userListDto.role;
-      } else if (userListDto.blocked === "null") {
+      } else if (userListDto.blocked === "false") {
         where.blocked_at = null;
       } else if (userListDto.blocked === "true") {
         where.blocked_at = { not: null };
-      } else if (userListDto.deleted === "null") {
+      } else if (userListDto.deleted === "false") {
         where.deleted_at = null;
       } else if (userListDto.deleted === "true") {
         where.deleted_at = { not: null };
