@@ -26,7 +26,7 @@ AdminRouter.put(
   AdminController.manageVetRequestsController
 );
 
-//유저목록 조회(role별, type별, block 여부)
+//유저목록 조회(role별, block 여부, delete 여부)
 AdminRouter.get(
   "/admins/users",
   passport.authenticate("jwt", { session: false }),

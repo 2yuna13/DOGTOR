@@ -23,13 +23,32 @@ class AdminController {
     }
   }
 
-  //user_type별, role별, blocked_at별
+  //user role별, blocked_at별, deleted_at별
   static async userListcontroller(req: Request, res: Response) {
     try {
-      const userList = await AdminService.getUserList(req.query as any);
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const totalUsersCnt = await AdminService.getTotalUsersCnt(
+        req.query as any
+      );
+      let startIndex: number = (currentPage - 1) * rowPerPage;
+      if (startIndex < 0) {
+        startIndex = 0;
+      }
+      const userList = await AdminService.getUserList(
+        req.query as any,
+        startIndex,
+        rowPerPage
+      );
       logger.info("유저 목록 조회 성공");
-      return res.status(200).json(userList);
+      return res.status(200).json({
+        totalUsersCnt,
+        currentPage,
+        totalPages: Math.ceil(totalUsersCnt / rowPerPage),
+        data: userList,
+      });
     } catch (error: any) {
+      logger.error("유저 목록 조회 실패");
       res.status(500).json(error.message);
     }
   }

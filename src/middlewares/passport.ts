@@ -111,7 +111,6 @@ passport.use(
       done: (error: any, user?: any, info?: any) => void
     ) => {
       try {
-        console.log(profile);
         const email = profile._json.kakao_account.email || "";
         const user = await prisma.users.findUnique({
           where: { email },
