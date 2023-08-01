@@ -22,12 +22,15 @@ enum UserRoleEnum {
   ADMIN = "admin",
 }
 
-enum UserTypeEnum {
-  NORMAL = "normal",
-  KAKAO = "kakao",
-  GOOGLE = "google",
+enum UserBlockEnum {
+  NULL = "null",
+  TRUE = "true",
 }
 
+enum UserDeleteEnum {
+  NULL = "null",
+  TRUE = "true",
+}
 class VetListDto {
   @IsEnum(StatusEnum)
   status: StatusEnum;
@@ -60,17 +63,21 @@ class UserListDto {
   role: UserRoleEnum;
 
   @IsOptional()
-  @IsEnum(UserTypeEnum)
-  type: UserTypeEnum;
+  @IsEnum(UserBlockEnum)
+  blocked: UserBlockEnum;
 
   @IsOptional()
-  @IsBoolean()
-  blocked: boolean;
+  @IsEnum(UserDeleteEnum)
+  deleted: UserDeleteEnum;
 
-  constructor(role: UserRoleEnum, type: UserTypeEnum, blocked: boolean) {
+  constructor(
+    role: UserRoleEnum,
+    blocked: UserBlockEnum,
+    deleted: UserDeleteEnum
+  ) {
     this.role = role;
-    this.type = type;
     this.blocked = blocked;
+    this.deleted = deleted;
   }
 }
 

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { UserListDto, VetListDto, VetStatusDto } from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
@@ -46,31 +46,62 @@ class AdminService {
     }
   }
 
-  static async getUserList(userListDto: UserListDto) {
+  static async getUserList(
+    userListDto: UserListDto,
+    startIndex: number,
+    rowPerPage: number
+  ) {
     try {
+      const where: Prisma.usersWhereInput = {};
+
       if (userListDto.role) {
-        return await prisma.users.findMany({
-          where: {
-            role: userListDto.role,
-          },
-        });
-      } else if (userListDto.type) {
-        return await prisma.users.findMany({
-          where: {
-            user_type: userListDto.type,
-          },
-        });
-      } else if (userListDto.blocked) {
-        return await prisma.users.findMany({
-          where: {
-            blocked_at: {
-              not: null,
-            },
-          },
-        });
-      } else {
-        return await prisma.users.findMany();
+        where["role"] = userListDto.role;
+      } else if (userListDto.blocked === "null") {
+        where["blocked_at"] = null;
+      } else if (userListDto.blocked === "true") {
+        where["blocked_at"] = { not: null };
+      } else if (userListDto.deleted === "null") {
+        where["deleted_at"] = null;
+      } else if (userListDto.deleted === "true") {
+        where["deleted_at"] = { not: null };
       }
+
+      const orderBy: Prisma.usersOrderByWithRelationInput = {
+        updated_at: Prisma.SortOrder.asc,
+      };
+
+      const users = await prisma.users.findMany({
+        where,
+        orderBy,
+        skip: startIndex,
+        take: rowPerPage,
+      });
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getTotalUsersCnt(userListDto: UserListDto) {
+    try {
+      const where: Prisma.usersWhereInput = {};
+
+      if (userListDto.role) {
+        where.role = userListDto.role;
+      } else if (userListDto.blocked === "null") {
+        where.blocked_at = null;
+      } else if (userListDto.blocked === "true") {
+        where.blocked_at = { not: null };
+      } else if (userListDto.deleted === "null") {
+        where.deleted_at = null;
+      } else if (userListDto.deleted === "true") {
+        where.deleted_at = { not: null };
+      }
+
+      const totalUsersCnt = await prisma.users.count({ where });
+
+      return totalUsersCnt;
     } catch (error) {
       throw error;
     }
