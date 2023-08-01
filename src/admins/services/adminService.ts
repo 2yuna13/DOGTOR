@@ -1,5 +1,10 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { UserListDto, VetListDto, VetStatusDto } from "../dtos/adminDto";
+import {
+  UserListDto,
+  UserStatusDto,
+  VetListDto,
+  VetStatusDto,
+} from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
 
@@ -102,6 +107,65 @@ class AdminService {
       const totalUsersCnt = await prisma.users.count({ where });
 
       return totalUsersCnt;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async manageUsers(userStatusDto: UserStatusDto) {
+    try {
+      const { email, blocked, deleted } = userStatusDto;
+
+      const user = await prisma.users.findUnique({ where: { email } });
+
+      if (!user) {
+        throw new Error("유저가 존재하지 않습니다.");
+      }
+
+      // 2주 정지
+      if (blocked === "true") {
+        const twoWeeksFromNow = new Date();
+        twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+
+        if (!user.blocked_at) {
+          await prisma.users.update({
+            where: { email },
+            data: { blocked_at: twoWeeksFromNow },
+          });
+        } else {
+          const blockedAt = new Date(user.blocked_at);
+          blockedAt.setDate(blockedAt.getDate() + 14);
+
+          await prisma.users.update({
+            where: { email },
+            data: { blocked_at: blockedAt },
+          });
+        }
+      }
+
+      // 정지 해제
+      if (blocked === "false") {
+        await prisma.users.update({
+          where: { email },
+          data: { blocked_at: null },
+        });
+      }
+
+      // 영구 정지
+      if (blocked === "permanent") {
+        await prisma.users.update({
+          where: { email },
+          data: { blocked_at: new Date("9999-12-31") },
+        });
+      }
+
+      // 강제 탈퇴
+      if (deleted === "true") {
+        await prisma.users.update({
+          where: { email },
+          data: { deleted_at: new Date() },
+        });
+      }
     } catch (error) {
       throw error;
     }

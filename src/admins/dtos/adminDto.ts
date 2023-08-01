@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsEmail,
-  IsNumber,
-  IsEnum,
-  IsBoolean,
-  IsOptional,
-} from "class-validator";
+import { IsEmail, IsNumber, IsEnum, IsOptional } from "class-validator";
 
 // Data Transform Object
 // 유효성 검증
@@ -25,12 +18,14 @@ enum UserRoleEnum {
 enum UserBlockEnum {
   FALSE = "false",
   TRUE = "true",
+  PERMANENT = "permanent",
 }
 
 enum UserDeleteEnum {
   FALSE = "false",
   TRUE = "true",
 }
+
 class VetListDto {
   @IsEnum(StatusEnum)
   status: StatusEnum;
@@ -81,4 +76,23 @@ class UserListDto {
   }
 }
 
-export { VetStatusDto, VetListDto, UserListDto };
+class UserStatusDto {
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsEnum(UserBlockEnum)
+  blocked: UserBlockEnum;
+
+  @IsOptional()
+  @IsEnum(UserDeleteEnum)
+  deleted: UserDeleteEnum;
+
+  constructor(email: string, blocked: UserBlockEnum, deleted: UserDeleteEnum) {
+    this.email = email;
+    this.blocked = blocked;
+    this.deleted = deleted;
+  }
+}
+
+export { VetStatusDto, VetListDto, UserListDto, UserStatusDto };
