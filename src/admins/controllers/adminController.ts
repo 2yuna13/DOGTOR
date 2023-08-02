@@ -62,6 +62,52 @@ class AdminController {
       res.status(500).json(error.message);
     }
   }
+
+  static async postListcontroller(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { reportedPostList, totalPostsCnt } =
+        await AdminService.getPostList(
+          req.query as any,
+          currentPage,
+          rowPerPage
+        );
+
+      logger.info("게시글 신고 목록 조회 성공");
+      return res.status(200).json({
+        currentPage,
+        totalPages: Math.ceil(totalPostsCnt / rowPerPage),
+        data: reportedPostList,
+      });
+    } catch (error: any) {
+      logger.error("게시글 신고 목록 조회 실패");
+      res.status(500).json(error.message);
+    }
+  }
+
+  static async commentListcontroller(req: Request, res: Response) {
+    try {
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { reportedCommentList, totalCommentsCnt } =
+        await AdminService.getCommentList(
+          req.query as any,
+          currentPage,
+          rowPerPage
+        );
+
+      logger.info("댓글 신고 목록 조회 성공");
+      return res.status(200).json({
+        currentPage,
+        totalPages: Math.ceil(totalCommentsCnt / rowPerPage),
+        data: reportedCommentList,
+      });
+    } catch (error: any) {
+      logger.error("댓글 신고 목록 조회 실패");
+      res.status(500).json(error.message);
+    }
+  }
 }
 
 export { AdminController };

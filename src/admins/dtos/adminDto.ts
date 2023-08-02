@@ -15,6 +15,11 @@ enum StatusEnum {
   REJECTED = "rejected",
 }
 
+enum ReportStatusEnum {
+  PENDING = "pending",
+  COMPLETED = "completed",
+}
+
 enum UserRoleEnum {
   USER = "user",
   VET = "vet",
@@ -118,4 +123,13 @@ class UserStatusDto {
   }
 }
 
-export { VetStatusDto, VetListDto, UserListDto, UserStatusDto };
+class ReportListDto {
+  @IsEnum(ReportStatusEnum)
+  status: ReportStatusEnum;
+
+  constructor(status: ReportStatusEnum) {
+    this.status = status;
+  }
+}
+
+export { VetStatusDto, VetListDto, UserListDto, UserStatusDto, ReportListDto };
