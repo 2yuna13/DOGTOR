@@ -71,8 +71,18 @@ class AdminService {
         where["deleted_at"] = { not: null };
       }
 
+      if (userListDto.search) {
+        where["OR"] = [
+          { email: { contains: userListDto.search } },
+          { nickname: { contains: userListDto.search } },
+        ];
+      }
+
       const orderBy: Prisma.usersOrderByWithRelationInput = {
-        updated_at: Prisma.SortOrder.asc,
+        updated_at:
+          userListDto.orderBy === "asc"
+            ? Prisma.SortOrder.asc
+            : Prisma.SortOrder.desc,
       };
 
       const users = await prisma.users.findMany({
@@ -102,6 +112,13 @@ class AdminService {
         where.deleted_at = null;
       } else if (userListDto.deleted === "true") {
         where.deleted_at = { not: null };
+      }
+
+      if (userListDto.search) {
+        where["OR"] = [
+          { email: { contains: userListDto.search } },
+          { nickname: { contains: userListDto.search } },
+        ];
       }
 
       const totalUsersCnt = await prisma.users.count({ where });

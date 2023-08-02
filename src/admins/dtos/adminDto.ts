@@ -1,4 +1,10 @@
-import { IsEmail, IsNumber, IsEnum, IsOptional } from "class-validator";
+import {
+  IsString,
+  IsEmail,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
 
 // Data Transform Object
 // 유효성 검증
@@ -24,6 +30,11 @@ enum UserBlockEnum {
 enum UserDeleteEnum {
   FALSE = "false",
   TRUE = "true",
+}
+
+enum UserOrderByEnum {
+  ASC = "asc",
+  DESC = "desc",
 }
 
 class VetListDto {
@@ -65,14 +76,26 @@ class UserListDto {
   @IsEnum(UserDeleteEnum)
   deleted: UserDeleteEnum;
 
+  @IsOptional()
+  @IsString()
+  search: string;
+
+  @IsOptional()
+  @IsEnum(UserOrderByEnum)
+  orderBy: UserOrderByEnum;
+
   constructor(
     role: UserRoleEnum,
     blocked: UserBlockEnum,
-    deleted: UserDeleteEnum
+    deleted: UserDeleteEnum,
+    search: string,
+    orderBy: UserOrderByEnum
   ) {
     this.role = role;
     this.blocked = blocked;
     this.deleted = deleted;
+    this.search = search;
+    this.orderBy = orderBy;
   }
 }
 
