@@ -6,7 +6,6 @@ import {
   ReportPostDto,
   Category,
 } from "../dtos/postDto";
-import { posts_category } from "@prisma/client";
 
 class PostController {
   static async createPost(req: Request, res: Response) {
