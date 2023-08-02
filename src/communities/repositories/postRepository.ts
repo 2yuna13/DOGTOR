@@ -9,6 +9,9 @@ class PostRepository {
     try {
       const post = await prisma.posts.findUnique({
         where: { id: postId },
+        include: {
+          users: true,
+        },
       });
       return post;
     } catch (err) {
@@ -18,7 +21,11 @@ class PostRepository {
 
   static async getPosts(): Promise<posts[]> {
     try {
-      const posts = await prisma.posts.findMany();
+      const posts = await prisma.posts.findMany({
+        include: {
+          users: true,
+        },
+      });
       return posts;
     } catch (err) {
       throw err;
