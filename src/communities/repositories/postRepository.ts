@@ -1,5 +1,6 @@
 import { PrismaClient, posts, reports, report_posts } from "@prisma/client";
 import { CreatePostDto, ReportPostDto } from "../dtos/postDto";
+import { posts_category } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,19 @@ class PostRepository {
   static async getPosts(): Promise<posts[]> {
     try {
       const posts = await prisma.posts.findMany();
+      return posts;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async getPostsByCategory(category: posts_category): Promise<posts[]> {
+    try {
+      const posts = await prisma.posts.findMany({
+        where: {
+          category: category,
+        },
+      });
       return posts;
     } catch (err) {
       throw err;

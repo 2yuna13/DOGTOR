@@ -64,4 +64,4 @@ class ReportPostDto {
   }
 }
 
-export { CreatePostDto, UpdatePostDto, ReportPostDto };
+export { CreatePostDto, UpdatePostDto, ReportPostDto, Category };

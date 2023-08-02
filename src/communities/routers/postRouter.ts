@@ -13,7 +13,7 @@ PostRouter.post(
   PostController.createPost
 );
 
-PostRouter.get("/posts", PostController.getPosts);
+PostRouter.get("/posts", PostController.getPostsByCategory);
 
 PostRouter.get("/posts/:postId", PostController.getPostById);
 

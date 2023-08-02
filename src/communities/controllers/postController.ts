@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { PostService } from "../services/postService";
-import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
+import {
+  CreatePostDto,
+  UpdatePostDto,
+  ReportPostDto,
+  Category,
+} from "../dtos/postDto";
+import { posts_category } from "@prisma/client";
 
 class PostController {
   static async createPost(req: Request, res: Response) {
@@ -8,12 +14,28 @@ class PostController {
       const userId = req.user as string;
       const { title, body, category } = req.body;
 
-      const createPostDto = new CreatePostDto(title, body, category);
+      const createPostDto = new CreatePostDto(
+        title,
+        body,
+        category as Category
+      );
       const newPost = await PostService.createPost(createPostDto, userId);
 
       return res.status(201).json(newPost);
     } catch (error) {
       return res.status(500).json({ error: "게시물 작성 실패" });
+    }
+  }
+
+  static async getPostsByCategory(req: Request, res: Response) {
+    try {
+      const category = req.query.category as Category;
+      const currentPage = parseInt(req.query.currentPage as string, 10) || 1;
+
+      const posts = await PostService.getPostsByCategory(category, currentPage);
+      return res.status(200).json(posts);
+    } catch (error) {
+      return res.status(500).json({ error: "게시물 조회 실패" });
     }
   }
 

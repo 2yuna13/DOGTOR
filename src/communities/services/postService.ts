@@ -1,3 +1,4 @@
+import { posts_category } from "@prisma/client";
 import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
 import { PostRepository } from "../repositories/postRepository";
 
@@ -30,6 +31,40 @@ class PostService {
   static async deletePost(postId: number, author_email: string) {
     try {
       await PostRepository.deletePost(postId, author_email);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getPostsByCategory(
+    category: posts_category,
+    currentPage: number
+  ) {
+    try {
+      const pageSize = 10;
+      const skip = (currentPage - 1) * pageSize;
+
+      if (!category) {
+        const totalPosts = await PostRepository.getPosts();
+        const paginatedPosts = totalPosts.slice(skip, skip + pageSize);
+
+        return {
+          total: totalPosts.length,
+          currentPage,
+          pageSize,
+          posts: paginatedPosts,
+        };
+      }
+
+      const postsByCategory = await PostRepository.getPostsByCategory(category);
+      const paginatedPosts = postsByCategory.slice(skip, skip + pageSize);
+
+      return {
+        total: postsByCategory.length,
+        currentPage,
+        pageSize,
+        posts: paginatedPosts,
+      };
     } catch (error) {
       throw error;
     }
