@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AdminController } from "../controllers/adminController";
 import validationMiddleware from "../../middlewares/validateDto";
-import { VetListDto, VetStatusDto } from "../dtos/adminDto";
+import { VetStatusDto, UserStatusDto } from "../dtos/adminDto";
 import passport from "passport";
 import PermissionValidation from "../../middlewares/permission";
 const AdminRouter = Router();
@@ -13,7 +13,6 @@ AdminRouter.get(
   "/admins/vet-requests",
   passport.authenticate("jwt", { session: false }),
   PermissionValidation("admin"),
-  //validationMiddleware(VetListDto),
   AdminController.vetRequestListsController
 );
 
@@ -31,8 +30,16 @@ AdminRouter.get(
   "/admins/users",
   passport.authenticate("jwt", { session: false }),
   PermissionValidation("admin"),
-  //validationMiddleware(UserListDto),
   AdminController.userListcontroller
+);
+
+// 유저 상태 변경 (정지, 탈퇴, 정지 해제)
+AdminRouter.put(
+  "/admins/users",
+  passport.authenticate("jwt", { session: false }),
+  PermissionValidation("admin"),
+  validationMiddleware(UserStatusDto),
+  AdminController.manageUserController
 );
 
 export { AdminRouter };

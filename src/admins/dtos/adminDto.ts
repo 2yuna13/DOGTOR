@@ -3,7 +3,6 @@ import {
   IsEmail,
   IsNumber,
   IsEnum,
-  IsBoolean,
   IsOptional,
 } from "class-validator";
 
@@ -25,12 +24,19 @@ enum UserRoleEnum {
 enum UserBlockEnum {
   FALSE = "false",
   TRUE = "true",
+  PERMANENT = "permanent",
 }
 
 enum UserDeleteEnum {
   FALSE = "false",
   TRUE = "true",
 }
+
+enum UserOrderByEnum {
+  ASC = "asc",
+  DESC = "desc",
+}
+
 class VetListDto {
   @IsEnum(StatusEnum)
   status: StatusEnum;
@@ -70,15 +76,46 @@ class UserListDto {
   @IsEnum(UserDeleteEnum)
   deleted: UserDeleteEnum;
 
+  @IsOptional()
+  @IsString()
+  search: string;
+
+  @IsOptional()
+  @IsEnum(UserOrderByEnum)
+  orderBy: UserOrderByEnum;
+
   constructor(
     role: UserRoleEnum,
     blocked: UserBlockEnum,
-    deleted: UserDeleteEnum
+    deleted: UserDeleteEnum,
+    search: string,
+    orderBy: UserOrderByEnum
   ) {
     this.role = role;
+    this.blocked = blocked;
+    this.deleted = deleted;
+    this.search = search;
+    this.orderBy = orderBy;
+  }
+}
+
+class UserStatusDto {
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsEnum(UserBlockEnum)
+  blocked: UserBlockEnum;
+
+  @IsOptional()
+  @IsEnum(UserDeleteEnum)
+  deleted: UserDeleteEnum;
+
+  constructor(email: string, blocked: UserBlockEnum, deleted: UserDeleteEnum) {
+    this.email = email;
     this.blocked = blocked;
     this.deleted = deleted;
   }
 }
 
-export { VetStatusDto, VetListDto, UserListDto };
+export { VetStatusDto, VetListDto, UserListDto, UserStatusDto };
