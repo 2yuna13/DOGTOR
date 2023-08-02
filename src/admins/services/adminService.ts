@@ -4,6 +4,7 @@ import {
   UserStatusDto,
   VetListDto,
   VetStatusDto,
+  ReportListDto,
 } from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
@@ -79,7 +80,7 @@ class AdminService {
       }
 
       const orderBy: Prisma.usersOrderByWithRelationInput = {
-        updated_at:
+        created_at:
           userListDto.orderBy === "asc"
             ? Prisma.SortOrder.asc
             : Prisma.SortOrder.desc,
@@ -87,6 +88,15 @@ class AdminService {
 
       const users = await prisma.users.findMany({
         where,
+        select: {
+          email: true,
+          nickname: true,
+          role: true,
+          img_path: true,
+          created_at: true,
+          blocked_at: true,
+          deleted_at: true,
+        },
         orderBy,
         skip: startIndex,
         take: rowPerPage,
@@ -183,6 +193,146 @@ class AdminService {
           data: { deleted_at: new Date() },
         });
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getPostList(
+    reportListDto: ReportListDto,
+    currentPage: number,
+    rowPerPage: number
+  ) {
+    try {
+      const status = reportListDto.status;
+      const startIndex = (currentPage - 1) * rowPerPage;
+
+      let reportedPostList;
+      let totalPostsCnt;
+
+      const where: Prisma.report_postsWhereInput = status
+        ? {
+            reports: {
+              status: {
+                in:
+                  status === "completed" ? ["accepted", "rejected"] : [status],
+              },
+            },
+          }
+        : {};
+
+      const baseQuery = prisma.report_posts.findMany({
+        where,
+        select: {
+          reports: {
+            select: {
+              content: true,
+              status: true,
+              created_at: true,
+            },
+          },
+          posts: {
+            select: {
+              category: true,
+              title: true,
+              body: true,
+              created_at: true,
+              users: {
+                select: {
+                  email: true,
+                  nickname: true,
+                  img_path: true,
+                  blocked_at: true,
+                  deleted_at: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          reports: {
+            updated_at: "asc",
+          },
+        },
+        skip: startIndex,
+        take: rowPerPage,
+      });
+
+      reportedPostList = await baseQuery;
+      totalPostsCnt = await prisma.report_posts.count({
+        where,
+      });
+
+      return { reportedPostList, totalPostsCnt };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCommentList(
+    reportListDto: ReportListDto,
+    currentPage: number,
+    rowPerPage: number
+  ) {
+    try {
+      const status = reportListDto.status;
+      const startIndex = (currentPage - 1) * rowPerPage;
+
+      let reportedCommentList;
+      let totalCommentsCnt;
+
+      const where: Prisma.report_commentsWhereInput = status
+        ? {
+            reports: {
+              status: {
+                in:
+                  status === "completed" ? ["accepted", "rejected"] : [status],
+              },
+            },
+          }
+        : {};
+
+      const baseQuery = prisma.report_comments.findMany({
+        where,
+        select: {
+          reports: {
+            select: {
+              content: true,
+              status: true,
+              created_at: true,
+            },
+          },
+          comments: {
+            select: {
+              body: true,
+              created_at: true,
+              users: {
+                select: {
+                  email: true,
+                  nickname: true,
+                  img_path: true,
+                  blocked_at: true,
+                  deleted_at: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          reports: {
+            updated_at: "asc",
+          },
+        },
+        skip: startIndex,
+        take: rowPerPage,
+      });
+
+      reportedCommentList = await baseQuery;
+      totalCommentsCnt = await prisma.report_comments.count({
+        where,
+      });
+
+      return { reportedCommentList, totalCommentsCnt };
     } catch (error) {
       throw error;
     }

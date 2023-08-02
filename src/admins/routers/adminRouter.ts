@@ -42,4 +42,22 @@ AdminRouter.put(
   AdminController.manageUserController
 );
 
+// 게시글 신고 목록 조회
+AdminRouter.get(
+  "/admins/report-posts",
+  passport.authenticate("jwt", { session: false }),
+  PermissionValidation("admin"),
+  AdminController.postListcontroller
+);
+
+// 댓글 신고 목록 조회
+AdminRouter.get(
+  "/admins/report-comments",
+  passport.authenticate("jwt", { session: false }),
+  PermissionValidation("admin"),
+  AdminController.commentListcontroller
+);
+
+// 신고 목록 처리 (상태 변경)
+
 export { AdminRouter };
