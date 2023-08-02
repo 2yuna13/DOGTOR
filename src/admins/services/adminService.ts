@@ -79,7 +79,7 @@ class AdminService {
       }
 
       const orderBy: Prisma.usersOrderByWithRelationInput = {
-        updated_at:
+        created_at:
           userListDto.orderBy === "asc"
             ? Prisma.SortOrder.asc
             : Prisma.SortOrder.desc,
@@ -87,6 +87,15 @@ class AdminService {
 
       const users = await prisma.users.findMany({
         where,
+        select: {
+          email: true,
+          nickname: true,
+          role: true,
+          img_path: true,
+          created_at: true,
+          blocked_at: true,
+          deleted_at: true,
+        },
         orderBy,
         skip: startIndex,
         take: rowPerPage,
