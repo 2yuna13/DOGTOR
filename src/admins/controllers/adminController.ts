@@ -52,6 +52,16 @@ class AdminController {
       res.status(500).json(error.message);
     }
   }
+
+  static async manageUserController(req: Request, res: Response) {
+    try {
+      await AdminService.manageUsers(req.body);
+      logger.info("유저 상태 변경 성공");
+      return res.status(201).json("유저 상태가 변경되었습니다.");
+    } catch (error: any) {
+      res.status(500).json(error.message);
+    }
+  }
 }
 
 export { AdminController };
