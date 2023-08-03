@@ -88,17 +88,6 @@ class PostService {
 
   static async reportPost(reportPostDto: ReportPostDto, userId: string) {
     try {
-      const { post_id, reason } = reportPostDto;
-      const existingPost = await PostRepository.getPostById(post_id);
-
-      if (!existingPost) {
-        throw new Error("게시물이 존재하지 않습니다.");
-      }
-
-      if (existingPost.author_email !== userId) {
-        throw new Error("자신의 게시물을 신고할 수 없습니다.");
-      }
-
       const { report, report_posts } = await PostRepository.reportPost(
         reportPostDto,
         userId
