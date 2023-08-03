@@ -97,7 +97,7 @@ class PostController {
       const userId = req.user as string;
       const { post_id, reason } = req.body;
 
-      const reportPostDto = new ReportPostDto(post_id, 0, reason);
+      const reportPostDto = new ReportPostDto(post_id, reason);
       await PostService.reportPost(reportPostDto, userId);
 
       return res.status(200).json({ message: "게시물 신고 성공" });

@@ -54,7 +54,7 @@ class ReportPostDto {
   @IsIn(Object.values(ReportReason))
   reason: string;
 
-  constructor(post_id: number, report_id: number, reason: string) {
+  constructor(post_id: number, reason: string) {
     this.post_id = post_id;
     this.reason = reason;
   }

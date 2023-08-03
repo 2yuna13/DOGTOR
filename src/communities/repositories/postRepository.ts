@@ -38,6 +38,9 @@ class PostRepository {
         where: {
           category: category,
         },
+        include: {
+          users: true,
+        },
       });
       return posts;
     } catch (err) {
