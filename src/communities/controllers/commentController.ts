@@ -35,13 +35,9 @@ class CommentController {
   static async reportComment(req: Request, res: Response) {
     try {
       const userId = req.user as string;
-      const { comment_id, report_id, reason } = req.body;
+      const { comment_id, reason } = req.body;
 
-      const reportCommentDto = new ReportCommentDto(
-        comment_id,
-        report_id,
-        reason
-      );
+      const reportCommentDto = new ReportCommentDto(comment_id, reason);
       await CommentService.reportComment(reportCommentDto, userId);
 
       return res.status(200).json({ message: "댓글 신고 성공" });

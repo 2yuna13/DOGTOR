@@ -73,6 +73,17 @@ class CommentRepository {
         throw new Error("자신의 댓글을 신고할 수 없습니다.");
       }
 
+      const existingReport = await prisma.reports.findFirst({
+        where: {
+          author_email: author_email,
+          id: comment_id,
+        },
+      });
+
+      if (existingReport) {
+        throw new Error("이미 해당 댓글을 신고하셨습니다.");
+      }
+
       const report = await prisma.reports.create({
         data: {
           author_email,
