@@ -10,6 +10,7 @@ import passport from "./middlewares/passport";
 import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
 import session from "express-session";
+import path from "path";
 
 import { PostRouter } from "./communities/routers/postRouter";
 // import swaggerUi from "swagger-ui-express";
@@ -43,6 +44,15 @@ app.use(
     origin: true,
   })
 );
+
+app.get("/imgs", (req: Request, res: Response) => {
+  const filename = req.query.filename;
+  const filePath = `${filename}`;
+  const options = {
+    root: path.join("../4team_project_back"),
+  };
+  res.sendFile(filePath, options);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
