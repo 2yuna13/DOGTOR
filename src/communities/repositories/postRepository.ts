@@ -147,8 +147,19 @@ class PostRepository {
         throw new Error("게시물이 존재하지 않습니다.");
       }
 
-      if (existingPost.author_email !== author_email) {
+      if (existingPost.author_email === author_email) {
         throw new Error("자신의 게시물을 신고할 수 없습니다.");
+      }
+
+      const existingReport = await prisma.reports.findFirst({
+        where: {
+          author_email: author_email,
+          id: post_id,
+        },
+      });
+
+      if (existingReport) {
+        throw new Error("이미 해당 게시물을 신고하셨습니다.");
       }
 
       const report = await prisma.reports.create({

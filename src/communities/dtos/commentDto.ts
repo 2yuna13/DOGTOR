@@ -21,32 +21,17 @@ enum ReportReason {
   Other = "기타",
 }
 
-enum ReportStatus {
-  Pending = "pending",
-  Resolved = "resolved",
-  Rejected = "rejected",
-}
-
 class ReportCommentDto {
   @IsInt()
   comment_id: number;
-
-  @IsInt()
-  report_id: number;
 
   @IsString()
   @IsIn(Object.values(ReportReason))
   reason: string;
 
-  @IsString()
-  @IsIn(Object.values(ReportStatus))
-  status: string;
-
-  constructor(comment_id: number, report_id: number, reason: string) {
+  constructor(comment_id: number, reason: string) {
     this.comment_id = comment_id;
-    this.report_id = report_id;
     this.reason = reason;
-    this.status = ReportStatus.Pending;
   }
 }
 
