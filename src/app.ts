@@ -12,6 +12,7 @@ import { chatSocket } from "./chats/sockets/chatSocket";
 import session from "express-session";
 
 import { PostRouter } from "./communities/routers/postRouter";
+import { DiseaseRouter } from "./diseases/routers/diseaseRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
@@ -76,5 +77,6 @@ app.use(userRouter);
 app.use(AdminRouter);
 app.use(ChatRouter);
 app.use(PostRouter);
+app.use(DiseaseRouter);
 
 export { connection, app, io };
