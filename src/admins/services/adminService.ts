@@ -5,6 +5,7 @@ import {
   VetListDto,
   VetStatusDto,
   ReportListDto,
+  ReportStatusDto,
 } from "../dtos/adminDto";
 
 const prisma = new PrismaClient();
@@ -226,6 +227,7 @@ class AdminService {
         select: {
           reports: {
             select: {
+              id: true,
               content: true,
               status: true,
               created_at: true,
@@ -233,6 +235,7 @@ class AdminService {
           },
           posts: {
             select: {
+              id: true,
               category: true,
               title: true,
               body: true,
@@ -251,7 +254,7 @@ class AdminService {
         },
         orderBy: {
           reports: {
-            updated_at: "asc",
+            updated_at: "desc",
           },
         },
         skip: startIndex,
@@ -297,6 +300,7 @@ class AdminService {
         select: {
           reports: {
             select: {
+              id: true,
               content: true,
               status: true,
               created_at: true,
@@ -304,6 +308,7 @@ class AdminService {
           },
           comments: {
             select: {
+              id: true,
               body: true,
               created_at: true,
               users: {
@@ -320,7 +325,7 @@ class AdminService {
         },
         orderBy: {
           reports: {
-            updated_at: "asc",
+            updated_at: "desc",
           },
         },
         skip: startIndex,
@@ -333,6 +338,43 @@ class AdminService {
       });
 
       return { reportedCommentList, totalCommentsCnt };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async manageReports(reportStatusDto: ReportStatusDto) {
+    try {
+      const { id, status } = reportStatusDto;
+
+      const report = await prisma.reports.findUnique({ where: { id } });
+
+      if (!report) {
+        throw new Error("신고 내역이 존재하지 않습니다.");
+      }
+
+      // 신고 내용 승인
+      if (status === "accepted") {
+        await prisma.reports.update({
+          where: { id },
+          data: {
+            status: "accepted",
+            updated_at: new Date(),
+            deleted_at: new Date(),
+          },
+        });
+      }
+
+      // 신고 내용 거절
+      if (status === "rejected") {
+        await prisma.reports.update({
+          where: { id },
+          data: {
+            status: "rejected",
+            updated_at: new Date(),
+          },
+        });
+      }
     } catch (error) {
       throw error;
     }
