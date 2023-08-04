@@ -14,17 +14,29 @@ const currentDate = new Date();
 currentDate.setHours(currentDate.getHours() + 9);
 
 class AdminService {
-  static async getVetRequestLists(vetListsDto: VetListDto) {
+  static async getVetRequestLists(
+    vetListsDto: VetListDto,
+    currentPage: number,
+    rowPerPage: number
+  ) {
     try {
-      const vetRequests = await prisma.vets.findMany({
+      const startIndex = (currentPage - 1) * rowPerPage;
+      const vetList = await prisma.vets.findMany({
         where: {
           status: vetListsDto.status,
         },
         orderBy: {
           updated_at: "asc",
         },
+        skip: startIndex,
+        take: rowPerPage,
       });
-      return vetRequests;
+
+      const totalVetsCnt = await prisma.vets.count({
+        where: { status: vetListsDto.status },
+      });
+
+      return { vetList, totalVetsCnt };
     } catch (error) {
       throw error;
     }
