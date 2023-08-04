@@ -132,4 +132,24 @@ class ReportListDto {
   }
 }
 
-export { VetStatusDto, VetListDto, UserListDto, UserStatusDto, ReportListDto };
+class ReportStatusDto {
+  @IsNumber()
+  id: number;
+
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
+
+  constructor(id: number, status: StatusEnum) {
+    this.id = id;
+    this.status = status;
+  }
+}
+
+export {
+  VetStatusDto,
+  VetListDto,
+  UserListDto,
+  UserStatusDto,
+  ReportListDto,
+  ReportStatusDto,
+};

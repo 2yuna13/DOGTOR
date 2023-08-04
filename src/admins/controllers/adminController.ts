@@ -108,6 +108,16 @@ class AdminController {
       res.status(500).json(error.message);
     }
   }
+
+  static async manageReportController(req: Request, res: Response) {
+    try {
+      await AdminService.manageReports(req.body);
+      logger.info("신고 처리 성공");
+      return res.status(201).json("신고 처리가 완료되었습니다.");
+    } catch (error: any) {
+      res.status(500).json(error.message);
+    }
+  }
 }
 
 export { AdminController };

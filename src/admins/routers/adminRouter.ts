@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AdminController } from "../controllers/adminController";
 import validationMiddleware from "../../middlewares/validateDto";
-import { VetStatusDto, UserStatusDto } from "../dtos/adminDto";
+import { VetStatusDto, UserStatusDto, ReportStatusDto } from "../dtos/adminDto";
 import passport from "passport";
 import PermissionValidation from "../../middlewares/permission";
 const AdminRouter = Router();
@@ -59,5 +59,12 @@ AdminRouter.get(
 );
 
 // 신고 목록 처리 (상태 변경)
+AdminRouter.put(
+  "/admins/reports",
+  passport.authenticate("jwt", { session: false }),
+  PermissionValidation("admin"),
+  validationMiddleware(ReportStatusDto),
+  AdminController.manageReportController
+);
 
 export { AdminRouter };
