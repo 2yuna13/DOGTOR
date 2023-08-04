@@ -13,6 +13,9 @@ import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
 const prisma = new PrismaClient();
 
+const currentDate = new Date();
+currentDate.setHours(currentDate.getHours() + 9);
+
 class UserService {
   static async addUser(userRegisterDto: UserRegisterDto) {
     try {
@@ -24,8 +27,8 @@ class UserService {
           password: hashedPassword,
           nickname: userRegisterDto.nickname,
           role: "user",
-          created_at: new Date(),
-          updated_at: new Date(),
+          created_at: currentDate,
+          updated_at: currentDate,
         },
       });
       return createUser;
@@ -168,7 +171,7 @@ class UserService {
       if (updatedFields.nickname) user.nickname = updatedFields.nickname;
       if (updatedFields.img_path) user.img_path = updatedFields.img_path;
 
-      user.updated_at = new Date();
+      user.updated_at = currentDate;
 
       const updateUser = await prisma.users.update({
         where: {
@@ -198,7 +201,7 @@ class UserService {
         vet.description = updatedFields.description;
       if (updatedFields.region) vet.region = updatedFields.region;
 
-      vet.updated_at = new Date();
+      vet.updated_at = currentDate;
 
       const updateVet = await prisma.vets.update({
         where: { id: vet.id },
@@ -219,13 +222,13 @@ class UserService {
     try {
       const startIndex = (currentPage - 1) * rowPerPage;
       const postList = await prisma.posts.findMany({
-        where: { author_email: email },
+        where: { author_email: email, deleted_at: null },
         skip: startIndex,
         take: rowPerPage,
       });
 
       const totalPostsCnt = await prisma.posts.count({
-        where: { author_email: email },
+        where: { author_email: email, deleted_at: null },
       });
 
       return { postList, totalPostsCnt };

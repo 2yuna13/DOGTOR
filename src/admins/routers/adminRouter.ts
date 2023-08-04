@@ -34,7 +34,7 @@ AdminRouter.get(
 );
 
 // 유저 상태 변경 (정지, 탈퇴, 정지 해제)
-AdminRouter.put(
+AdminRouter.patch(
   "/admins/users",
   passport.authenticate("jwt", { session: false }),
   PermissionValidation("admin"),
