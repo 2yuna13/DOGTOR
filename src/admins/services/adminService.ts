@@ -10,6 +10,9 @@ import {
 
 const prisma = new PrismaClient();
 
+const currentDate = new Date();
+currentDate.setHours(currentDate.getHours() + 9);
+
 class AdminService {
   static async getVetRequestLists(vetListsDto: VetListDto) {
     try {
@@ -63,13 +66,11 @@ class AdminService {
 
       if (userListDto.role) {
         where["role"] = userListDto.role;
-      } else if (userListDto.blocked === "false") {
-        where["blocked_at"] = null;
-      } else if (userListDto.blocked === "true") {
+      }
+
+      if (userListDto.status === "blocked") {
         where["blocked_at"] = { not: null };
-      } else if (userListDto.deleted === "false") {
-        where["deleted_at"] = null;
-      } else if (userListDto.deleted === "true") {
+      } else if (userListDto.status === "deleted") {
         where["deleted_at"] = { not: null };
       }
 
@@ -114,15 +115,13 @@ class AdminService {
       const where: Prisma.usersWhereInput = {};
 
       if (userListDto.role) {
-        where.role = userListDto.role;
-      } else if (userListDto.blocked === "false") {
-        where.blocked_at = null;
-      } else if (userListDto.blocked === "true") {
-        where.blocked_at = { not: null };
-      } else if (userListDto.deleted === "false") {
-        where.deleted_at = null;
-      } else if (userListDto.deleted === "true") {
-        where.deleted_at = { not: null };
+        where["role"] = userListDto.role;
+      }
+
+      if (userListDto.status === "blocked") {
+        where["blocked_at"] = { not: null };
+      } else if (userListDto.status === "deleted") {
+        where["deleted_at"] = { not: null };
       }
 
       if (userListDto.search) {
@@ -152,7 +151,7 @@ class AdminService {
 
       // 2주 정지
       if (blocked === "true") {
-        const twoWeeksFromNow = new Date();
+        const twoWeeksFromNow = currentDate;
         twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
 
         if (!user.blocked_at) {
@@ -191,7 +190,7 @@ class AdminService {
       if (deleted === "true") {
         await prisma.users.update({
           where: { email },
-          data: { deleted_at: new Date() },
+          data: { deleted_at: currentDate },
         });
       }
     } catch (error) {
@@ -348,6 +347,12 @@ class AdminService {
       const { id, status } = reportStatusDto;
 
       const report = await prisma.reports.findUnique({ where: { id } });
+      const reportedPost = await prisma.report_posts.findMany({
+        where: { report_id: id },
+      });
+      const reportedComment = await prisma.report_comments.findMany({
+        where: { report_id: id },
+      });
 
       if (!report) {
         throw new Error("신고 내역이 존재하지 않습니다.");
@@ -359,10 +364,25 @@ class AdminService {
           where: { id },
           data: {
             status: "accepted",
-            updated_at: new Date(),
-            deleted_at: new Date(),
+            updated_at: currentDate,
           },
         });
+
+        if (reportedPost.length) {
+          await prisma.posts.update({
+            where: { id: reportedPost[0].post_id },
+            data: {
+              deleted_at: currentDate,
+            },
+          });
+        } else if (reportedComment) {
+          await prisma.comments.update({
+            where: { id: reportedComment[0].comment_id },
+            data: {
+              deleted_at: currentDate,
+            },
+          });
+        }
       }
 
       // 신고 내용 거절
@@ -371,7 +391,7 @@ class AdminService {
           where: { id },
           data: {
             status: "rejected",
-            updated_at: new Date(),
+            updated_at: currentDate,
           },
         });
       }

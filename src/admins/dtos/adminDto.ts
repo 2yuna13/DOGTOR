@@ -26,6 +26,11 @@ enum UserRoleEnum {
   ADMIN = "admin",
 }
 
+enum UserStatusEnum {
+  Blocked = "blocked",
+  Deleted = "deleted",
+}
+
 enum UserBlockEnum {
   FALSE = "false",
   TRUE = "true",
@@ -74,12 +79,8 @@ class UserListDto {
   role: UserRoleEnum;
 
   @IsOptional()
-  @IsEnum(UserBlockEnum)
-  blocked: UserBlockEnum;
-
-  @IsOptional()
-  @IsEnum(UserDeleteEnum)
-  deleted: UserDeleteEnum;
+  @IsEnum(UserStatusEnum)
+  status: UserStatusEnum;
 
   @IsOptional()
   @IsString()
@@ -91,14 +92,12 @@ class UserListDto {
 
   constructor(
     role: UserRoleEnum,
-    blocked: UserBlockEnum,
-    deleted: UserDeleteEnum,
+    status: UserStatusEnum,
     search: string,
     orderBy: UserOrderByEnum
   ) {
     this.role = role;
-    this.blocked = blocked;
-    this.deleted = deleted;
+    this.status = status;
     this.search = search;
     this.orderBy = orderBy;
   }
