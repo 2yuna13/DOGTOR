@@ -14,6 +14,7 @@ import path from "path";
 
 import { PostRouter } from "./communities/routers/postRouter";
 import { DiseaseRouter } from "./diseases/routers/diseaseRouter";
+import { commentRouter } from "./communities/routers/commentRouter";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerJson from "../swagger-output.json";
 const port: number = 5000;
@@ -88,5 +89,6 @@ app.use(AdminRouter);
 app.use(ChatRouter);
 app.use(PostRouter);
 app.use(DiseaseRouter);
+app.use(commentRouter);
 
 export { connection, app, io };

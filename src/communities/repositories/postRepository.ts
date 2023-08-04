@@ -22,8 +22,19 @@ class PostRepository {
   static async getPosts(): Promise<posts[]> {
     try {
       const posts = await prisma.posts.findMany({
+        where: {
+          deleted_at: null,
+        },
         include: {
           users: true,
+          report_posts: {
+            include: {
+              reports: true,
+            },
+          },
+        },
+        orderBy: {
+          created_at: "desc",
         },
       });
       return posts;
@@ -37,9 +48,18 @@ class PostRepository {
       const posts = await prisma.posts.findMany({
         where: {
           category: category,
+          deleted_at: null,
         },
         include: {
           users: true,
+          report_posts: {
+            include: {
+              reports: true,
+            },
+          },
+        },
+        orderBy: {
+          created_at: "desc",
         },
       });
       return posts;
@@ -151,10 +171,9 @@ class PostRepository {
         throw new Error("자신의 게시물을 신고할 수 없습니다.");
       }
 
-      const existingReport = await prisma.reports.findFirst({
+      const existingReport = await prisma.report_posts.findFirst({
         where: {
-          author_email: author_email,
-          id: post_id,
+          post_id,
         },
       });
 

@@ -40,10 +40,12 @@ class UpdatePostDto {
 }
 
 enum ReportReason {
-  Abuse = "욕설",
-  InappropriateContent = "부적절한 내용",
+  PromotionOrCommercialContent = "홍보/상업성",
   Spam = "스팸",
-  Other = "기타",
+  ProfanityOrHarassment = "욕설/인신공격",
+  AdultContentOrExplicitMaterial = "음란/선정성",
+  IllegalInformation = "불법정보",
+  PersonalInformationExposure = "개인정보 노출",
 }
 
 class ReportPostDto {
