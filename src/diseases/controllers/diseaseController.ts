@@ -9,16 +9,13 @@ class DiseaseController {
       if (!req.file) {
         return res.status(400).json({ error: "사진 미첨부" });
       }
-      const formData = new FormData();
-      const fileContent = fs.readFileSync(req.file.path);
-      const fileBlob = new Blob([fileContent], { type: req.file.mimetype });
-      formData.append("photo", fileBlob, req.file.originalname);
+      const image = fs.readFileSync(req.file.path);
       const response = await axios.post(
         "http://127.0.0.1:5223/uploader",
-        formData,
+        image,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": req.file.mimetype, // 파일의 Content-Type 설정
           },
         }
       );
