@@ -5,9 +5,19 @@ import { AdminService } from "../services/adminService";
 class AdminController {
   static async vetRequestListsController(req: Request, res: Response) {
     try {
-      const vetLists = await AdminService.getVetRequestLists(req.query as any);
+      const rowPerPage: number = 10;
+      const currentPage = parseInt(req.query.currentPage as string) || 1;
+      const { vetList, totalVetsCnt } = await AdminService.getVetRequestLists(
+        req.query as any,
+        currentPage,
+        rowPerPage
+      );
       logger.info("수의사 신청 목록 조회 성공");
-      return res.status(200).json(vetLists);
+      return res.status(200).json({
+        currentPage,
+        totalPages: Math.ceil(totalVetsCnt / rowPerPage),
+        data: vetList,
+      });
     } catch (error) {
       res.status(500).json({ error });
     }
