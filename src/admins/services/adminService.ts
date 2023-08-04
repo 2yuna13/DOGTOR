@@ -151,7 +151,7 @@ class AdminService {
 
       // 2주 정지
       if (blocked === "true") {
-        const twoWeeksFromNow = currentDate;
+        const twoWeeksFromNow = new Date(currentDate);
         twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
 
         if (!user.blocked_at) {
