@@ -6,11 +6,9 @@ import { Strategy as KakaoStrategy } from "passport-kakao";
 import { UserService } from "../users/services/userService";
 import { PrismaClient } from "@prisma/client";
 import { generateToken } from "./auth";
+import { KORDATE } from "../utils/constant";
 
 const prisma = new PrismaClient();
-
-const currentDate = new Date();
-currentDate.setHours(currentDate.getHours() + 9);
 
 passport.serializeUser((user: any, done) => {
   done(null, user.email);
@@ -87,8 +85,8 @@ passport.use(
             role: "user",
             user_type: "google",
             img_path: null,
-            created_at: currentDate,
-            updated_at: currentDate,
+            created_at: new Date(Date.now() + KORDATE),
+            updated_at: new Date(Date.now() + KORDATE),
           },
         });
 
@@ -130,8 +128,8 @@ passport.use(
             role: "user",
             user_type: "kakao",
             img_path: null,
-            created_at: currentDate,
-            updated_at: currentDate,
+            created_at: new Date(Date.now() + KORDATE),
+            updated_at: new Date(Date.now() + KORDATE),
           },
         });
 

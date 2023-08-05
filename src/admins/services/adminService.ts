@@ -7,11 +7,9 @@ import {
   ReportListDto,
   ReportStatusDto,
 } from "../dtos/adminDto";
+import { KORDATE } from "../../utils/constant";
 
 const prisma = new PrismaClient();
-
-const currentDate = new Date();
-currentDate.setHours(currentDate.getHours() + 9);
 
 class AdminService {
   static async getVetRequestLists(
@@ -164,7 +162,7 @@ class AdminService {
 
       // 2주 정지
       if (blocked === "true") {
-        const twoWeeksFromNow = new Date(currentDate);
+        const twoWeeksFromNow = new Date(Date.now() + KORDATE);
         twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
 
         if (!user.blocked_at) {
@@ -204,12 +202,15 @@ class AdminService {
         if (user.blocked_at) {
           await prisma.users.update({
             where: { email },
-            data: { blocked_at: null, deleted_at: currentDate },
+            data: {
+              blocked_at: null,
+              deleted_at: new Date(Date.now() + KORDATE),
+            },
           });
         } else {
           await prisma.users.update({
             where: { email },
-            data: { deleted_at: currentDate },
+            data: { deleted_at: new Date(Date.now() + KORDATE) },
           });
         }
       }
@@ -384,7 +385,7 @@ class AdminService {
           where: { id },
           data: {
             status: "accepted",
-            updated_at: currentDate,
+            updated_at: new Date(Date.now() + KORDATE),
           },
         });
 
@@ -392,14 +393,14 @@ class AdminService {
           await prisma.posts.update({
             where: { id: reportedPost[0].post_id },
             data: {
-              deleted_at: currentDate,
+              deleted_at: new Date(Date.now() + KORDATE),
             },
           });
         } else if (reportedComment) {
           await prisma.comments.update({
             where: { id: reportedComment[0].comment_id },
             data: {
-              deleted_at: currentDate,
+              deleted_at: new Date(Date.now() + KORDATE),
             },
           });
         }
@@ -411,7 +412,7 @@ class AdminService {
           where: { id },
           data: {
             status: "rejected",
-            updated_at: currentDate,
+            updated_at: new Date(Date.now() + KORDATE),
           },
         });
       }

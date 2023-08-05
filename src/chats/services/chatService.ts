@@ -8,7 +8,7 @@ import {
   ChatStatusDto,
   VetRegionDto,
 } from "../dtos/chatDto";
-
+import { KORDATE } from "../../utils/constant";
 const prisma = new PrismaClient();
 
 class ChatService {
@@ -175,7 +175,10 @@ class ChatService {
     try {
       await prisma.chat_rooms.updateMany({
         where: { id: chatStatusDto.id, user_vet_email: vetEmail },
-        data: { status: chatStatusDto.status },
+        data: {
+          status: chatStatusDto.status,
+          updated_at: new Date(Date.now() + KORDATE),
+        },
       });
       return;
     } catch (error) {
@@ -212,7 +215,7 @@ class ChatService {
       await prisma.chat_rooms.update({
         where: { id: chatId },
         data: {
-          updated_at: new Date(),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
       return await prisma.users.findUnique({
@@ -330,7 +333,10 @@ class ChatService {
       const averageGrade = sumOfGrades / numOfGrades;
       await prisma.vets.updateMany({
         where: { user_email: chatRoom?.user_vet_email },
-        data: { grade: averageGrade, updated_at: new Date() },
+        data: {
+          grade: averageGrade,
+          updated_at: new Date(Date.now() + KORDATE),
+        },
       });
       return;
     } catch (error) {

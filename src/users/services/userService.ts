@@ -11,10 +11,8 @@ import {
 } from "../dtos/userDto";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
+import { KORDATE } from "../../utils/constant";
 const prisma = new PrismaClient();
-
-const currentDate = new Date();
-currentDate.setHours(currentDate.getHours() + 9);
 
 class UserService {
   static async addUser(userRegisterDto: UserRegisterDto) {
@@ -27,8 +25,8 @@ class UserService {
           password: hashedPassword,
           nickname: userRegisterDto.nickname,
           role: "user",
-          created_at: currentDate,
-          updated_at: currentDate,
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
       return createUser;
@@ -175,13 +173,11 @@ class UserService {
       if (updatedFields.nickname) user.nickname = updatedFields.nickname;
       if (updatedFields.img_path) user.img_path = updatedFields.img_path;
 
-      user.updated_at = currentDate;
-
       const updateUser = await prisma.users.update({
         where: {
           email,
         },
-        data: user,
+        data: { updated_at: new Date(Date.now() + KORDATE) },
       });
 
       return updateUser;
@@ -205,11 +201,9 @@ class UserService {
         vet.description = updatedFields.description;
       if (updatedFields.region) vet.region = updatedFields.region;
 
-      vet.updated_at = currentDate;
-
       const updateVet = await prisma.vets.update({
         where: { id: vet.id },
-        data: vet,
+        data: { updated_at: new Date(Date.now() + KORDATE) },
       });
 
       return updateVet;
