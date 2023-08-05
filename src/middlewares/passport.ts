@@ -75,10 +75,6 @@ passport.use(
           where: { email },
         });
 
-        if (user && user.deleted_at !== null) {
-          return done(null, false);
-        }
-
         if (user) {
           return done(null, user);
         }
@@ -121,10 +117,6 @@ passport.use(
         const user = await prisma.users.findUnique({
           where: { email },
         });
-
-        if (user && user.deleted_at !== null) {
-          return done(null, false);
-        }
 
         if (user) {
           return done(null, user);

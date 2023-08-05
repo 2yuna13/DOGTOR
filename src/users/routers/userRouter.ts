@@ -52,9 +52,7 @@ userRouter.get(
 
 userRouter.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "http://localhost:5173/login",
-  }),
+  passport.authenticate("google", { failureRedirect: "/" }),
   UserController.socialLoginController
 );
 
@@ -63,9 +61,7 @@ userRouter.get("/auth/kakao", passport.authenticate("kakao"));
 
 userRouter.get(
   "/auth/kakao/callback",
-  passport.authenticate("kakao", {
-    failureRedirect: "http://localhost:5173/login",
-  }),
+  passport.authenticate("kakao", { failureRedirect: "/" }),
   UserController.socialLoginController
 );
 
