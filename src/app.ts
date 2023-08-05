@@ -11,6 +11,7 @@ import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
 import session from "express-session";
 import path from "path";
+import { updateBlockedAt } from "./utils/scheduledTask";
 
 import { PostRouter } from "./communities/routers/postRouter";
 import { DiseaseRouter } from "./diseases/routers/diseaseRouter";
@@ -35,6 +36,8 @@ connection.connect((err) => {
   }
   logger.info("MySQL 서버에 연결되었습니다.");
 });
+
+updateBlockedAt();
 
 process.on("SIGINT", () => {
   connection.end();
