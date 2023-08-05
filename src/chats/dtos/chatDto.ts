@@ -4,6 +4,8 @@ import {
   IsNumber,
   IsEnum,
   IsOptional,
+  Min,
+  Max,
 } from "class-validator";
 
 enum StatusEnum {
@@ -73,6 +75,20 @@ class ChatStatusDto {
   }
 }
 
+class ChatRatingDto {
+  @IsNumber()
+  id: number;
+
+  @IsNumber()
+  @Min(0, { message: "별점은 0점 이상이어야 합니다." })
+  @Max(5, { message: "별점은 5점 이하여야 합니다." })
+  grade: number;
+
+  constructor(id: number, grade: number) {
+    (this.id = id), (this.grade = grade);
+  }
+}
+
 class VetRegionDto {
   @IsString()
   currentPage: string;
@@ -97,5 +113,6 @@ export {
   ChatListDto,
   ChatSelectDto,
   ChatStatusDto,
+  ChatRatingDto,
   VetRegionDto,
 };

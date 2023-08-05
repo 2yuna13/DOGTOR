@@ -32,9 +32,17 @@ class ChatController {
 
   static async chatRequestController(req: Request, res: Response) {
     try {
-      const newRequest = ChatService.addRequest(req.body, req.user as string);
-      logger.info("상담 요청 성공");
-      return res.status(201).json(newRequest);
+      const newRequest = await ChatService.addRequest(
+        req.body,
+        req.user as string
+      );
+      if (newRequest) {
+        logger.info("상담 요청 실패(중복요청)");
+        return res.status(400).json(newRequest);
+      } else {
+        logger.info("상담 요청 성공");
+        return res.status(201).json("상담 요청 성공");
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -71,6 +79,16 @@ class ChatController {
       await ChatService.chatStatus(req.body, req.user as string);
       logger.info("상담 요청 상태 변경 성공");
       return res.status(201).json("상담 요청 상태 변경 성공");
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
+
+  static async chatRatingController(req: Request, res: Response) {
+    try {
+      await ChatService.rateChat(req.body);
+      logger.info("채팅 평가 성공");
+      return res.status(201).json("채팅 평가가 완료되었습니다.");
     } catch (error) {
       res.status(500).json({ error });
     }

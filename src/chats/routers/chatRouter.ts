@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ChatController } from "../controllers/chatController";
 import {
   ChatListDto,
+  ChatRatingDto,
   ChatRequestDto,
   ChatSelectDto,
   ChatStatusDto,
@@ -50,5 +51,13 @@ ChatRouter.patch(
   PermissionValidation("vet"),
   validationMiddleware(ChatStatusDto),
   ChatController.chatStatusController
+);
+
+//채팅 평가
+ChatRouter.patch(
+  "/chats/rating",
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(ChatRatingDto),
+  ChatController.chatRatingController
 );
 export { ChatRouter };

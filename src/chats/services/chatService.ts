@@ -2,6 +2,7 @@ import { logger } from "../../utils/winston";
 import { PrismaClient } from "@prisma/client";
 import {
   ChatListDto,
+  ChatRatingDto,
   ChatRequestDto,
   ChatSelectDto,
   ChatStatusDto,
@@ -13,6 +14,21 @@ const prisma = new PrismaClient();
 class ChatService {
   static async addRequest(chatRequestDto: ChatRequestDto, userEmail: string) {
     try {
+      const duplicateCheck = await prisma.chat_rooms.findFirst({
+        where: {
+          user_email: userEmail,
+          user_vet_email: chatRequestDto.vetEmail,
+        },
+        orderBy: {
+          updated_at: "desc",
+        },
+      });
+      if (
+        duplicateCheck?.status === "pending" ||
+        duplicateCheck?.status === "accepted"
+      ) {
+        return "이미 상담(대기)중인 상태입니다.";
+      }
       const createRequest = await prisma.chat_rooms.create({
         data: {
           user_email: userEmail,
@@ -274,6 +290,34 @@ class ChatService {
           take: rowPerPage,
         });
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async rateChat(chatratingDto: ChatRatingDto) {
+    try {
+      const chatRoom = await prisma.chat_rooms.update({
+        where: { id: chatratingDto.id },
+        data: { grade: chatratingDto.grade },
+      });
+      const chatRoomsWithGrade = await prisma.chat_rooms.findMany({
+        where: { user_vet_email: chatRoom?.user_vet_email },
+      });
+      let sumOfGrades = 0;
+      let numOfGrades = 0;
+      for (const chatRoom of chatRoomsWithGrade) {
+        if (chatRoom.grade !== null) {
+          sumOfGrades += chatRoom.grade;
+          numOfGrades++;
+        }
+      }
+      const averageGrade = sumOfGrades / numOfGrades;
+      await prisma.vets.updateMany({
+        where: { user_email: chatRoom?.user_vet_email },
+        data: { grade: averageGrade },
+      });
+      return;
     } catch (error) {
       throw error;
     }
