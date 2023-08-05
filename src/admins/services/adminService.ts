@@ -25,6 +25,7 @@ class AdminService {
         where: {
           status: vetListsDto.status,
         },
+        include: { users: { select: { img_path: true } } },
         orderBy: {
           updated_at: "asc",
         },
@@ -200,10 +201,17 @@ class AdminService {
 
       // 강제 탈퇴
       if (deleted === "true") {
-        await prisma.users.update({
-          where: { email },
-          data: { deleted_at: currentDate },
-        });
+        if (user.blocked_at) {
+          await prisma.users.update({
+            where: { email },
+            data: { blocked_at: null, deleted_at: currentDate },
+          });
+        } else {
+          await prisma.users.update({
+            where: { email },
+            data: { deleted_at: currentDate },
+          });
+        }
       }
     } catch (error) {
       throw error;

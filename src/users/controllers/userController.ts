@@ -56,11 +56,12 @@ class UserController {
         async (err: Error | null, token: any, info: any) => {
           try {
             if (err) {
-              res.status(401).json(err.message);
+              return res.status(401).json({ error: err.message });
             }
             if (info) {
-              res.status(401).json(info.reason);
+              return res.status(401).json({ error: info.reason });
             }
+
             return res.status(200).json(token);
           } catch (error) {
             return res.status(500).json({ error });

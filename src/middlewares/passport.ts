@@ -9,6 +9,9 @@ import { generateToken } from "./auth";
 
 const prisma = new PrismaClient();
 
+const currentDate = new Date();
+currentDate.setHours(currentDate.getHours() + 9);
+
 passport.serializeUser((user: any, done) => {
   done(null, user.email);
 });
@@ -68,7 +71,6 @@ passport.use(
     ) => {
       try {
         const email = profile.emails?.[0].value || "";
-
         const user = await prisma.users.findUnique({
           where: { email },
         });
@@ -85,8 +87,8 @@ passport.use(
             role: "user",
             user_type: "google",
             img_path: null,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: currentDate,
+            updated_at: currentDate,
           },
         });
 
@@ -115,6 +117,7 @@ passport.use(
         const user = await prisma.users.findUnique({
           where: { email },
         });
+
         if (user) {
           return done(null, user);
         }
@@ -127,8 +130,8 @@ passport.use(
             role: "user",
             user_type: "kakao",
             img_path: null,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: currentDate,
+            updated_at: currentDate,
           },
         });
 

@@ -81,12 +81,16 @@ class UserService {
 
   static async loginUser(userLoginDto: UserLoginDto) {
     try {
-      const user = await prisma.users.findFirst({
-        where: { AND: [{ email: userLoginDto.email }, { deleted_at: null }] },
+      const user = await prisma.users.findUnique({
+        where: { email: userLoginDto.email },
       });
 
       if (!user) {
         throw new Error("해당 이메일은 가입 내역이 없습니다.");
+      }
+
+      if (user.deleted_at !== null) {
+        throw new Error("해당 이메일은 강제 탈퇴된 계정입니다.");
       }
 
       const passwordMatch = await bcrypt.compare(
