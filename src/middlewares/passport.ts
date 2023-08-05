@@ -9,6 +9,9 @@ import { generateToken } from "./auth";
 
 const prisma = new PrismaClient();
 
+const currentDate = new Date();
+currentDate.setHours(currentDate.getHours() + 9);
+
 passport.serializeUser((user: any, done) => {
   done(null, user.email);
 });
@@ -85,8 +88,8 @@ passport.use(
             role: "user",
             user_type: "google",
             img_path: null,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: currentDate,
+            updated_at: currentDate,
           },
         });
 
@@ -127,8 +130,8 @@ passport.use(
             role: "user",
             user_type: "kakao",
             img_path: null,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: currentDate,
+            updated_at: currentDate,
           },
         });
 
