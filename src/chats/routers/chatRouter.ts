@@ -61,8 +61,8 @@ ChatRouter.patch(
   ChatController.chatRatingController
 );
 
-ChatRouter.patch(
-  "/chats/:id/exit",
+ChatRouter.delete(
+  "/chats/exit",
   passport.authenticate("jwt", { session: false }),
   ChatController.chatExitController
 );
