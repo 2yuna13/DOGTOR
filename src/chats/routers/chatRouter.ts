@@ -60,4 +60,10 @@ ChatRouter.patch(
   validationMiddleware(ChatRatingDto),
   ChatController.chatRatingController
 );
+
+ChatRouter.patch(
+  "/chats/:id/exit",
+  passport.authenticate("jwt", { session: false }),
+  ChatController.chatExitController
+);
 export { ChatRouter };

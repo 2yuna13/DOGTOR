@@ -54,7 +54,22 @@ class ChatService {
       const getChatList = await prisma.chat_rooms.findMany({
         where: {
           AND: [
-            { OR: [{ user_email: email }, { user_vet_email: email }] },
+            {
+              OR: [
+                {
+                  user_email: email,
+                  NOT: {
+                    is_user_exit: true,
+                  },
+                },
+                {
+                  user_vet_email: email,
+                  NOT: {
+                    is_vet_exit: true,
+                  },
+                },
+              ],
+            },
             { status: chatListDto.status },
           ],
         },
@@ -315,9 +330,30 @@ class ChatService {
       const averageGrade = sumOfGrades / numOfGrades;
       await prisma.vets.updateMany({
         where: { user_email: chatRoom?.user_vet_email },
-        data: { grade: averageGrade },
+        data: { grade: averageGrade, updated_at: new Date() },
       });
       return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async exitChat(id: number, userId: string) {
+    try {
+      const chatRoom = await prisma.chat_rooms.findUnique({
+        where: { id: id },
+      });
+      if (chatRoom?.user_email == userId) {
+        await prisma.chat_rooms.update({
+          where: { id: id },
+          data: { is_user_exit: true },
+        });
+      } else if (chatRoom?.user_vet_email == userId) {
+        await prisma.chat_rooms.update({
+          where: { id: id },
+          data: { is_vet_exit: true },
+        });
+      }
     } catch (error) {
       throw error;
     }

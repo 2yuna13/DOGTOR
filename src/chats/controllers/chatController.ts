@@ -93,6 +93,19 @@ class ChatController {
       res.status(500).json({ error });
     }
   }
+
+  static async chatExitController(req: Request, res: Response) {
+    try {
+      await ChatService.exitChat(
+        parseInt(req.params.id) as number,
+        req.user as string
+      );
+      logger.info("채팅방 나가기 성공");
+      return res.status(200).json("채팅 나가기 성공");
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
 }
 
 export { ChatController };
