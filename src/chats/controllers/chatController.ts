@@ -97,7 +97,7 @@ class ChatController {
   static async chatExitController(req: Request, res: Response) {
     try {
       await ChatService.exitChat(
-        parseInt(req.query.id as string),
+        parseInt(req.params.id as string),
         req.user as string
       );
       logger.info("채팅방 나가기 성공");

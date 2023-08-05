@@ -62,7 +62,7 @@ ChatRouter.patch(
 );
 
 ChatRouter.delete(
-  "/chats/exit",
+  "/chats/:id",
   passport.authenticate("jwt", { session: false }),
   ChatController.chatExitController
 );
