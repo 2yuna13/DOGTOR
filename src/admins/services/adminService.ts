@@ -25,6 +25,7 @@ class AdminService {
         where: {
           status: vetListsDto.status,
         },
+        include: { users: { select: { img_path: true } } },
         orderBy: {
           updated_at: "asc",
         },
