@@ -352,12 +352,12 @@ class ChatService {
       if (chatRoom?.user_email == userId) {
         await prisma.chat_rooms.update({
           where: { id: id },
-          data: { is_user_exit: true },
+          data: { is_user_exit: true, status: "completed" },
         });
       } else if (chatRoom?.user_vet_email == userId) {
         await prisma.chat_rooms.update({
           where: { id: id },
-          data: { is_vet_exit: true },
+          data: { is_vet_exit: true, status: "completed" },
         });
       }
     } catch (error) {
