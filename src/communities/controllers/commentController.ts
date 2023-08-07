@@ -20,11 +20,11 @@ class CommentController {
     }
   }
 
-  static async getCommentById(req: Request, res: Response) {
+  static async getComments(req: Request, res: Response) {
     try {
       const { postId } = req.params;
 
-      const comments = await CommentService.getCommentById(Number(postId));
+      const comments = await CommentService.getComments(Number(postId));
 
       if (!comments) {
         return res.status(404).json({ error: "댓글을 찾을 수 없습니다." });
