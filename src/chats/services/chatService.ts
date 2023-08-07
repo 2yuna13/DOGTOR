@@ -1,5 +1,4 @@
 import { logger } from "../../utils/winston";
-import { PrismaClient } from "@prisma/client";
 import {
   ChatListDto,
   ChatRatingDto,
@@ -8,42 +7,33 @@ import {
   ChatStatusDto,
   VetRegionDto,
 } from "../dtos/chatDto";
-import { KORDATE } from "../../utils/constant";
-const prisma = new PrismaClient();
+import { ChatRepository } from "../repositories/chatRepository";
 
 class ChatService {
   static async addRequest(chatRequestDto: ChatRequestDto, userEmail: string) {
     try {
-      const duplicateCheck = await prisma.chat_rooms.findFirst({
-        where: {
-          user_email: userEmail,
-          user_vet_email: chatRequestDto.vetEmail,
-        },
-        orderBy: {
-          updated_at: "desc",
-        },
-      });
+      const duplicateCheck = await ChatRepository.findChatByUserAndVetEmail(
+        userEmail,
+        chatRequestDto.vetEmail
+      );
       if (
         duplicateCheck?.status === "pending" ||
         duplicateCheck?.status === "accepted"
       ) {
         return "이미 상담(대기)중인 상태입니다.";
       }
-      const createRequest = await prisma.chat_rooms.create({
-        data: {
-          user_email: userEmail,
-          user_vet_email: chatRequestDto.vetEmail,
-        },
-      });
-      await prisma.chat_contents.create({
-        data: {
-          chat_room_id: createRequest.id,
-          is_from_user: true,
-          from_id: createRequest.user_email,
-          message: chatRequestDto.message,
-        },
-      });
-      return;
+      const createRequest = await ChatRepository.createChatByUserAndVetEamil(
+        userEmail,
+        chatRequestDto.vetEmail
+      );
+      if (createRequest) {
+        ChatRepository.createChatContents(
+          createRequest?.id,
+          true,
+          userEmail,
+          chatRequestDto.message
+        );
+      }
     } catch (Error) {
       throw Error;
     }
@@ -51,64 +41,7 @@ class ChatService {
 
   static async getChatList(email: string, chatListDto: ChatListDto) {
     try {
-      const getChatList = await prisma.chat_rooms.findMany({
-        where: {
-          AND: [
-            {
-              OR: [
-                {
-                  user_email: email,
-                  NOT: {
-                    is_user_exit: true,
-                  },
-                },
-                {
-                  user_vet_email: email,
-                  NOT: {
-                    is_vet_exit: true,
-                  },
-                },
-              ],
-            },
-            { status: chatListDto.status },
-          ],
-        },
-        orderBy: {
-          updated_at: "desc",
-        },
-        include: {
-          chat_contents: {
-            select: {
-              message: true,
-            },
-            orderBy: {
-              created_at: "desc",
-            },
-            take: 1, // 최근 생성된 chat_contents 하나만 가져오도록 설정
-          },
-          users_chat_rooms_user_emailTousers: {
-            select: {
-              email: true,
-              nickname: true,
-              img_path: true,
-            },
-          },
-          users_chat_rooms_user_vet_emailTousers: {
-            select: {
-              email: true,
-              nickname: true,
-              img_path: true,
-              vets: {
-                select: {
-                  name: true,
-                  hospital_name: true,
-                },
-              },
-            },
-          },
-        },
-      });
-      return getChatList;
+      return await ChatRepository.findChatByStatus(email, chatListDto.status);
     } catch (error) {
       throw error;
     }
@@ -118,43 +51,11 @@ class ChatService {
     try {
       let writable: boolean = false,
         editable: boolean = false;
-      const ChatContents = await prisma.chat_contents.findMany({
-        where: {
-          chat_room_id: id,
-          chat_rooms: {
-            OR: [{ user_email: email }, { user_vet_email: email }],
-          },
-        },
-        orderBy: { created_at: "asc" },
-      });
-      const checkStatus = await prisma.chat_rooms.findUnique({
-        where: {
-          id: id,
-        },
-        select: {
-          status: true,
-          users_chat_rooms_user_emailTousers: {
-            select: {
-              email: true,
-              nickname: true,
-              img_path: true,
-            },
-          },
-          users_chat_rooms_user_vet_emailTousers: {
-            select: {
-              email: true,
-              nickname: true,
-              img_path: true,
-              vets: {
-                select: {
-                  name: true,
-                  hospital_name: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      const ChatContents = await ChatRepository.findChatContentsByIdAndEmail(
+        id,
+        email
+      );
+      const checkStatus = await ChatRepository.findUniqueChatRoomById(id);
       if (checkStatus?.status == "accepted") {
         writable = true;
       } else {
@@ -173,14 +74,11 @@ class ChatService {
 
   static async chatStatus(chatStatusDto: ChatStatusDto, vetEmail: string) {
     try {
-      await prisma.chat_rooms.updateMany({
-        where: { id: chatStatusDto.id, user_vet_email: vetEmail },
-        data: {
-          status: chatStatusDto.status,
-          updated_at: new Date(Date.now() + KORDATE),
-        },
-      });
-      return;
+      return await ChatRepository.updateChatRoomStatus(
+        chatStatusDto.id,
+        chatStatusDto.status,
+        vetEmail
+      );
     } catch (error) {
       throw error;
     }
@@ -188,39 +86,17 @@ class ChatService {
 
   static async addChat(email: string, chatId: number, message: string) {
     try {
-      const checkUser = await prisma.chat_rooms.findFirst({
-        where: {
-          AND: [{ id: chatId }, { status: "accepted" }],
-        },
-      });
+      const checkUser = await ChatRepository.findChatByIdAndStatus(
+        chatId,
+        "accepted"
+      );
       if (checkUser?.user_email == email) {
-        await prisma.chat_contents.create({
-          data: {
-            chat_room_id: chatId,
-            is_from_user: true,
-            from_id: email,
-            message: message,
-          },
-        });
+        await ChatRepository.createChatContents(chatId, true, email, message);
       } else {
-        await prisma.chat_contents.create({
-          data: {
-            chat_room_id: chatId,
-            is_from_user: false,
-            from_id: email,
-            message: message,
-          },
-        });
+        await ChatRepository.createChatContents(chatId, false, email, message);
       }
-      await prisma.chat_rooms.update({
-        where: { id: chatId },
-        data: {
-          updated_at: new Date(Date.now() + KORDATE),
-        },
-      });
-      return await prisma.users.findUnique({
-        where: { email: email },
-      });
+      await ChatRepository.updateChatRoomUpdated(chatId);
+      return await ChatRepository.findUserByEmail(email);
     } catch (error) {
       throw error;
     }
@@ -229,34 +105,18 @@ class ChatService {
   static async getTotalVetCnt(vetRegionDto: VetRegionDto) {
     try {
       if (!vetRegionDto.region && !vetRegionDto.search) {
-        return await prisma.vets.count();
+        return await ChatRepository.countVets();
       } else if (vetRegionDto.region && !vetRegionDto.search) {
-        return await prisma.vets.count({
-          where: { region: vetRegionDto.region },
-        });
+        return await ChatRepository.countVetsByRegion(vetRegionDto.region);
       } else if (vetRegionDto.search && !vetRegionDto.region) {
-        return await prisma.vets.count({
-          where: {
-            OR: [
-              { name: { contains: vetRegionDto.search } },
-              { hospital_name: { contains: vetRegionDto.search } },
-            ],
-          },
-        });
+        return await ChatRepository.countVetsByNameOrHospitalName(
+          vetRegionDto.search
+        );
       } else {
-        return await prisma.vets.count({
-          where: {
-            AND: [
-              {
-                OR: [
-                  { name: { contains: vetRegionDto.search } },
-                  { hospital_name: { contains: vetRegionDto.search } },
-                ],
-              },
-              { region: vetRegionDto.region },
-            ],
-          },
-        });
+        return await ChatRepository.countVetsByRegionAndName(
+          vetRegionDto.search,
+          vetRegionDto.region
+        );
       }
     } catch (error) {
       throw error;
@@ -270,58 +130,41 @@ class ChatService {
   ) {
     try {
       if (!vetRegionDto.region && !vetRegionDto.search) {
-        return await prisma.vets.findMany({
-          skip: startIndex,
-          take: rowPerPage,
-        });
+        return await ChatRepository.findVetsByPage(startIndex, rowPerPage);
       } else if (vetRegionDto.region && !vetRegionDto.search) {
-        return await prisma.vets.findMany({
-          where: { region: vetRegionDto.region },
-          skip: startIndex,
-          take: rowPerPage,
-        });
+        return await ChatRepository.findVetsByRegionAndPage(
+          vetRegionDto.region,
+          startIndex,
+          rowPerPage
+        );
       } else if (vetRegionDto.search && !vetRegionDto.region) {
-        return await prisma.vets.findMany({
-          where: {
-            OR: [
-              { name: { contains: vetRegionDto.search } },
-              { hospital_name: { contains: vetRegionDto.search } },
-            ],
-          },
-          skip: startIndex,
-          take: rowPerPage,
-        });
+        return await ChatRepository.findVetsByNameAndPage(
+          vetRegionDto.search,
+          startIndex,
+          rowPerPage
+        );
       } else {
-        return await prisma.vets.findMany({
-          where: {
-            AND: [
-              {
-                OR: [
-                  { name: { contains: vetRegionDto.search } },
-                  { hospital_name: { contains: vetRegionDto.search } },
-                ],
-              },
-              { region: vetRegionDto.region },
-            ],
-          },
-          skip: startIndex,
-          take: rowPerPage,
-        });
+        return await ChatRepository.findVetsByRegionAndNameAndPage(
+          vetRegionDto.region,
+          vetRegionDto.search,
+          startIndex,
+          rowPerPage
+        );
       }
     } catch (error) {
       throw error;
     }
   }
 
-  static async rateChat(chatratingDto: ChatRatingDto) {
+  static async rateChat(chatRatingDto: ChatRatingDto) {
     try {
-      const chatRoom = await prisma.chat_rooms.update({
-        where: { id: chatratingDto.id },
-        data: { grade: chatratingDto.grade },
-      });
-      const chatRoomsWithGrade = await prisma.chat_rooms.findMany({
-        where: { user_vet_email: chatRoom?.user_vet_email },
-      });
+      const chatRoom = await ChatRepository.gradeChatRoomById(
+        chatRatingDto.id,
+        chatRatingDto.grade
+      );
+      const chatRoomsWithGrade = await ChatRepository.findChatsByVetEmail(
+        chatRoom.user_vet_email
+      );
       let sumOfGrades = 0;
       let numOfGrades = 0;
       for (const chatRoom of chatRoomsWithGrade) {
@@ -331,14 +174,10 @@ class ChatService {
         }
       }
       const averageGrade = sumOfGrades / numOfGrades;
-      await prisma.vets.updateMany({
-        where: { user_email: chatRoom?.user_vet_email },
-        data: {
-          grade: averageGrade,
-          updated_at: new Date(Date.now() + KORDATE),
-        },
-      });
-      return;
+      await ChatRepository.updateVetGrade(
+        chatRoom.user_vet_email,
+        averageGrade
+      );
     } catch (error) {
       throw error;
     }
@@ -346,19 +185,13 @@ class ChatService {
 
   static async exitChat(id: number, userId: string) {
     try {
-      const chatRoom = await prisma.chat_rooms.findUnique({
-        where: { id: id },
-      });
-      if (chatRoom?.user_email == userId) {
-        await prisma.chat_rooms.update({
-          where: { id: id },
-          data: { is_user_exit: true, status: "completed" },
-        });
-      } else if (chatRoom?.user_vet_email == userId) {
-        await prisma.chat_rooms.update({
-          where: { id: id },
-          data: { is_vet_exit: true, status: "completed" },
-        });
+      const chatRoom = await ChatRepository.findUniqueChatRoomById(id);
+      if (chatRoom?.users_chat_rooms_user_emailTousers.email == userId) {
+        await ChatRepository.updateUserChatExit(id);
+      } else if (
+        chatRoom?.users_chat_rooms_user_vet_emailTousers.email == userId
+      ) {
+        await ChatRepository.updateVetChatExit(id);
       }
     } catch (error) {
       throw error;
