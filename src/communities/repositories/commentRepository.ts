@@ -12,7 +12,7 @@ class CommentRepository {
   static async getComments(postId: number): Promise<comments[] | null> {
     try {
       return await prisma.comments.findMany({
-        where: { post_id: postId },
+        where: { post_id: postId, deleted_at: null },
         include: {
           users: true,
           report_comments: {
@@ -70,6 +70,15 @@ class CommentRepository {
 
   static async deleteComment(commentId: number): Promise<comments> {
     try {
+      const existingComment = await prisma.comments.findUnique({
+        where: { id: commentId },
+        select: { author_email: true },
+      });
+
+      if (!existingComment) {
+        throw new Error("댓글이 존재하지 않습니다.");
+      }
+
       const deletedComment = await prisma.comments.update({
         where: { id: commentId },
         data: {
