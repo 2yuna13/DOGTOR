@@ -13,4 +13,10 @@ DiseaseRouter.post(
   DiseaseController.diseaseCheckController
 );
 
+//수의사 별점 top 5 반환
+DiseaseRouter.get(
+  "/diseases/vets",
+  passport.authenticate("jwt", { session: false }),
+  DiseaseController.getVetsController
+);
 export { DiseaseRouter };

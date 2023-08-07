@@ -8,6 +8,7 @@ import {
   ReportStatusDto,
 } from "../dtos/adminDto";
 import { KORDATE } from "../../utils/constant";
+import { AdminRepository } from "../repositories/adminRepository";
 
 const prisma = new PrismaClient();
 
@@ -19,22 +20,15 @@ class AdminService {
   ) {
     try {
       const startIndex = (currentPage - 1) * rowPerPage;
-      const vetList = await prisma.vets.findMany({
-        where: {
-          status: vetListsDto.status,
-        },
-        include: { users: { select: { img_path: true } } },
-        orderBy: {
-          updated_at: "asc",
-        },
-        skip: startIndex,
-        take: rowPerPage,
-      });
+      const vetList = await AdminRepository.findVetsByStatusAndPage(
+        vetListsDto.status,
+        startIndex,
+        rowPerPage
+      );
 
-      const totalVetsCnt = await prisma.vets.count({
-        where: { status: vetListsDto.status },
-      });
-
+      const totalVetsCnt = await AdminRepository.countVetsByStatus(
+        vetListsDto.status
+      );
       return { vetList, totalVetsCnt };
     } catch (error) {
       throw error;
@@ -43,23 +37,12 @@ class AdminService {
 
   static async manageVetRequests(vetStatusDto: VetStatusDto) {
     try {
-      const updateVet = await prisma.vets.update({
-        where: {
-          id: vetStatusDto.id,
-        },
-        data: {
-          status: vetStatusDto.status,
-        },
-      });
+      const updateVet = await AdminRepository.updateVetStatus(
+        vetStatusDto.id,
+        vetStatusDto.status
+      );
       if (updateVet.status == "accepted") {
-        await prisma.users.update({
-          where: {
-            email: vetStatusDto.email,
-          },
-          data: {
-            role: "vet",
-          },
-        });
+        await AdminRepository.updateUserRole(vetStatusDto.email, "vet");
       }
       return updateVet;
     } catch (error) {
@@ -99,21 +82,13 @@ class AdminService {
             : Prisma.SortOrder.desc,
       };
 
-      const users = await prisma.users.findMany({
-        where,
-        select: {
-          email: true,
-          nickname: true,
-          role: true,
-          img_path: true,
-          created_at: true,
-          blocked_at: true,
-          deleted_at: true,
-        },
-        orderBy,
-        skip: startIndex,
-        take: rowPerPage,
-      });
+      const users =
+        await AdminRepository.findUsersByRoleAndStatusAndSearchAndPage(
+          where,
+          orderBy,
+          startIndex,
+          rowPerPage
+        );
 
       return users;
     } catch (error) {
@@ -142,7 +117,8 @@ class AdminService {
         ];
       }
 
-      const totalUsersCnt = await prisma.users.count({ where });
+      const totalUsersCnt =
+        await AdminRepository.countUsersByRoleAndStatusAndSearch(where);
 
       return totalUsersCnt;
     } catch (error) {

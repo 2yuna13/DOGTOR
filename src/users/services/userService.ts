@@ -172,12 +172,12 @@ class UserService {
       }
       if (updatedFields.nickname) user.nickname = updatedFields.nickname;
       if (updatedFields.img_path) user.img_path = updatedFields.img_path;
-
+      user.updated_at = new Date(Date.now() + KORDATE);
       const updateUser = await prisma.users.update({
         where: {
           email,
         },
-        data: { updated_at: new Date(Date.now() + KORDATE) },
+        data: user,
       });
 
       return updateUser;
