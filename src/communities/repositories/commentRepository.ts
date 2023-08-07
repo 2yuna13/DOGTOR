@@ -13,6 +13,14 @@ class CommentRepository {
     try {
       return await prisma.comments.findUnique({
         where: { id: commentId },
+        include: {
+          users: true,
+          report_comments: {
+            include: {
+              reports: true,
+            },
+          },
+        },
       });
     } catch (err) {
       throw err;
@@ -44,9 +52,13 @@ class CommentRepository {
 
   static async deleteComment(commentId: number): Promise<comments> {
     try {
-      const deletedComment = await prisma.comments.delete({
+      const deletedComment = await prisma.comments.update({
         where: { id: commentId },
+        data: {
+          deleted_at: new Date(),
+        },
       });
+
       return deletedComment;
     } catch (err) {
       throw err;

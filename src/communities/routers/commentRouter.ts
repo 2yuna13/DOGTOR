@@ -13,6 +13,8 @@ commentRouter.post(
   CommentController.createComment
 );
 
+commentRouter.get("/comments/:commentId", CommentController.getCommentById);
+
 commentRouter.delete(
   "/comments/:commentId",
   passport.authenticate("jwt", { session: false }),
