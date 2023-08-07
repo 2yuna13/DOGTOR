@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { PrismaClient } from "@prisma/client";
-
+import { logger } from "./winston";
 const prisma = new PrismaClient();
 
 async function updateBlockedAt(): Promise<void> {
@@ -16,7 +16,7 @@ async function updateBlockedAt(): Promise<void> {
       data: { blocked_at: null },
     });
 
-    console.log(
+    logger.info(
       `${updatedUsers.count} users' blocked_at updated successfully.`
     );
   } catch (error) {
