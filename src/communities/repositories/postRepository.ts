@@ -141,8 +141,11 @@ class PostRepository {
         throw new Error("게시물 삭제 권한이 없습니다.");
       }
 
-      const deletedPost = await prisma.posts.delete({
+      const deletedPost = await prisma.posts.update({
         where: { id: postId },
+        data: {
+          deleted_at: new Date(),
+        },
       });
 
       return deletedPost;

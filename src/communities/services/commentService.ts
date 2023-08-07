@@ -15,6 +15,14 @@ class CommentService {
     }
   }
 
+  static async getCommentById(commentId: number) {
+    try {
+      return await CommentRepository.getCommentById(commentId);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async deleteComment(commentId: number, author_email: string) {
     try {
       const comment = await CommentRepository.getCommentById(commentId);
