@@ -39,10 +39,9 @@ class ChatController {
       if (newRequest) {
         logger.info("상담 요청 실패(중복요청)");
         return res.status(400).json(newRequest);
-      } else {
-        logger.info("상담 요청 성공");
-        return res.status(201).json("상담 요청 성공");
       }
+      logger.info("상담 요청 성공");
+      return res.status(201).json("상담 요청 성공");
     } catch (error) {
       res.status(500).json({ error });
     }
