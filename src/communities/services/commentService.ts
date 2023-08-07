@@ -1,10 +1,11 @@
 import { CreateCommentDto, ReportCommentDto } from "../dtos/commentDto";
 import { CommentRepository } from "../repositories/commentRepository";
+import { PostRepository } from "../repositories/postRepository";
 
 class CommentService {
   static async createComment(commentDto: CreateCommentDto, userId: string) {
     try {
-      const post = await CommentRepository.getCommentById(commentDto.post_id);
+      const post = await PostRepository.getPostById(commentDto.post_id);
       if (!post) {
         throw new Error("게시물이 존재하지 않습니다.");
       }
@@ -15,9 +16,9 @@ class CommentService {
     }
   }
 
-  static async getCommentById(commentId: number) {
+  static async getComments(postId: number) {
     try {
-      return await CommentRepository.getCommentById(commentId);
+      return await CommentRepository.getComments(postId);
     } catch (error) {
       throw error;
     }

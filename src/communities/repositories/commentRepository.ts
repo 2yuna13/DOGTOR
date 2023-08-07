@@ -9,6 +9,24 @@ import { CreateCommentDto, ReportCommentDto } from "../dtos/commentDto";
 const prisma = new PrismaClient();
 
 class CommentRepository {
+  static async getComments(postId: number): Promise<comments[] | null> {
+    try {
+      return await prisma.comments.findMany({
+        where: { post_id: postId },
+        include: {
+          users: true,
+          report_comments: {
+            include: {
+              reports: true,
+            },
+          },
+        },
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async getCommentById(commentId: number): Promise<comments | null> {
     try {
       return await prisma.comments.findUnique({
