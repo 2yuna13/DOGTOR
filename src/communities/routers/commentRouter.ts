@@ -13,7 +13,7 @@ commentRouter.post(
   CommentController.createComment
 );
 
-commentRouter.get("/comments/:commentId", CommentController.getCommentById);
+commentRouter.get("/comments/:postId", CommentController.getComments);
 
 commentRouter.delete(
   "/comments/:commentId",

@@ -15,12 +15,12 @@ class CreateCommentDto {
 }
 
 enum ReportReason {
-  PromotionOrCommercialContent = "홍보/상업성",
-  Spam = "스팸",
-  ProfanityOrHarassment = "욕설/인신공격",
-  AdultContentOrExplicitMaterial = "음란/선정성",
-  IllegalInformation = "불법정보",
-  PersonalInformationExposure = "개인정보 노출",
+  PROMOTION_OR_COMMERCIAL_CONTENT = "홍보/상업성",
+  SPAM = "스팸",
+  PROFANITY_OR_HARASSMENT = "욕설/인신공격",
+  ADULT_CONTENT_OR_EXPLICITMATERIAL = "음란/선정성",
+  ILLEGAL_INFORMATION = "불법정보",
+  PERSONAL_INFORMATION_EXPOSURE = "개인정보 노출",
 }
 
 class ReportCommentDto {

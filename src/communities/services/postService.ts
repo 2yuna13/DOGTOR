@@ -41,7 +41,7 @@ class PostService {
     currentPage: number
   ) {
     try {
-      const pageSize = 10;
+      const pageSize: number = 10;
       const skip = (currentPage - 1) * pageSize;
 
       if (!category) {
