@@ -28,19 +28,25 @@ class PostController {
 
   static async getPostsByCategory(req: Request, res: Response) {
     try {
+      const userId = req.user as string;
       const category = req.query.category as Category;
       const currentPage = parseInt(req.query.currentPage as string, 10) || 1;
 
-      const posts = await PostService.getPostsByCategory(category, currentPage);
+      const posts = await PostService.getPostsByCategory(
+        category,
+        currentPage,
+        userId
+      );
       return res.status(200).json(posts);
     } catch (error) {
       return res.status(500).json({ error: "게시물 조회 실패" });
     }
   }
 
-  static async getPosts(_req: Request, res: Response) {
+  static async getPosts(req: Request, res: Response) {
     try {
-      const posts = await PostService.getPosts();
+      const userId = req.user as string;
+      const posts = await PostService.getPosts(userId);
       return res.status(200).json(posts);
     } catch (error) {
       return res.status(500).json({ error: "게시물 조회 실패" });
@@ -49,8 +55,9 @@ class PostController {
 
   static async getPostById(req: Request, res: Response) {
     try {
+      const userId = req.user as string;
       const postId = Number(req.params.postId);
-      const post = await PostService.getPostById(postId);
+      const post = await PostService.getPostById(postId, userId);
       if (!post) {
         return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
       }
@@ -103,6 +110,17 @@ class PostController {
       return res.status(200).json({ message: "게시물 신고 성공" });
     } catch (error) {
       return res.status(500).json({ error: "게시물 신고 실패" });
+    }
+  }
+
+  static async likePost(req: Request, res: Response) {
+    try {
+      const userId = req.user as string;
+      const postId = parseInt(req.query.postId as string);
+      const likeresult = await PostService.likePost(userId, postId);
+      res.status(200).json(likeresult);
+    } catch (error) {
+      return res.status(500).json({ error: "좋아요 실패" });
     }
   }
 }

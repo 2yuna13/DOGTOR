@@ -15,7 +15,11 @@ PostRouter.post(
 
 PostRouter.get("/posts", PostController.getPostsByCategory);
 
-PostRouter.get("/posts/:postId", PostController.getPostById);
+PostRouter.get(
+  "/posts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  PostController.getPostById
+);
 
 PostRouter.put(
   "/posts/:postId",
@@ -35,6 +39,12 @@ PostRouter.post(
   passport.authenticate("jwt", { session: false }),
   validationMiddleware(ReportPostDto),
   PostController.reportPost
+);
+
+PostRouter.patch(
+  "/posts/like",
+  passport.authenticate("jwt", { session: false }),
+  PostController.likePost
 );
 
 export { PostRouter };
