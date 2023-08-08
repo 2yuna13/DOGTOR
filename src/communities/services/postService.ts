@@ -1,5 +1,10 @@
 import { posts_category } from "@prisma/client";
-import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
+import {
+  CreatePostDto,
+  UpdatePostDto,
+  ReportPostDto,
+  LikePostDto,
+} from "../dtos/postDto";
 import { PostRepository } from "../repositories/postRepository";
 
 class PostService {
@@ -103,17 +108,20 @@ class PostService {
     }
   }
 
-  static async likePost(userId: string, postId: number) {
+  static async likePost(userId: string, likePostDto: LikePostDto) {
     try {
-      const checkExist = await PostRepository.findLike(userId, postId);
+      const checkExist = await PostRepository.findLike(
+        userId,
+        likePostDto.postId
+      );
       if (checkExist?.is_like == true) {
         await PostRepository.changeLike(checkExist?.id, false);
       } else if (checkExist?.is_like == false) {
         await PostRepository.changeLike(checkExist?.id, true);
       } else {
-        await PostRepository.likePost(userId, postId);
+        await PostRepository.likePost(userId, likePostDto.postId);
       }
-      return await PostRepository.updateLike(userId, postId);
+      return await PostRepository.updateLike(userId, likePostDto.postId);
     } catch (error) {
       throw error;
     }

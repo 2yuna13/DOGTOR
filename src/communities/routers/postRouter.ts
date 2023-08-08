@@ -2,7 +2,12 @@ import { Router } from "express";
 import { PostController } from "../controllers/postController";
 import passport from "passport";
 import validationMiddleware from "../../middlewares/validateDto";
-import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
+import {
+  CreatePostDto,
+  UpdatePostDto,
+  ReportPostDto,
+  LikePostDto,
+} from "../dtos/postDto";
 
 const PostRouter = Router();
 
@@ -44,6 +49,7 @@ PostRouter.post(
 PostRouter.patch(
   "/posts/like",
   passport.authenticate("jwt", { session: false }),
+  validationMiddleware(LikePostDto),
   PostController.likePost
 );
 

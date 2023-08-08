@@ -62,4 +62,13 @@ class ReportPostDto {
   }
 }
 
-export { CreatePostDto, UpdatePostDto, ReportPostDto, Category };
+class LikePostDto {
+  @IsInt()
+  postId: number;
+
+  constructor(postId: number) {
+    this.postId = postId;
+  }
+}
+
+export { CreatePostDto, UpdatePostDto, ReportPostDto, Category, LikePostDto };

@@ -5,6 +5,7 @@ import {
   UpdatePostDto,
   ReportPostDto,
   Category,
+  LikePostDto,
 } from "../dtos/postDto";
 
 class PostController {
@@ -116,8 +117,8 @@ class PostController {
   static async likePost(req: Request, res: Response) {
     try {
       const userId = req.user as string;
-      const postId = parseInt(req.query.postId as string);
-      const likeresult = await PostService.likePost(userId, postId);
+      const likePostDto = new LikePostDto(req.body.postId);
+      const likeresult = await PostService.likePost(userId, likePostDto);
       res.status(200).json(likeresult);
     } catch (error) {
       return res.status(500).json({ error: "좋아요 실패" });
