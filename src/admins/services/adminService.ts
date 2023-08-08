@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   UserListDto,
   UserStatusDto,
@@ -9,8 +9,7 @@ import {
 } from "../dtos/adminDto";
 import { KORDATE } from "../../utils/constant";
 import { AdminRepository } from "../repositories/adminRepository";
-
-const prisma = new PrismaClient();
+import { start } from "repl";
 
 class AdminService {
   static async getVetRequestLists(
@@ -130,7 +129,7 @@ class AdminService {
     try {
       const { email, blocked, deleted } = userStatusDto;
 
-      const user = await prisma.users.findUnique({ where: { email } });
+      const user = await AdminRepository.findUserByEmail(email);
 
       if (!user) {
         throw new Error("유저가 존재하지 않습니다.");
@@ -142,53 +141,28 @@ class AdminService {
         twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
 
         if (!user.blocked_at) {
-          await prisma.users.update({
-            where: { email },
-            data: { blocked_at: twoWeeksFromNow },
-          });
+          await AdminRepository.blockUserByEmail(email, twoWeeksFromNow);
         } else {
           const blockedAt = new Date(user.blocked_at);
           blockedAt.setDate(blockedAt.getDate() + 14);
 
-          await prisma.users.update({
-            where: { email },
-            data: { blocked_at: blockedAt },
-          });
+          await AdminRepository.blockUserByEmail(email, blockedAt);
         }
       }
 
       // 정지 해제
       if (blocked === "false") {
-        await prisma.users.update({
-          where: { email },
-          data: { blocked_at: null },
-        });
+        await AdminRepository.unBlockUserByEmail(email);
       }
 
       // 영구 정지
       if (blocked === "permanent") {
-        await prisma.users.update({
-          where: { email },
-          data: { blocked_at: new Date("9999-12-31") },
-        });
+        await AdminRepository.blockUserByEmail(email, new Date("9999-12-31"));
       }
 
       // 강제 탈퇴
       if (deleted === "true") {
-        if (user.blocked_at) {
-          await prisma.users.update({
-            where: { email },
-            data: {
-              blocked_at: null,
-              deleted_at: new Date(Date.now() + KORDATE),
-            },
-          });
-        } else {
-          await prisma.users.update({
-            where: { email },
-            data: { deleted_at: new Date(Date.now() + KORDATE) },
-          });
-        }
+        await AdminRepository.deleteUserByEmail(email);
       }
     } catch (error) {
       throw error;
@@ -203,10 +177,6 @@ class AdminService {
     try {
       const status = reportListDto.status;
       const startIndex = (currentPage - 1) * rowPerPage;
-
-      let reportedPostList;
-      let totalPostsCnt;
-
       const where: Prisma.report_postsWhereInput = status
         ? {
             reports: {
@@ -218,49 +188,13 @@ class AdminService {
           }
         : {};
 
-      const baseQuery = prisma.report_posts.findMany({
+      const reportedPostList = await AdminRepository.findReportedPosts(
         where,
-        select: {
-          reports: {
-            select: {
-              id: true,
-              content: true,
-              status: true,
-              created_at: true,
-            },
-          },
-          posts: {
-            select: {
-              id: true,
-              category: true,
-              title: true,
-              body: true,
-              created_at: true,
-              users: {
-                select: {
-                  email: true,
-                  nickname: true,
-                  img_path: true,
-                  blocked_at: true,
-                  deleted_at: true,
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          reports: {
-            updated_at: "desc",
-          },
-        },
-        skip: startIndex,
-        take: rowPerPage,
-      });
+        startIndex,
+        rowPerPage
+      );
 
-      reportedPostList = await baseQuery;
-      totalPostsCnt = await prisma.report_posts.count({
-        where,
-      });
+      const totalPostsCnt = await AdminRepository.countReportedPosts(where);
 
       return { reportedPostList, totalPostsCnt };
     } catch (error) {
@@ -277,9 +211,6 @@ class AdminService {
       const status = reportListDto.status;
       const startIndex = (currentPage - 1) * rowPerPage;
 
-      let reportedCommentList;
-      let totalCommentsCnt;
-
       const where: Prisma.report_commentsWhereInput = status
         ? {
             reports: {
@@ -291,47 +222,14 @@ class AdminService {
           }
         : {};
 
-      const baseQuery = prisma.report_comments.findMany({
+      const reportedCommentList = await AdminRepository.findReportedComments(
         where,
-        select: {
-          reports: {
-            select: {
-              id: true,
-              content: true,
-              status: true,
-              created_at: true,
-            },
-          },
-          comments: {
-            select: {
-              id: true,
-              body: true,
-              created_at: true,
-              users: {
-                select: {
-                  email: true,
-                  nickname: true,
-                  img_path: true,
-                  blocked_at: true,
-                  deleted_at: true,
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          reports: {
-            updated_at: "desc",
-          },
-        },
-        skip: startIndex,
-        take: rowPerPage,
-      });
-
-      reportedCommentList = await baseQuery;
-      totalCommentsCnt = await prisma.report_comments.count({
-        where,
-      });
+        startIndex,
+        rowPerPage
+      );
+      const totalCommentsCnt = await AdminRepository.countReportedComments(
+        where
+      );
 
       return { reportedCommentList, totalCommentsCnt };
     } catch (error) {
@@ -343,13 +241,9 @@ class AdminService {
     try {
       const { id, status } = reportStatusDto;
 
-      const report = await prisma.reports.findUnique({ where: { id } });
-      const reportedPost = await prisma.report_posts.findMany({
-        where: { report_id: id },
-      });
-      const reportedComment = await prisma.report_comments.findMany({
-        where: { report_id: id },
-      });
+      const report = await AdminRepository.findReportById(id);
+      const reportedPost = await AdminRepository.findReportedPostById(id);
+      const reportedComment = await AdminRepository.findReportedCommentById(id);
 
       if (!report) {
         throw new Error("신고 내역이 존재하지 않습니다.");
@@ -357,40 +251,20 @@ class AdminService {
 
       // 신고 내용 승인
       if (status === "accepted") {
-        await prisma.reports.update({
-          where: { id },
-          data: {
-            status: "accepted",
-            updated_at: new Date(Date.now() + KORDATE),
-          },
-        });
+        await AdminRepository.updateReportStatus(id, "accepted");
 
         if (reportedPost.length) {
-          await prisma.posts.update({
-            where: { id: reportedPost[0].post_id },
-            data: {
-              deleted_at: new Date(Date.now() + KORDATE),
-            },
-          });
+          await AdminRepository.deletePostById(reportedPost[0].post_id);
         } else if (reportedComment) {
-          await prisma.comments.update({
-            where: { id: reportedComment[0].comment_id },
-            data: {
-              deleted_at: new Date(Date.now() + KORDATE),
-            },
-          });
+          await AdminRepository.deleteCommentById(
+            reportedComment[0].comment_id
+          );
         }
       }
 
       // 신고 내용 거절
       if (status === "rejected") {
-        await prisma.reports.update({
-          where: { id },
-          data: {
-            status: "rejected",
-            updated_at: new Date(Date.now() + KORDATE),
-          },
-        });
+        await AdminRepository.updateReportStatus(id, "rejected");
       }
     } catch (error) {
       throw error;
