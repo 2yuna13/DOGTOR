@@ -14,6 +14,12 @@ LikeRouter.post(
 );
 
 LikeRouter.get(
+  "/posts/:postId/isLiked",
+  passport.authenticate("jwt", { session: false }),
+  LikeController.isLiked
+);
+
+LikeRouter.get(
   "/posts/:postId/like",
   passport.authenticate("jwt", { session: false }),
   LikeController.getLikeCount

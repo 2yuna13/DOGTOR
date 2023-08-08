@@ -2,6 +2,18 @@ import { Request, Response } from "express";
 import { LikeService } from "../services/likeService";
 
 class LikeController {
+  static async isLiked(req: Request, res: Response) {
+    try {
+      const postId = parseInt(req.params.postId, 10);
+
+      const liked = await LikeService.isLiked(postId);
+
+      return res.status(200).json({ liked });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
   static async addLike(req: Request, res: Response) {
     try {
       const postId = parseInt(req.params.postId, 10);
