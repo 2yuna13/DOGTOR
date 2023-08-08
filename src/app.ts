@@ -51,8 +51,10 @@ app.use(
 );
 
 app.get("/imgs", (req: Request, res: Response) => {
-  const filename = req.query.filename;
-  const filePath = `${filename}`;
+  const filename = req.query.filename as string;
+  const modifiedFilename = filename.replace(/\s/g, "");
+  const filePath = `${modifiedFilename}`;
+
   const options = {
     root: path.join("../4team_project_back"),
   };
