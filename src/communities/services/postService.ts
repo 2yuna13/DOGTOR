@@ -38,14 +38,15 @@ class PostService {
 
   static async getPostsByCategory(
     category: posts_category,
-    currentPage: number
+    currentPage: number,
+    userId: string
   ) {
     try {
       const pageSize: number = 10;
       const skip = (currentPage - 1) * pageSize;
 
       if (!category) {
-        const totalPosts = await PostRepository.getPosts();
+        const totalPosts = await PostRepository.getPosts(userId);
         const paginatedPosts = totalPosts.slice(skip, skip + pageSize);
 
         return {
@@ -56,7 +57,10 @@ class PostService {
         };
       }
 
-      const postsByCategory = await PostRepository.getPostsByCategory(category);
+      const postsByCategory = await PostRepository.getPostsByCategory(
+        category,
+        userId
+      );
       const paginatedPosts = postsByCategory.slice(skip, skip + pageSize);
 
       return {
@@ -70,17 +74,17 @@ class PostService {
     }
   }
 
-  static async getPostById(postId: number) {
+  static async getPostById(postId: number, userId: string) {
     try {
-      return await PostRepository.getPostById(postId);
+      return await PostRepository.getPostById(postId, userId);
     } catch (error) {
       throw error;
     }
   }
 
-  static async getPosts() {
+  static async getPosts(userId: string) {
     try {
-      return await PostRepository.getPosts();
+      return await PostRepository.getPosts(userId);
     } catch (error) {
       throw error;
     }
@@ -94,6 +98,22 @@ class PostService {
       );
 
       return { report, report_posts };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async likePost(userId: string, postId: number) {
+    try {
+      const checkExist = await PostRepository.findLike(userId, postId);
+      if (checkExist?.is_like == true) {
+        await PostRepository.changeLike(checkExist?.id, false);
+      } else if (checkExist?.is_like == false) {
+        await PostRepository.changeLike(checkExist?.id, true);
+      } else {
+        await PostRepository.likePost(userId, postId);
+      }
+      return await PostRepository.updateLike(userId, postId);
     } catch (error) {
       throw error;
     }

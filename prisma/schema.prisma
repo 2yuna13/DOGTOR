@@ -82,6 +82,7 @@ model posts {
   comments     comments[]
   users        users          @relation(fields: [author_email], references: [email], onDelete: Cascade, onUpdate: NoAction, map: "FK_posts_users")
   report_posts report_posts[]
+  likes        likes[]
 
   @@index([author_email], map: "FK_posts_users")
 }
@@ -138,6 +139,7 @@ model users {
   posts                                       posts[]
   reports                                     reports[]
   vets                                        vets[]
+  likes                                       likes[]
 }
 
 model verificationCodes {
@@ -164,6 +166,18 @@ model vets {
   users         users     @relation(fields: [user_email], references: [email], onDelete: Cascade, onUpdate: NoAction, map: "FK_vets_users")
 
   @@index([user_email], map: "FK_vets_users")
+}
+
+model likes {
+  id              Int        @id @default(autoincrement())
+  post_id         Int
+  author_email    String     @db.VarChar(255)
+  is_like         Boolean    @default(true)
+  posts           posts      @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_likes_posts")
+  users           users      @relation(fields: [author_email], references: [email], onDelete: Cascade, onUpdate: NoAction, map: "FK_likes_users")
+
+  @@index([post_id], map: "FK_likes_posts")
+  @@index([author_email], map: "FK_likes_users")
 }
 
 enum posts_category {

@@ -5,12 +5,21 @@ import { posts_category } from "@prisma/client";
 const prisma = new PrismaClient();
 
 class PostRepository {
-  static async getPostById(postId: number): Promise<posts | null> {
+  static async getPostById(
+    postId: number,
+    userId: string
+  ): Promise<posts | null> {
     try {
       const post = await prisma.posts.findUnique({
         where: { id: postId },
         include: {
           users: true,
+          likes: {
+            where: { author_email: userId },
+            select: {
+              is_like: true,
+            },
+          },
         },
       });
       return post;
@@ -19,7 +28,7 @@ class PostRepository {
     }
   }
 
-  static async getPosts(): Promise<posts[]> {
+  static async getPosts(userId: string): Promise<posts[]> {
     try {
       const posts = await prisma.posts.findMany({
         where: {
@@ -43,7 +52,10 @@ class PostRepository {
     }
   }
 
-  static async getPostsByCategory(category: posts_category): Promise<posts[]> {
+  static async getPostsByCategory(
+    category: posts_category,
+    userId: string
+  ): Promise<posts[]> {
     try {
       const posts = await prisma.posts.findMany({
         where: {
@@ -202,6 +214,63 @@ class PostRepository {
       return { report, report_posts: reportPost };
     } catch (err) {
       throw err;
+    }
+  }
+
+  static async likePost(userId: string, postId: number) {
+    try {
+      return await prisma.likes.create({
+        data: { post_id: postId, author_email: userId },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findLike(userId: string, postId: number) {
+    try {
+      return await prisma.likes.findFirst({
+        where: { post_id: postId, author_email: userId },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async changeLike(id: number, like: boolean) {
+    try {
+      return await prisma.likes.update({
+        where: { id },
+        data: { is_like: like },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateLike(userId: string, postId: number) {
+    try {
+      const likes = await prisma.likes.count({
+        where: { post_id: postId, is_like: true },
+      });
+      await prisma.posts.update({
+        where: { id: postId },
+        data: { like: likes },
+      });
+      return await prisma.posts.findUnique({
+        where: { id: postId },
+        select: {
+          like: true,
+          likes: {
+            where: { author_email: userId },
+            select: {
+              is_like: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw error;
     }
   }
 }
