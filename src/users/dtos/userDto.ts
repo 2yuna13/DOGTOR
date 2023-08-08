@@ -112,7 +112,7 @@ class UserDto {
 
   @IsOptional()
   @IsString()
-  img_path?: string;
+  img_path?: string | null;
 
   constructor(password: string, nickname: string, img_path: string) {
     this.password = password;
@@ -134,12 +134,7 @@ class VetDto {
   @IsOptional()
   region: RegionEnum;
 
-  constructor(
-    name: string,
-    hospitalName: string,
-    description: string,
-    region: RegionEnum
-  ) {
+  constructor(hospitalName: string, description: string, region: RegionEnum) {
     this.hospitalName = hospitalName;
     this.description = description;
     this.region = region;

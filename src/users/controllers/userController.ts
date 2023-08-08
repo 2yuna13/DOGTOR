@@ -24,7 +24,7 @@ class UserController {
       );
 
       if (verification === null) {
-        res.status(400).json({ message: "이미 존재하는 이메일입니다. " });
+        res.status(400).json({ error: "이미 존재하는 이메일입니다. " });
       } else {
         logger.info("이메일 전송");
         res.status(200).json({ message: "이메일이 전송되었습니다." });
