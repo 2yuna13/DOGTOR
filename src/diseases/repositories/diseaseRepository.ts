@@ -10,6 +10,11 @@ class DiseaseRepository {
           grade: "desc",
         },
         take: 5,
+        include: {
+          users: {
+            select: { img_path: true },
+          },
+        },
       });
     } catch (error) {
       throw error;
