@@ -36,9 +36,10 @@ class PostRepository {
         },
         include: {
           users: true,
-          report_posts: {
-            include: {
-              reports: true,
+          likes: {
+            where: { author_email: userId },
+            select: {
+              is_like: true,
             },
           },
         },
@@ -64,9 +65,10 @@ class PostRepository {
         },
         include: {
           users: true,
-          report_posts: {
-            include: {
-              reports: true,
+          likes: {
+            where: { author_email: userId },
+            select: {
+              is_like: true,
             },
           },
         },

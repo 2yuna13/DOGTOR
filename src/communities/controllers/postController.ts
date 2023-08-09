@@ -29,10 +29,9 @@ class PostController {
 
   static async getPostsByCategory(req: Request, res: Response) {
     try {
-      const userId = req.user as string;
+      const userId = (req.user as string) || "";
       const category = req.query.category as Category;
       const currentPage = parseInt(req.query.currentPage as string, 10) || 1;
-
       const posts = await PostService.getPostsByCategory(
         category,
         currentPage,
@@ -46,7 +45,7 @@ class PostController {
 
   static async getPosts(req: Request, res: Response) {
     try {
-      const userId = req.user as string;
+      const userId = (req.user as string) || "";
       const posts = await PostService.getPosts(userId);
       return res.status(200).json(posts);
     } catch (error) {
@@ -56,7 +55,7 @@ class PostController {
 
   static async getPostById(req: Request, res: Response) {
     try {
-      const userId = req.user as string;
+      const userId = (req.user as string) || "";
       const postId = Number(req.params.postId);
       const post = await PostService.getPostById(postId, userId);
       if (!post) {
