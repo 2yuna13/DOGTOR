@@ -5,7 +5,7 @@ import { PostRepository } from "../repositories/postRepository";
 class CommentService {
   static async createComment(commentDto: CreateCommentDto, userId: string) {
     try {
-      const post = await PostRepository.getPostById(commentDto.post_id);
+      const post = await PostRepository.getPostById(commentDto.post_id, userId);
       if (!post) {
         throw new Error("게시물이 존재하지 않습니다.");
       }

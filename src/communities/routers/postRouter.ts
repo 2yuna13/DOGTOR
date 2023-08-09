@@ -2,7 +2,12 @@ import { Router } from "express";
 import { PostController } from "../controllers/postController";
 import passport from "passport";
 import validationMiddleware from "../../middlewares/validateDto";
-import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
+import {
+  CreatePostDto,
+  UpdatePostDto,
+  ReportPostDto,
+  LikePostDto,
+} from "../dtos/postDto";
 
 const PostRouter = Router();
 
@@ -15,7 +20,11 @@ PostRouter.post(
 
 PostRouter.get("/posts", PostController.getPostsByCategory);
 
-PostRouter.get("/posts/:postId", PostController.getPostById);
+PostRouter.get(
+  "/posts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  PostController.getPostById
+);
 
 PostRouter.put(
   "/posts/:postId",
@@ -35,6 +44,13 @@ PostRouter.post(
   passport.authenticate("jwt", { session: false }),
   validationMiddleware(ReportPostDto),
   PostController.reportPost
+);
+
+PostRouter.patch(
+  "/posts/like",
+  passport.authenticate("jwt", { session: false }),
+  validationMiddleware(LikePostDto),
+  PostController.likePost
 );
 
 export { PostRouter };

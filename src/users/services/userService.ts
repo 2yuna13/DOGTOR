@@ -1,5 +1,3 @@
-import { connection } from "../../app";
-import { logger } from "../../utils/winston";
 import { PrismaClient } from "@prisma/client";
 import {
   UserDto,
@@ -12,6 +10,8 @@ import {
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/mail";
 import { KORDATE } from "../../utils/constant";
+import { UserRepository } from "../repositories/userRepository";
+
 const prisma = new PrismaClient();
 
 class UserService {
@@ -19,26 +19,20 @@ class UserService {
     try {
       const hashedPassword = await bcrypt.hash(userRegisterDto.password, 10);
 
-      const createUser = await prisma.users.create({
-        data: {
-          email: userRegisterDto.email,
-          password: hashedPassword,
-          nickname: userRegisterDto.nickname,
-          role: "user",
-          created_at: new Date(Date.now() + KORDATE),
-          updated_at: new Date(Date.now() + KORDATE),
-        },
-      });
-      return createUser;
+      const newUser = await UserRepository.createUser(
+        userRegisterDto.email,
+        hashedPassword,
+        userRegisterDto.nickname
+      );
+
+      return newUser;
     } catch (err) {
       throw err;
     }
   }
 
   static async createVerificationCode(email: string) {
-    const existingUser = await prisma.users.findUnique({
-      where: { email: email },
-    });
+    const existingUser = await UserRepository.findUserByEmail(email);
 
     if (existingUser) {
       return null;
@@ -46,31 +40,25 @@ class UserService {
 
     const verificationCode = sendEmail(email);
 
-    const verification = await prisma.verificationCodes.create({
-      data: {
-        email: email,
-        code: verificationCode,
-      },
-    });
+    const verification = await UserRepository.createVerificationCode(
+      email,
+      verificationCode
+    );
+
     return verification;
   }
 
   static async verifyUserEmail(verifyEmailDto: VerifyEmailDto) {
     try {
-      // 사용자 이메일과 인증 코드를 사용하여 인증 확인
-      const verificationCode = await prisma.verificationCodes.findFirst({
-        where: { email: verifyEmailDto.email },
-        orderBy: { createdAt: "desc" },
-      });
+      const verificationCode = await UserRepository.findCodeByEmail(
+        verifyEmailDto.email
+      );
 
       if (!verificationCode || verificationCode.code !== verifyEmailDto.code) {
         throw new Error("인증 코드가 유효하지 않습니다.");
       }
 
-      await prisma.verificationCodes.deleteMany({
-        where: { email: verifyEmailDto.email },
-      });
-
+      await UserRepository.deleteCodeByEmail(verifyEmailDto.email);
       return;
     } catch (err) {
       throw err;
@@ -79,9 +67,7 @@ class UserService {
 
   static async loginUser(userLoginDto: UserLoginDto) {
     try {
-      const user = await prisma.users.findUnique({
-        where: { email: userLoginDto.email },
-      });
+      const user = await UserRepository.findUserByEmail(userLoginDto.email);
 
       if (!user) {
         throw new Error("해당 이메일은 가입 내역이 없습니다.");
@@ -108,11 +94,7 @@ class UserService {
 
   static async deleteUser(email: string) {
     try {
-      const user = await prisma.users.delete({
-        where: { email },
-      });
-
-      return user;
+      return await UserRepository.deleteUser(email);
     } catch (err) {
       throw err;
     }
@@ -124,31 +106,24 @@ class UserService {
     userEmail: string
   ) {
     try {
-      const createVet = await prisma.vets.create({
-        data: {
-          user_email: userEmail,
-          name: verifyVetDto.name,
-          hospital_name: verifyVetDto.hospitalName,
-          description: verifyVetDto.description,
-          region: verifyVetDto.region,
-          img_path: file_path,
-        },
-      });
-      return createVet;
-    } catch (Error) {
-      throw Error;
+      return await UserRepository.createVet(
+        userEmail,
+        verifyVetDto.name,
+        verifyVetDto.hospitalName,
+        verifyVetDto.description,
+        verifyVetDto.region,
+        file_path
+      );
+    } catch (err) {
+      throw err;
     }
   }
 
   static async getUser(email: string) {
     try {
-      const user = await prisma.users.findUnique({
-        where: { email },
-      });
+      const user = await UserRepository.findUserByEmail(email);
 
-      const vet = await prisma.vets.findFirst({
-        where: { user_email: email },
-      });
+      const vet = await UserRepository.findVetByEmail(email);
 
       return { user, vet };
     } catch (err) {
@@ -158,9 +133,7 @@ class UserService {
 
   static async setUser(email: string, updatedFields: Partial<UserDto>) {
     try {
-      const user = await prisma.users.findUnique({
-        where: { email },
-      });
+      const user = await UserRepository.findUserByEmail(email);
 
       if (!user) {
         throw new Error("유저 정보가 없습니다.");
@@ -173,24 +146,18 @@ class UserService {
       if (updatedFields.nickname) user.nickname = updatedFields.nickname;
       if (updatedFields.img_path) user.img_path = updatedFields.img_path;
       user.updated_at = new Date(Date.now() + KORDATE);
-      const updateUser = await prisma.users.update({
-        where: {
-          email,
-        },
-        data: user,
-      });
+
+      const updateUser = await UserRepository.updateUserByEmail(user);
 
       return updateUser;
-    } catch (Error) {
-      throw Error;
+    } catch (err) {
+      throw err;
     }
   }
 
   static async setVet(email: string, updatedFields: Partial<VetDto>) {
     try {
-      const vet = await prisma.vets.findFirst({
-        where: { user_email: email },
-      });
+      const vet = await UserRepository.findVetByEmail(email);
 
       if (!vet) {
         throw new Error("수의사 정보가 없습니다.");
@@ -200,15 +167,13 @@ class UserService {
       if (updatedFields.description)
         vet.description = updatedFields.description;
       if (updatedFields.region) vet.region = updatedFields.region;
+      vet.updated_at = new Date(Date.now() + KORDATE);
 
-      const updateVet = await prisma.vets.update({
-        where: { id: vet.id },
-        data: { updated_at: new Date(Date.now() + KORDATE) },
-      });
+      const updateVet = await UserRepository.updateVetByEmail(vet);
 
       return updateVet;
-    } catch (Error) {
-      throw Error;
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -219,15 +184,13 @@ class UserService {
   ) {
     try {
       const startIndex = (currentPage - 1) * rowPerPage;
-      const postList = await prisma.posts.findMany({
-        where: { author_email: email, deleted_at: null },
-        skip: startIndex,
-        take: rowPerPage,
-      });
+      const postList = await UserRepository.findPostByEmail(
+        email,
+        startIndex,
+        rowPerPage
+      );
 
-      const totalPostsCnt = await prisma.posts.count({
-        where: { author_email: email, deleted_at: null },
-      });
+      const totalPostsCnt = await UserRepository.countPostsByEmail(email);
 
       return { postList, totalPostsCnt };
     } catch (err) {
@@ -237,9 +200,7 @@ class UserService {
 
   static async deleteVet(email: string) {
     try {
-      const result = await prisma.vets.deleteMany({
-        where: { user_email: email, status: "rejected" },
-      });
+      const result = await UserRepository.deleteVet(email);
 
       if (result.count === 0) {
         throw new Error("해당 수의사 정보는 존재하지 않습니다.");

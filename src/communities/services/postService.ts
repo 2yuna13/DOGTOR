@@ -1,5 +1,10 @@
 import { posts_category } from "@prisma/client";
-import { CreatePostDto, UpdatePostDto, ReportPostDto } from "../dtos/postDto";
+import {
+  CreatePostDto,
+  UpdatePostDto,
+  ReportPostDto,
+  LikePostDto,
+} from "../dtos/postDto";
 import { PostRepository } from "../repositories/postRepository";
 
 class PostService {
@@ -38,14 +43,15 @@ class PostService {
 
   static async getPostsByCategory(
     category: posts_category,
-    currentPage: number
+    currentPage: number,
+    userId: string
   ) {
     try {
       const pageSize: number = 10;
       const skip = (currentPage - 1) * pageSize;
 
       if (!category) {
-        const totalPosts = await PostRepository.getPosts();
+        const totalPosts = await PostRepository.getPosts(userId);
         const paginatedPosts = totalPosts.slice(skip, skip + pageSize);
 
         return {
@@ -56,7 +62,10 @@ class PostService {
         };
       }
 
-      const postsByCategory = await PostRepository.getPostsByCategory(category);
+      const postsByCategory = await PostRepository.getPostsByCategory(
+        category,
+        userId
+      );
       const paginatedPosts = postsByCategory.slice(skip, skip + pageSize);
 
       return {
@@ -70,17 +79,17 @@ class PostService {
     }
   }
 
-  static async getPostById(postId: number) {
+  static async getPostById(postId: number, userId: string) {
     try {
-      return await PostRepository.getPostById(postId);
+      return await PostRepository.getPostById(postId, userId);
     } catch (error) {
       throw error;
     }
   }
 
-  static async getPosts() {
+  static async getPosts(userId: string) {
     try {
-      return await PostRepository.getPosts();
+      return await PostRepository.getPosts(userId);
     } catch (error) {
       throw error;
     }
@@ -94,6 +103,25 @@ class PostService {
       );
 
       return { report, report_posts };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async likePost(userId: string, likePostDto: LikePostDto) {
+    try {
+      const checkExist = await PostRepository.findLike(
+        userId,
+        likePostDto.postId
+      );
+      if (checkExist?.is_like == true) {
+        await PostRepository.changeLike(checkExist?.id, false);
+      } else if (checkExist?.is_like == false) {
+        await PostRepository.changeLike(checkExist?.id, true);
+      } else {
+        await PostRepository.likePost(userId, likePostDto.postId);
+      }
+      return await PostRepository.updateLike(userId, likePostDto.postId);
     } catch (error) {
       throw error;
     }
