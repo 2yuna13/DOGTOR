@@ -289,6 +289,11 @@ class ChatRepository {
         where: { status: "accepted" },
         skip: startIndex,
         take: rowPerPage,
+        include: {
+          users: {
+            select: { img_path: true },
+          },
+        },
       });
     } catch (error) {
       throw error;
@@ -305,6 +310,11 @@ class ChatRepository {
         where: { region: region, status: "accepted" },
         skip: startIndex,
         take: rowPerPage,
+        include: {
+          users: {
+            select: { img_path: true },
+          },
+        },
       });
     } catch (error) {
       throw error;
@@ -331,6 +341,11 @@ class ChatRepository {
         },
         skip: startIndex,
         take: rowPerPage,
+        include: {
+          users: {
+            select: { img_path: true },
+          },
+        },
       });
     } catch (error) {
       throw error;
@@ -358,6 +373,11 @@ class ChatRepository {
         },
         skip: startIndex,
         take: rowPerPage,
+        include: {
+          users: {
+            select: { img_path: true },
+          },
+        },
       });
     } catch (error) {
       throw error;
