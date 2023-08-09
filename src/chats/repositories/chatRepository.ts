@@ -226,7 +226,7 @@ class ChatRepository {
 
   static async countVets() {
     try {
-      return await prisma.vets.count();
+      return await prisma.vets.count({ where: { status: "accepted" } });
     } catch (error) {
       throw error;
     }
@@ -235,7 +235,7 @@ class ChatRepository {
   static async countVetsByRegion(region: vet_region) {
     try {
       return await prisma.vets.count({
-        where: { region: region },
+        where: { region: region, status: "accepted" },
       });
     } catch (error) {
       throw error;
@@ -246,9 +246,14 @@ class ChatRepository {
     try {
       return await prisma.vets.count({
         where: {
-          OR: [
-            { name: { contains: search } },
-            { hospital_name: { contains: search } },
+          AND: [
+            {
+              OR: [
+                { name: { contains: search } },
+                { hospital_name: { contains: search } },
+              ],
+            },
+            { status: "accepted" },
           ],
         },
       });
@@ -269,6 +274,7 @@ class ChatRepository {
               ],
             },
             { region: region },
+            { status: "accepted" },
           ],
         },
       });
@@ -280,6 +286,7 @@ class ChatRepository {
   static async findVetsByPage(startIndex: number, rowPerPage: number) {
     try {
       return await prisma.vets.findMany({
+        where: { status: "accepted" },
         skip: startIndex,
         take: rowPerPage,
       });
@@ -295,7 +302,7 @@ class ChatRepository {
   ) {
     try {
       return await prisma.vets.findMany({
-        where: { region: region },
+        where: { region: region, status: "accepted" },
         skip: startIndex,
         take: rowPerPage,
       });
@@ -312,9 +319,14 @@ class ChatRepository {
     try {
       return await prisma.vets.findMany({
         where: {
-          OR: [
-            { name: { contains: search } },
-            { hospital_name: { contains: search } },
+          AND: [
+            {
+              OR: [
+                { name: { contains: search } },
+                { hospital_name: { contains: search } },
+              ],
+            },
+            { status: "accepted" },
           ],
         },
         skip: startIndex,
@@ -341,7 +353,7 @@ class ChatRepository {
                 { hospital_name: { contains: search } },
               ],
             },
-            { region: region },
+            { region: region, status: "accepted" },
           ],
         },
         skip: startIndex,

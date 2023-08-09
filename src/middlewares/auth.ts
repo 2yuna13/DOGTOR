@@ -13,8 +13,8 @@ export function authenticateToken(
   next: NextFunction
 ) {
   try {
-    const userToken = req.headers["authorization"]?.split(" ")[1] ?? null;
-    if (userToken !== null) {
+    const userToken = req.headers["authorization"]?.split(" ")[1] as string;
+    if (userToken !== "null") {
       const secretKey = process.env.JWT_SECRET_KEY || "jwt-secret-key";
       const jwtDecoded = jwt.verify(userToken, secretKey) as JwtPayload;
       req.user = jwtDecoded.email;
