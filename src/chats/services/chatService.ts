@@ -193,6 +193,9 @@ class ChatService {
       ) {
         await ChatRepository.updateVetChatExit(id);
       }
+      await ChatRepository.updateVetChatCount(
+        chatRoom?.users_chat_rooms_user_vet_emailTousers.email as string
+      );
     } catch (error) {
       throw error;
     }

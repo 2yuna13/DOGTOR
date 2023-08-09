@@ -446,6 +446,20 @@ class ChatRepository {
       throw error;
     }
   }
+
+  static async updateVetChatCount(email: string) {
+    try {
+      const chatCount = await prisma.chat_rooms.count({
+        where: { user_vet_email: email, status: "completed" },
+      });
+      return await prisma.vets.updateMany({
+        where: { user_email: email },
+        data: { chat_count: chatCount },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export { ChatRepository };
