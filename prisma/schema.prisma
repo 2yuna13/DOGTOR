@@ -41,9 +41,6 @@ model chat_rooms {
 model comments {
   id              Int               @id @default(autoincrement())
   post_id         Int   
-  group           Int?               
-  order           Int?
-  indent          Int?
   author_email    String            @db.VarChar(255)
   body            String            @db.Text
   created_at      DateTime          @db.DateTime(0) @default(now())
@@ -55,18 +52,6 @@ model comments {
 
   @@index([post_id], map: "FK_comments_posts")
   @@index([author_email], map: "FK_comments_users")
-}
-
-model hospitals {
-  id            Int       @id @default(autoincrement())
-  hospital_name String    @db.VarChar(255)
-  address       String    @db.VarChar(255)
-  contact       String?   @db.VarChar(255)
-  locate_x      Float?    @db.Float
-  locate_y      Float?    @db.Float
-  created_at    DateTime  @db.DateTime(0) @default(now())
-  updated_at    DateTime  @db.DateTime(0) @default(now())
-  deleted_at    DateTime? @db.DateTime(0)
 }
 
 model posts {
@@ -128,7 +113,7 @@ model users {
   nickname                                    String          @db.VarChar(255)
   role                                        users_role
   user_type                                   users_type      @default(normal)
-  img_path                                    String?          @db.VarChar(255)
+  img_path                                    String?         @db.VarChar(255) @default("imgs/users/profile.png")
   created_at                                  DateTime        @db.DateTime(0) @default(now())
   updated_at                                  DateTime        @db.DateTime(0) @default(now())
   blocked_at                                  DateTime?       @db.DateTime(0)
@@ -189,7 +174,6 @@ enum reports_status {
   pending
   accepted
   rejected
-  completed
 }
 
 enum chat_rooms_status {
