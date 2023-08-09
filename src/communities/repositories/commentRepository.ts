@@ -52,9 +52,6 @@ class CommentRepository {
     try {
       const commentData = {
         ...commentDto,
-        group: 0,
-        order: 0,
-        indent: 0,
         author_email: userId,
       };
 
