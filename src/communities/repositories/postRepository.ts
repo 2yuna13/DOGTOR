@@ -88,18 +88,29 @@ class PostRepository {
     userId: string
   ): Promise<posts> {
     try {
-      const post = await prisma.posts.create({
-        data: {
-          author_email: userId,
-          title: postDto.title,
-          body: postDto.body,
-          category: postDto.category,
-          like: 0,
-          created_at: new Date(Date.now() + KORDATE),
-          updated_at: new Date(Date.now() + KORDATE),
-        },
+      const blockedUser = await prisma.users.findUnique({
+        where: { email: userId },
+        select: { blocked_at: true },
       });
-      return post;
+
+      if (blockedUser && blockedUser.blocked_at === null) {
+        const post = await prisma.posts.create({
+          data: {
+            author_email: userId,
+            title: postDto.title,
+            body: postDto.body,
+            category: postDto.category,
+            like: 0,
+            created_at: new Date(Date.now() + KORDATE),
+            updated_at: new Date(Date.now() + KORDATE),
+          },
+        });
+        return post;
+      } else {
+        throw new Error(
+          "서비스 이용이 불가능한 유저는 게시글을 작성할 수 없습니다."
+        );
+      }
     } catch (err) {
       throw err;
     }

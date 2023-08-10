@@ -51,20 +51,31 @@ class CommentRepository {
     userId: string
   ): Promise<comments> {
     try {
-      const commentData = {
-        ...commentDto,
-        author_email: userId,
-      };
-
-      const comment = await prisma.comments.create({
-        data: {
-          ...commentData,
-          created_at: new Date(Date.now() + KORDATE),
-          updated_at: new Date(Date.now() + KORDATE),
-        },
+      const blockedUser = await prisma.users.findUnique({
+        where: { email: userId },
+        select: { blocked_at: true },
       });
 
-      return comment;
+      if (blockedUser && blockedUser.blocked_at === null) {
+        const commentData = {
+          ...commentDto,
+          author_email: userId,
+        };
+
+        const comment = await prisma.comments.create({
+          data: {
+            ...commentData,
+            created_at: new Date(Date.now() + KORDATE),
+            updated_at: new Date(Date.now() + KORDATE),
+          },
+        });
+
+        return comment;
+      } else {
+        throw new Error(
+          "서비스 이용이 불가능한 유저는 게시글을 작성할 수 없습니다."
+        );
+      }
     } catch (err) {
       throw err;
     }
