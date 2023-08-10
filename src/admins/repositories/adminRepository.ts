@@ -50,6 +50,7 @@ class AdminRepository {
         },
         data: {
           status: status,
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
     } catch (error) {
@@ -65,6 +66,7 @@ class AdminRepository {
         },
         data: {
           role: role,
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
     } catch (error) {
@@ -121,7 +123,7 @@ class AdminRepository {
     try {
       return await prisma.users.update({
         where: { email },
-        data: { blocked_at: date },
+        data: { updated_at: new Date(Date.now() + KORDATE), blocked_at: date },
       });
     } catch (error) {
       throw error;
@@ -132,7 +134,7 @@ class AdminRepository {
     try {
       return await prisma.users.update({
         where: { email },
-        data: { blocked_at: null },
+        data: { updated_at: new Date(Date.now() + KORDATE), blocked_at: null },
       });
     } catch (error) {
       throw error;
@@ -144,6 +146,7 @@ class AdminRepository {
       return await prisma.users.update({
         where: { email },
         data: {
+          updated_at: new Date(Date.now() + KORDATE),
           blocked_at: null,
           deleted_at: new Date(Date.now() + KORDATE),
         },
@@ -316,6 +319,7 @@ class AdminRepository {
       return await prisma.posts.update({
         where: { id: id },
         data: {
+          updated_at: new Date(Date.now() + KORDATE),
           deleted_at: new Date(Date.now() + KORDATE),
         },
       });
@@ -329,6 +333,7 @@ class AdminRepository {
       return await prisma.comments.update({
         where: { id: id },
         data: {
+          updated_at: new Date(Date.now() + KORDATE),
           deleted_at: new Date(Date.now() + KORDATE),
         },
       });

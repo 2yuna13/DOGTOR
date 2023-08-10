@@ -96,6 +96,8 @@ class UserRepository {
           description: description,
           region: region,
           img_path: file_path,
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
     } catch (err) {
