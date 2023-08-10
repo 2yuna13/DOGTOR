@@ -29,6 +29,8 @@ class ChatRepository {
         data: {
           user_email: userEmail,
           user_vet_email: vetEmail,
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
     } catch (error) {
@@ -49,6 +51,7 @@ class ChatRepository {
           is_from_user: isFrom_user,
           from_id: sentEmail,
           message: message,
+          created_at: new Date(Date.now() + KORDATE),
         },
       });
     } catch (error) {
@@ -388,7 +391,7 @@ class ChatRepository {
     try {
       return await prisma.chat_rooms.update({
         where: { id: id },
-        data: { grade: grade },
+        data: { grade: grade, updated_at: new Date(Date.now() + KORDATE) },
       });
     } catch (error) {
       throw error;
@@ -454,7 +457,10 @@ class ChatRepository {
       });
       return await prisma.vets.updateMany({
         where: { user_email: email },
-        data: { chat_count: chatCount },
+        data: {
+          chat_count: chatCount,
+          updated_at: new Date(Date.now() + KORDATE),
+        },
       });
     } catch (error) {
       throw error;
