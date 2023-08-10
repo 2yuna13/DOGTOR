@@ -8,6 +8,7 @@ import {
   ReportPostDto,
   LikePostDto,
 } from "../dtos/postDto";
+import { authenticateToken } from "../../middlewares/auth";
 
 const PostRouter = Router();
 
@@ -18,13 +19,9 @@ PostRouter.post(
   PostController.createPost
 );
 
-PostRouter.get("/posts", PostController.getPostsByCategory);
+PostRouter.get("/posts", authenticateToken, PostController.getPostsByCategory);
 
-PostRouter.get(
-  "/posts/:postId",
-  passport.authenticate("jwt", { session: false }),
-  PostController.getPostById
-);
+PostRouter.get("/posts/:postId", authenticateToken, PostController.getPostById);
 
 PostRouter.put(
   "/posts/:postId",

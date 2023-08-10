@@ -1,5 +1,6 @@
 import multer from "multer";
 import fs from "fs";
+import path from "path";
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -14,9 +15,7 @@ const upload = multer({
       cb(null, folderPath);
     },
     filename: function (req, file, cb) {
-      const encodedFileName =
-        Date.now() + "-" + encodeURIComponent(file.originalname);
-      cb(null, encodedFileName);
+      cb(null, new Date().valueOf() + path.extname(file.originalname));
     },
   }),
 });
