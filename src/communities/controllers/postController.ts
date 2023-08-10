@@ -22,8 +22,8 @@ class PostController {
       const newPost = await PostService.createPost(createPostDto, userId);
 
       return res.status(201).json(newPost);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 작성 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -38,8 +38,8 @@ class PostController {
         userId
       );
       return res.status(200).json(posts);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 조회 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -48,8 +48,8 @@ class PostController {
       const userId = (req.user as string) || "";
       const posts = await PostService.getPosts(userId);
       return res.status(200).json(posts);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 조회 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -62,8 +62,8 @@ class PostController {
         return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
       }
       return res.status(200).json(post);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 상세 조회 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -81,8 +81,8 @@ class PostController {
       );
 
       return res.status(200).json(updatedPost);
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 수정 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -94,8 +94,8 @@ class PostController {
       await PostService.deletePost(postId, userId);
 
       return res.status(200).json({ message: "게시물 삭제 성공" });
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 삭제 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -108,8 +108,8 @@ class PostController {
       await PostService.reportPost(reportPostDto, userId);
 
       return res.status(200).json({ message: "게시물 신고 성공" });
-    } catch (error) {
-      return res.status(500).json({ error: "게시물 신고 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -119,8 +119,8 @@ class PostController {
       const likePostDto = new LikePostDto(req.body.postId);
       const likeresult = await PostService.likePost(userId, likePostDto);
       res.status(200).json(likeresult);
-    } catch (error) {
-      return res.status(500).json({ error: "좋아요 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 }
