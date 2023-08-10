@@ -1,6 +1,7 @@
 import { PrismaClient, posts, reports, report_posts } from "@prisma/client";
 import { CreatePostDto, ReportPostDto } from "../dtos/postDto";
 import { posts_category } from "@prisma/client";
+import { KORDATE } from "../../utils/constant";
 
 const prisma = new PrismaClient();
 
@@ -94,6 +95,8 @@ class PostRepository {
           body: postDto.body,
           category: postDto.category,
           like: 0,
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
       return post;
@@ -203,6 +206,8 @@ class PostRepository {
           author_email,
           content: reason,
           status: "pending",
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
 

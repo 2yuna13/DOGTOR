@@ -15,8 +15,8 @@ class CommentController {
       );
 
       return res.status(201).json(newComment);
-    } catch (error) {
-      return res.status(500).json({ error: "댓글 작성 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -31,8 +31,8 @@ class CommentController {
       }
 
       return res.status(200).json(comments);
-    } catch (error) {
-      return res.status(500).json({ error: "댓글 조회 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -44,8 +44,8 @@ class CommentController {
       await CommentService.deleteComment(Number(commentId), userId);
 
       return res.status(200).json({ message: "댓글 삭제 성공" });
-    } catch (error) {
-      return res.status(500).json({ error: "댓글 삭제 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 
@@ -58,8 +58,8 @@ class CommentController {
       await CommentService.reportComment(reportCommentDto, userId);
 
       return res.status(200).json({ message: "댓글 신고 성공" });
-    } catch (error) {
-      return res.status(500).json({ error: "댓글 신고 실패" });
+    } catch (error: any) {
+      return res.status(500).json(error.message);
     }
   }
 }

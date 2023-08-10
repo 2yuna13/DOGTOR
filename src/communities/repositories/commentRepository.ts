@@ -5,6 +5,7 @@ import {
   report_comments,
 } from "@prisma/client";
 import { CreateCommentDto, ReportCommentDto } from "../dtos/commentDto";
+import { KORDATE } from "../../utils/constant";
 
 const prisma = new PrismaClient();
 
@@ -56,7 +57,11 @@ class CommentRepository {
       };
 
       const comment = await prisma.comments.create({
-        data: commentData,
+        data: {
+          ...commentData,
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
+        },
       });
 
       return comment;
@@ -124,6 +129,8 @@ class CommentRepository {
           author_email,
           content: reason,
           status: "pending",
+          created_at: new Date(Date.now() + KORDATE),
+          updated_at: new Date(Date.now() + KORDATE),
         },
       });
 
