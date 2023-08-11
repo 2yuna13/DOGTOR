@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src="/uploads/1fe878c1b2a77124892862546dd17180/pwa_icon.png" width="80px" height="80px">
+  <img src="/uploads/e8d1fe6236276effc20f1487601bd4bf/image.png" width="80px" height="80px">
 </p>
 
 <h1 align="center"> DOCTOR </h1>
@@ -59,13 +59,13 @@
 <!-- ABOUT THE PROJECT -->
 <h2> :pencil: 데이터 플로우</h2>
 
-<img src="/uploads/5fbaf19c0e3fe6fa3d6d4b44a2ac61b5/work-flow.png" width="750px">
+<img src="/uploads/ed42c5d76d79944c33d5fead6bc8bd6b/데이터.png" width="750px">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <h2> :pencil: ERD </h2>
 
-<img src="/uploads/5fbaf19c0e3fe6fa3d6d4b44a2ac61b5/work-flow.png" width="750px">
+<img src="/uploads/ce1d991d5e8e81a3be276c4055d9d747/erds.png" width="750px">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -130,7 +130,7 @@
 
 <p align="center">
 
-![로그인](/uploads/97baac47da6035573ff433ed290682dd/로그인.mp4)
+![로그인](/uploads/00940cad2cb2f4164ca17b601d4fb410/로그인.mp4)
 
 <!--gif/DFS.gif-->
 <!--height="382px" width="737px"-->
@@ -144,7 +144,7 @@
 
 <p align="center">
 
-![회원가입](/uploads/e7d36b8fa3f970b7ac36ab23890d64a7/회원가입.mp4)
+![회원가입](/uploads/cc84b2acba27dd5fa36b421ebc08f3ce/회원가입.mp4)
 
 </p>
 
@@ -156,7 +156,7 @@
 
 <p align="center">
 
-![메인페이지](/uploads/b03a2f0d9f46cd013eca626aca2a5127/메인페이지.mp4)
+![메인페이지](/uploads/e0fa2ae08b0aaa5ff7793d023e13cd0b/메인페이지.mp4)
 
 </p>
 
@@ -168,7 +168,7 @@
 
 <p align="center">
 
-![AI](/uploads/beef71b5553c1d4411507a095a22e53a/AI.mp4)
+![AI](/uploads/f566bc41579cfc01b8c197c0ba372cf7/AI.mp4)
 
 </p>
 
@@ -180,7 +180,7 @@
 
 <p align="center">
 
-![동물병원찾기](/uploads/6b7e24d71821f4ead9225c457cf6ee2f/동물병원찾기.mp4)
+![동물병원찾기](/uploads/4076b82a1584aeedf40c353ef1cb36ef/동물병원찾기.mp4)
 
 </p>
 
@@ -192,7 +192,7 @@
 
 <p align="center">
 
-![실시간상담신청](/uploads/e3f795ef14c56d816e8be4bb1e285402/실시간상담신청.mp4)
+![실시간상담신청](/uploads/ea61e6e48b3165372642ebbfa7a0730d/실시간상담신청.mp4)
 
 </p>
 
@@ -204,12 +204,12 @@
 
 <p align="center">
 
-![실시간채팅](/uploads/67a90b01f1dfd781ee59f9d3e7d5057c/실시간채팅.mp4)
+![실시간채팅](/uploads/493be37ff06eb2433935d81ec1ee85bc/실시간채팅.mp4)
 
 </p>
 <p align="center">
 
-![상담만족도조사](/uploads/4e485779e85654963fe249d06d1ff479/상담만족도조사.mp4)
+![상담만족도조사](/uploads/0e5d76b7cb28083dcf717a69cfaa252f/상담만족도조사.mp4)
 
 </p>
 
@@ -221,7 +221,7 @@
 
 <p align="center">
 
-![커뮤니티조회](/uploads/2f38ce28c3cebdb2f0ed8da08c8a2f55/커뮤니티조회.mp4)
+![커뮤니티조회](/uploads/1062925e5d748152c1a2a09c06f62eb5/커뮤니티조회.mp4)
 
 </p>
 
@@ -233,7 +233,7 @@
 
 <p align="center">
 
-![커뮤니티등록](/uploads/a0f6504d247e3718e61a4b329ee02577/커뮤니티등록.mp4)
+![커뮤니티등록](/uploads/9bc7a679ce0e52972207d17b764d0d3e/커뮤니티등록.mp4)
 
 </p>
 
@@ -245,7 +245,7 @@
 
 <p align="center">
 
-![커뮤니티댓글](/uploads/64bcf6fb4f372bbc9982c3cd31a6f2c2/커뮤니티댓글.mp4)
+![커뮤니티댓글](/uploads/34ba6a2486da6e24b8ad505d4d31ecf0/커뮤니티댓글.mp4)
 
 </p>
 
@@ -257,7 +257,7 @@
 
 <p align="center">
 
-![커뮤니티신고](/uploads/d5c7456d2de8534d1fe09544a30dcd5f/커뮤니티신고.mp4)
+![커뮤니티신고](/uploads/ab8311a0bd8251951096b6ccbd642fe8/커뮤니티신고.mp4)
 
 </p>
 
@@ -269,13 +269,13 @@
 
 <p align="center">
 
-![마이페이지](/uploads/19788679e5b95aec355bafed5b07cf29/마이페이지.mp4)
+![마이페이지](/uploads/1353dd97e0f0864b9bc461818da9f0f3/마이페이지.mp4)
 
 </p>
 
 <p align="center">
 
-![수의사인증](/uploads/7ca61ceb2211aab3cd14f9c2a9fe8241/수의사인증.mp4)
+![수의사인증](/uploads/2853e4c3c9025212ac6e17e8bf553613/수의사인증.mp4)
 
 </p>
 
@@ -287,7 +287,7 @@
 
 <p align="center">
 
-![관리자페이지-유저관리](/uploads/abc5973afa1f4b430aba407c512958e4/관리자페이지-유저관리.mp4)
+![관리자페이지-유저관리](/uploads/8484018cc75282c8f7187c26490b3c7d/관리자페이지-유저관리.mp4)
 
 </p>
 
@@ -299,7 +299,7 @@
 
 <p align="center">
 
-![관리자페이지-수의사인증](/uploads/402fbdf60279bd161bf66628baa7c0e9/관리자페이지-수의사인증.mp4)
+![관리자페이지-수의사인증](/uploads/f2613dc968865920685466fd4a50ac03/관리자페이지-수의사인증.mp4)
 
 </p>
 
@@ -311,7 +311,7 @@
 
 <p align="center">
 
-![관리자페이지-커뮤니티신고](/uploads/cd149aede0481cfa6aad2152847f26c5/관리자페이지-커뮤니티신고.mp4)
+![관리자페이지-커뮤니티신고](/uploads/5fbaaa5fa7753ebd63837eb0da51eea2/관리자페이지-커뮤니티신고.mp4)
 
 </p>
 
