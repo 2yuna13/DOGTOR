@@ -11,6 +11,8 @@ import { Server } from "socket.io";
 import { chatSocket } from "./chats/sockets/chatSocket";
 import session from "express-session";
 import path from "path";
+import https from "https";
+import fs from "fs";
 import { updateBlockedAt } from "./utils/scheduledTask";
 
 import { PostRouter } from "./communities/routers/postRouter";
@@ -82,7 +84,15 @@ app.get("/", (request: Request, response: Response) => {
   response.send("hello");
 });
 
-const server = app.listen(port, () => {
+const keyoptions = {
+  ca: fs.readFileSync(process.env.HTTPS_CA as string),
+  key: fs.readFileSync(process.env.HTTPS_KEY as string),
+  cert: fs.readFileSync(process.env.HTTPS_CERT as string),
+};
+
+const httpsAccess = https.createServer(keyoptions, app);
+
+const server = httpsAccess.listen(port, () => {
   logger.info(`${port} 포트에서 서버 시작`);
 });
 

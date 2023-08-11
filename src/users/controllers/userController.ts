@@ -79,7 +79,7 @@ class UserController {
       const token = generateToken(req.user);
       res.cookie("token", token, { httpOnly: false });
 
-      return res.redirect("http://localhost:5173");
+      return res.redirect("https://kdt-ai7-team04.elicecoding.com");
     } catch (error) {
       res.status(500).json({ error });
     }
