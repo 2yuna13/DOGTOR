@@ -48,7 +48,7 @@ process.on("SIGINT", () => {
 
 app.use(
   cors({
-    origin: true,
+    origin: "https://kdt-ai7-team04.elicecoding.com",
   })
 );
 
