@@ -81,7 +81,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/", (request: Request, response: Response) => {
-  response.send("hello");
+  response.redirect("https://kdt-ai7-team04.elicecoding.com/");
 });
 
 const keyoptions = {
