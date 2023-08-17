@@ -29,9 +29,9 @@ class UserController {
         logger.info("이메일 전송");
         res.status(200).json({ message: "이메일이 전송되었습니다." });
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error("이메일 전송 실패");
-      res.status(500).json({ error });
+      res.status(500).json({ error: error.message });
     }
   }
 
