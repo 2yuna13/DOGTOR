@@ -32,20 +32,25 @@ class UserService {
   }
 
   static async createVerificationCode(email: string) {
-    const existingUser = await UserRepository.findUserByEmail(email);
+    try {
+      const existingUser = await UserRepository.findUserByEmail(email);
 
-    if (existingUser) {
-      return null;
+      if (existingUser) {
+        return null;
+      }
+
+      const verificationCode = await sendEmail(email);
+
+      if (verificationCode) {
+        const verification = await UserRepository.createVerificationCode(
+          email,
+          verificationCode
+        );
+        return verification;
+      }
+    } catch (error) {
+      throw error;
     }
-
-    const verificationCode = sendEmail(email);
-
-    const verification = await UserRepository.createVerificationCode(
-      email,
-      verificationCode
-    );
-
-    return verification;
   }
 
   static async verifyUserEmail(verifyEmailDto: VerifyEmailDto) {
