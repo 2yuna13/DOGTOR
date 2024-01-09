@@ -59,13 +59,13 @@
 <!-- ABOUT THE PROJECT -->
 <h2> :pencil: 데이터 플로우</h2>
 
-<img src="/uploads/ed42c5d76d79944c33d5fead6bc8bd6b/데이터.png" width="750px">
+<img src="https://github.com/2yuna13/DOGTOR/assets/121540949/1e56aa57-9f69-4244-9757-cdb3d67298d6" width="750px">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <h2> :pencil: ERD </h2>
 
-<img src="/uploads/ce1d991d5e8e81a3be276c4055d9d747/erds.png" width="750px">
+<img src="https://github.com/2yuna13/DOGTOR/assets/121540949/39c625ab-5140-4f56-ba1e-d9c2d99e61ec" width="750px">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -130,7 +130,7 @@
 
 <p align="center">
 
-![로그인](/uploads/00940cad2cb2f4164ca17b601d4fb410/로그인.mp4)
+![로그인](https://github.com/2yuna13/DOGTOR/assets/121540949/5bafdf3e-2f51-4625-9644-8d8f9698631e)
 
 <!--gif/DFS.gif-->
 <!--height="382px" width="737px"-->
@@ -144,7 +144,7 @@
 
 <p align="center">
 
-![회원가입](/uploads/bb728a5692c2556b54f2fa6f64cdf0f5/회원가입.mp4)
+![회원가입](https://github.com/2yuna13/DOGTOR/assets/121540949/4553ef8b-7cd1-449e-9c08-8d83cc981e80)
 
 </p>
 
@@ -156,7 +156,7 @@
 
 <p align="center">
 
-![메인페이지](/uploads/7dfcc6be5c725b8574419b6207496903/메인페이지.mp4)
+<img src="https://github.com/2yuna13/DOGTOR/assets/121540949/d84a0f69-d9b9-4254-b4d8-a5eb10e6edf9" width="750px">
 
 </p>
 
@@ -168,7 +168,7 @@
 
 <p align="center">
 
-![AI](/uploads/f566bc41579cfc01b8c197c0ba372cf7/AI.mp4)
+![AI검사](https://github.com/2yuna13/DOGTOR/assets/121540949/1479519b-7db3-4645-81fe-b42426bf5cf2)
 
 </p>
 
@@ -192,7 +192,7 @@
 
 <p align="center">
 
-![실시간상담신청](/uploads/5a937ee323632b0c6b663bc81f447543/실시간상담신청.mp4)
+![실시간상담신청](https://github.com/2yuna13/DOGTOR/assets/121540949/57f1e43b-8111-4f3c-8f41-addac47e68c1)
 
 </p>
 
@@ -204,12 +204,12 @@
 
 <p align="center">
 
-![실시간채팅](/uploads/d14567860b44a0237bce69293f5cc20c/실시간채팅.mp4)
+![실시간채팅](https://github.com/2yuna13/DOGTOR/assets/121540949/a3d937bb-337a-4c73-9793-2ecdce371f02)
 
 </p>
 <p align="center">
 
-![상담만족도조사](/uploads/c693fe51ad96f69aa3253b4e7ef340c3/상담만족도조사.mp4)
+![상담만족도조사](https://github.com/2yuna13/DOGTOR/assets/121540949/908afd39-dece-42db-b010-2c3c816c357a)
 
 </p>
 
@@ -221,7 +221,7 @@
 
 <p align="center">
 
-![커뮤니티조회](/uploads/0a346a3eaedb67c61924177f8fd403a8/커뮤니티조회.mp4)
+![커뮤니티조회](https://github.com/2yuna13/DOGTOR/assets/121540949/07247d3e-8ae0-4b9d-8357-dc4d03cf91a3)
 
 </p>
 
@@ -233,7 +233,7 @@
 
 <p align="center">
 
-![커뮤니티등록](/uploads/758c8da4eb2e35a5867a38a1c83a086a/커뮤니티등록.mp4)
+![커뮤니티등록](https://github.com/2yuna13/DOGTOR/assets/121540949/a5448c59-00f9-4c2f-8233-aca4d6fce80b)
 
 </p>
 
@@ -245,7 +245,7 @@
 
 <p align="center">
 
-![커뮤니티댓글](/uploads/db8a965a5ac0da2575bbb02fe7b46dbe/커뮤니티댓글.mp4)
+![커뮤니티댓글](https://github.com/2yuna13/DOGTOR/assets/121540949/6f2dd9c2-55be-4b7b-a21d-71f9d054e1c0)
 
 </p>
 
@@ -257,7 +257,7 @@
 
 <p align="center">
 
-![커뮤니티신고](/uploads/a47679f7bcea790ae2c7a4f57c8a9b7d/커뮤니티신고.mp4)
+![커뮤니티신고](https://github.com/2yuna13/DOGTOR/assets/121540949/cbd3a0b3-d65e-4962-991d-b8a3fb81fa20)
 
 </p>
 
@@ -311,7 +311,7 @@
 
 <p align="center">
 
-![관리자페이지-커뮤니티신고](/uploads/beaae361b00f2e6bfaba98eca915cbf1/관리자페이지-커뮤니티신고.mp4)
+<img src="https://github.com/2yuna13/DOGTOR/assets/121540949/6cad612a-fc58-4e84-85f5-7367f932310b" width="750px">
 
 </p>
 
