@@ -1,6 +1,5 @@
 <p align="center"> 
-<!--   <img src="/uploads/e8d1fe6236276effc20f1487601bd4bf/image.png" width="80px" height="80px"> -->
-  ![image](https://github.com/2yuna13/DOGTOR/assets/121540949/51026dbc-2658-4ac5-bfda-cf8b09db08ac)
+  <img src="https://github.com/2yuna13/DOGTOR/assets/121540949/51026dbc-2658-4ac5-bfda-cf8b09db08ac" width="100px" height="100px">
 </p>
 
 <h1 align="center"> DOCTOR </h1>
